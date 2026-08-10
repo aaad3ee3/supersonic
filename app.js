@@ -388,12 +388,47 @@ function RashqOrderSheet({ order, onClose, showToast }) {
     submitting ? "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0641\u064A\u0630..." : "\u062A\u0646\u0641\u064A\u0630 \u0627\u0644\u0637\u0644\u0628"
   )));
 }
+var CARDS_CATEGORY_MAP = {
+  "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644": "3889fd74-be30-43eb-8ade-487ae1daedf3"
+};
 function ProductSheet({ item, onClose, onPurchased }) {
-  const info = PRODUCT_PACKAGES[item.name];
+  const categoryId = CARDS_CATEGORY_MAP[item.name];
+  const cardsReady = !RASHQ_API_BASE.includes("REPLACE-WITH");
+  const [liveInfo, setLiveInfo] = useState(null);
+  const [loadingLive, setLoadingLive] = useState(!!categoryId && cardsReady);
+  const info = liveInfo || PRODUCT_PACKAGES[item.name];
   const [step, setStep] = useState("packages");
   const [selected, setSelected] = useState(null);
   const [playerId, setPlayerId] = useState("");
   const [orderCode, setOrderCode] = useState("");
+  useEffect(() => {
+    if (!categoryId || !cardsReady) return;
+    let cancelled = false;
+    fetch(`${RASHQ_API_BASE}/api/cards/category/${categoryId}`).then((res) => res.json()).then((data) => {
+      if (cancelled || !data.success) throw new Error("bad response");
+      const needsId = (data.subCategories || []).some(
+        (s) => s.how_to_use && (s.how_to_use.includes("\u0627\u064A\u062F\u064A") || s.how_to_use.includes("ID"))
+      );
+      const packages = [];
+      (data.subCategories || []).forEach((sub) => {
+        (sub.products || []).forEach((p) => {
+          if (p.available) packages.push({ label: p.name, price: p.price, productId: p.id });
+        });
+      });
+      if (!cancelled && packages.length) {
+        setLiveInfo({ idLabel: needsId ? "\u0622\u064A\u062F\u064A \u0627\u0644\u0644\u0627\u0639\u0628 (Player ID)" : null, packages, isLive: true });
+      }
+    }).catch(() => {
+    }).finally(() => {
+      if (!cancelled) setLoadingLive(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [categoryId, cardsReady]);
+  function unitPriceOf(pkg) {
+    return pkg.price != null ? pkg.price : priced(pkg.base);
+  }
   function confirmPurchase() {
     const code = "SS-" + Math.floor(1e5 + Math.random() * 9e5);
     setOrderCode(code);
@@ -401,12 +436,12 @@ function ProductSheet({ item, onClose, onPurchased }) {
       id: code,
       productName: item.name,
       packageLabel: selected.label,
-      price: fmt(priced(selected.base)),
+      price: fmt(unitPriceOf(selected)),
       date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", { day: "numeric", month: "short" })
     });
     setStep("success");
   }
-  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black", style: { opacity: 0.75 }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-gray-950 border-t border-purple-800 rounded-t-3xl p-5 pb-8 overflow-hidden", style: { maxWidth: 480, maxHeight: "85vh", overflowY: "auto" } }, step !== "success" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-sm" }, item.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" }))), step === "packages" && (!info ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-10 h-10 text-purple-500 mx-auto mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0627\u0644\u0628\u0627\u0642\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062A\u062C \u0642\u064A\u062F \u0627\u0644\u0625\u0636\u0627\u0641\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0628\u0627\u0644\u062F\u0639\u0645 \u0648\u0628\u0646\u062C\u0647\u0632\u0647\u0627 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-400 mb-3" }, "\u0627\u062E\u062A\u0631 \u0627\u0644\u0641\u0626\u0629"), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-2.5 mb-2" }, info.packages.map((p, i) => {
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black", style: { opacity: 0.75 }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-gray-950 border-t border-purple-800 rounded-t-3xl p-5 pb-8 overflow-hidden", style: { maxWidth: 480, maxHeight: "85vh", overflowY: "auto" } }, step !== "success" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-sm" }, item.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" }))), step === "packages" && (loadingLive ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-7 h-7 text-purple-500 animate-spin mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u064A\u062C\u064A\u0628 \u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u062D\u064A\u0629...")) : !info ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-10 h-10 text-purple-500 mx-auto mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0627\u0644\u0628\u0627\u0642\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062A\u062C \u0642\u064A\u062F \u0627\u0644\u0625\u0636\u0627\u0641\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0628\u0627\u0644\u062F\u0639\u0645 \u0648\u0628\u0646\u062C\u0647\u0632\u0647\u0627 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-400" }, "\u0627\u062E\u062A\u0631 \u0627\u0644\u0641\u0626\u0629"), info.isLive && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-emerald-400 flex items-center gap-1" }, /* @__PURE__ */ React.createElement("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-400" }), " \u0623\u0633\u0639\u0627\u0631 \u062D\u064A\u0629")), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-2.5 mb-2" }, info.packages.map((p, i) => {
     const active = selected === p;
     return /* @__PURE__ */ React.createElement(
       "button",
@@ -416,7 +451,7 @@ function ProductSheet({ item, onClose, onPurchased }) {
         className: active ? "rounded-2xl p-3.5 text-right border bg-purple-600 border-purple-400" : "rounded-2xl p-3.5 text-right border bg-black border-purple-900"
       },
       /* @__PURE__ */ React.createElement("span", { className: "block text-white text-sm font-bold mb-1" }, p.label),
-      /* @__PURE__ */ React.createElement("span", { className: active ? "block text-purple-100 text-xs" : "block text-purple-500 text-xs" }, "$", fmt(priced(p.base)))
+      /* @__PURE__ */ React.createElement("span", { className: active ? "block text-purple-100 text-xs" : "block text-purple-500 text-xs" }, "$", fmt(unitPriceOf(p)))
     );
   })), /* @__PURE__ */ React.createElement(
     "button",
@@ -427,7 +462,7 @@ function ProductSheet({ item, onClose, onPurchased }) {
       style: selected ? { boxShadow: "0 0 24px rgba(168,85,247,0.45)" } : void 0
     },
     "\u0645\u062A\u0627\u0628\u0639\u0629"
-  ))), step === "checkout" && selected && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-950 border border-purple-800 rounded-2xl p-4 mb-4 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, selected.label), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-xs" }, item.name)), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, "$", fmt(priced(selected.base)))), info.idLabel && /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, info.idLabel), /* @__PURE__ */ React.createElement(
+  ))), step === "checkout" && selected && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-950 border border-purple-800 rounded-2xl p-4 mb-4 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, selected.label), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-xs" }, item.name)), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, "$", fmt(unitPriceOf(selected)))), info.idLabel && /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, info.idLabel), /* @__PURE__ */ React.createElement(
     "input",
     {
       value: playerId,
@@ -843,3 +878,4 @@ createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createE
 export {
   App as default
 };
+
