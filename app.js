@@ -1,5 +1,5 @@
 // supersonic-app.entry.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import {
   Home,
@@ -253,13 +253,21 @@ function CategoryTile({ item, onOpen }) {
   );
 }
 function SectionHeader({ title, Icon }) {
-  return /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between px-4 mt-7 mb-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(Icon, { className: "w-4 h-4 text-purple-400" }), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-[15px]" }, title)), /* @__PURE__ */ React.createElement("button", { className: "flex items-center text-purple-400 text-xs gap-1" }, "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644 ", /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-3.5 h-3.5" })));
+  return /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 px-4 mt-7 mb-3" }, /* @__PURE__ */ React.createElement(Icon, { className: "w-4 h-4 text-purple-400" }), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-[15px]" }, title));
 }
 function CategoryRow({ items, onOpen }) {
   return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-3 gap-3 px-4" }, items.map((item, i) => /* @__PURE__ */ React.createElement(CategoryTile, { key: i, item, onOpen })));
 }
-function Header() {
-  return /* @__PURE__ */ React.createElement("header", { className: "sticky top-0 z-20 bg-black border-b border-purple-950 px-4 py-3 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-4 h-4 text-white" })), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("button", { className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-300" })), /* @__PURE__ */ React.createElement("button", { className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center relative" }, /* @__PURE__ */ React.createElement(Bell, { className: "w-4 h-4 text-purple-300" }), /* @__PURE__ */ React.createElement("span", { className: "absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-purple-400 rounded-full" }))));
+function Header({ onSearchClick, showToast }) {
+  return /* @__PURE__ */ React.createElement("header", { className: "sticky top-0 z-20 bg-black border-b border-purple-950 px-4 py-3 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-4 h-4 text-white" })), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("button", { onClick: onSearchClick, className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-300" })), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => showToast("\u0648\u0644\u0627 \u0625\u0634\u0639\u0627\u0631 \u062C\u062F\u064A\u062F \u062D\u0627\u0644\u064A\u064B\u0627"),
+      className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center relative"
+    },
+    /* @__PURE__ */ React.createElement(Bell, { className: "w-4 h-4 text-purple-300" }),
+    /* @__PURE__ */ React.createElement("span", { className: "absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-purple-400 rounded-full" })
+  )));
 }
 function BottomNav({ tab, onChange }) {
   return /* @__PURE__ */ React.createElement(
@@ -285,8 +293,12 @@ function BottomNav({ tab, onChange }) {
   );
 }
 function Footer({ showToast }) {
-  const links = ["\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", "API"];
-  return /* @__PURE__ */ React.createElement("footer", { className: "mt-10 mx-4 mb-6 border-t border-purple-950 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-x-5 gap-y-2 text-xs text-purple-400 mb-5" }, links.map((l) => /* @__PURE__ */ React.createElement("button", { key: l }, l))), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500 space-y-1 mb-5" }, /* @__PURE__ */ React.createElement("p", null, "\u062E\u062F\u0645\u0629 \u0627\u0644\u0639\u0645\u0644\u0627\u0621: support@supersonic.ly"), /* @__PURE__ */ React.createElement("p", null, "\u0648\u0627\u062A\u0633\u0627\u0628: 0910000000")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, /* @__PURE__ */ React.createElement(
+  const links = [
+    ["\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", "\u0628\u0631\u0646\u0627\u0645\u062C \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"],
+    ["\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"],
+    ["API", "\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0640 API \u0642\u0631\u064A\u0628\u064B\u0627"]
+  ];
+  return /* @__PURE__ */ React.createElement("footer", { className: "mt-10 mx-4 mb-6 border-t border-purple-950 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-x-5 gap-y-2 text-xs text-purple-400 mb-5" }, links.map(([label, msg]) => /* @__PURE__ */ React.createElement("button", { key: label, onClick: () => showToast(msg) }, label))), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500 space-y-1 mb-5" }, /* @__PURE__ */ React.createElement("p", null, "\u062E\u062F\u0645\u0629 \u0627\u0644\u0639\u0645\u0644\u0627\u0621: support@supersonic.ly"), /* @__PURE__ */ React.createElement("p", null, "\u0648\u0627\u062A\u0633\u0627\u0628: 0910000000")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: () => showToast("\u0642\u0631\u064A\u0628\u064B\u0627 \u0639\u0644\u0649 Google Play"),
@@ -497,18 +509,25 @@ function ProductSheet({ item, onClose, onPurchased }) {
     "\u062A\u0645"
   )))));
 }
-function HomeView({ filter, setFilter, slide, showToast, onOpenProduct }) {
-  const shown = filter === "all" ? SECTIONS : SECTIONS.filter((s) => s.key === filter);
-  const Banner = BANNERS[slide];
-  const BannerIcon = Banner.icon;
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-4 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden h-32 flex flex-col justify-center" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement(BannerIcon, { className: "w-7 h-7 text-purple-300 mb-2 relative z-10" }), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base relative z-10" }, Banner.title), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs mt-1 relative z-10" }, Banner.sub), /* @__PURE__ */ React.createElement("div", { className: "flex gap-1.5 absolute bottom-3 left-5 z-10" }, BANNERS.map((_, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: i === slide ? "h-1.5 w-5 rounded-full bg-purple-400" : "h-1.5 w-1.5 rounded-full bg-purple-900" })))), /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-4 flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
+function HomeView({ filter, setFilter, slide, showToast, onOpenProduct, searchRef }) {
+  const [query, setQuery] = useState("");
+  const q = query.trim();
+  const baseSections = filter === "all" ? SECTIONS : SECTIONS.filter((s) => s.key === filter);
+  const shown = !q ? baseSections : baseSections.map((s) => ({ ...s, items: s.items.filter((item) => item.name.includes(q)) })).filter((s) => s.items.length > 0);
+  const noResults = q && shown.length === 0;
+  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-4 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden h-32 flex flex-col justify-center" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null), (() => {
+    const BannerIcon = BANNERS[slide].icon;
+    return /* @__PURE__ */ React.createElement(BannerIcon, { className: "w-7 h-7 text-purple-300 mb-2 relative z-10" });
+  })(), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base relative z-10" }, BANNERS[slide].title), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs mt-1 relative z-10" }, BANNERS[slide].sub), /* @__PURE__ */ React.createElement("div", { className: "flex gap-1.5 absolute bottom-3 left-5 z-10" }, BANNERS.map((_, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: i === slide ? "h-1.5 w-5 rounded-full bg-purple-400" : "h-1.5 w-1.5 rounded-full bg-purple-900" })))), /* @__PURE__ */ React.createElement("div", { ref: searchRef, className: "mx-4 mt-4 flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "text",
+      value: query,
+      onChange: (e) => setQuery(e.target.value),
       placeholder: "\u0627\u0628\u062D\u062B \u0639\u0646 \u0645\u0646\u062A\u062C\u060C \u0641\u0626\u0629 \u0623\u0648 \u062E\u062F\u0645\u0629...",
       className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1"
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 px-4 mt-4 overflow-x-auto", style: { scrollbarWidth: "none" } }, FILTERS.map((f) => /* @__PURE__ */ React.createElement(
+  ), query && /* @__PURE__ */ React.createElement("button", { onClick: () => setQuery("") }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-500" }))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 px-4 mt-4 overflow-x-auto", style: { scrollbarWidth: "none" } }, FILTERS.map((f) => /* @__PURE__ */ React.createElement(
     "button",
     {
       key: f.id,
@@ -516,7 +535,7 @@ function HomeView({ filter, setFilter, slide, showToast, onOpenProduct }) {
       className: filter === f.id ? "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
     },
     f.label
-  ))), shown.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key }, /* @__PURE__ */ React.createElement(SectionHeader, { title: s.title, Icon: s.Icon }), /* @__PURE__ */ React.createElement(CategoryRow, { items: s.items, onOpen: onOpenProduct }))), /* @__PURE__ */ React.createElement(Footer, { showToast }));
+  ))), noResults ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14 text-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-8 h-8 text-purple-700 mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-sm" }, '\u0648\u0644\u0627 \u0646\u062A\u064A\u062C\u0629 \u0644\u0640"', q, '"')) : shown.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key }, /* @__PURE__ */ React.createElement(SectionHeader, { title: s.title, Icon: s.Icon }), /* @__PURE__ */ React.createElement(CategoryRow, { items: s.items, onOpen: onOpenProduct }))), /* @__PURE__ */ React.createElement(Footer, { showToast }));
 }
 function RashqPage({ onOpenService, livePrices, apiState }) {
   return /* @__PURE__ */ React.createElement("div", { className: "pt-2" }, /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-2 mb-1 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 flex items-center gap-3" }, /* @__PURE__ */ React.createElement("span", { className: "w-11 h-11 rounded-2xl bg-purple-600 flex items-center justify-center shrink-0" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-6 h-6 text-white" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base" }, "\u0631\u0634\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs" }, "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u0648\u062A\u0641\u0627\u0639\u0644 \u0644\u0643\u0644 \u0645\u0646\u0635\u0627\u062A\u0643 \u0628\u0636\u063A\u0637\u0629 \u0648\u062D\u062F\u0629")))), /* @__PURE__ */ React.createElement(RashqSection, { onOpenService, livePrices, apiState }), /* @__PURE__ */ React.createElement("div", { className: "h-6" }));
@@ -539,28 +558,51 @@ function PurchasesView({ goHome, purchases }) {
     "\u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A"
   )), sub === "cards" && purchases.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "space-y-2.5 pb-4" }, purchases.map((p) => /* @__PURE__ */ React.createElement("div", { key: p.id, className: "bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3.5 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "text-left" }, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, "$", p.price), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[10px]" }, p.date)), /* @__PURE__ */ React.createElement("div", { className: "text-right" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-200 text-xs" }, p.packageLabel), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-[11px]" }, p.productName), /* @__PURE__ */ React.createElement("p", { className: "text-gray-600 text-[10px] mt-0.5", dir: "ltr" }, p.id))))) : /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center py-14 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-800 to-purple-950 border border-purple-700 flex items-center justify-center mb-4" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-9 h-9 text-purple-400" })), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0644\u0633\u0647 \u0645\u0627 \u0633\u0648\u064A\u062A \u0623\u064A \u0639\u0645\u0644\u064A\u0629 \u0634\u0631\u0627\u0621"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-5" }, "\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u062A\u062C\u0631 \u0648\u0627\u0628\u062F\u0623 \u0623\u0648\u0644 \u0639\u0645\u0644\u064A\u0629 \u0634\u062D\u0646"), /* @__PURE__ */ React.createElement("button", { onClick: goHome, className: "text-purple-300 text-xs font-bold border border-purple-700 rounded-full px-5 py-2" }, "\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u062A\u062C\u0631")));
 }
-function SupportView() {
+function SupportView({ showToast }) {
   const items = [
-    { label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u0648\u0627\u062A\u0633\u0627\u0628", Icon: MessageCircle },
-    { label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F", Icon: MessageCircle },
-    { label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645", Icon: Send },
-    { label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F", Icon: Send }
+    { label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u0648\u0627\u062A\u0633\u0627\u0628", Icon: MessageCircle, msg: "\u0631\u0627\u0628\u0637 \u0648\u0627\u062A\u0633\u0627\u0628 \u0627\u0644\u062D\u0642\u064A\u0642\u064A \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" },
+    { label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F", Icon: MessageCircle, msg: "\u0631\u0627\u0628\u0637 \u0642\u0646\u0627\u0629 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" },
+    { label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645", Icon: Send, msg: "\u0631\u0627\u0628\u0637 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0627\u0644\u062D\u0642\u064A\u0642\u064A \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" },
+    { label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F", Icon: Send, msg: "\u0631\u0627\u0628\u0637 \u0642\u0646\u0627\u0629 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" }
   ];
-  const socials = [Instagram, Music2, Facebook, Youtube];
+  const socials = [
+    [Instagram, "\u0631\u0627\u0628\u0637 \u0627\u0646\u0633\u062A\u0642\u0631\u0627\u0645 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"],
+    [Music2, "\u0631\u0627\u0628\u0637 \u062A\u064A\u0643 \u062A\u0648\u0643 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"],
+    [Facebook, "\u0631\u0627\u0628\u0637 \u0641\u064A\u0633\u0628\u0648\u0643 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"],
+    [Youtube, "\u0631\u0627\u0628\u0637 \u064A\u0648\u062A\u064A\u0648\u0628 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"]
+  ];
   return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-4" }, /* @__PURE__ */ React.createElement("div", { className: "rounded-3xl bg-gradient-to-br from-purple-900 to-black border border-purple-800 p-5 text-center mb-6" }, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg mb-1" }, "\u0627\u0644\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs" }, "\u064A\u0627 \u0647\u0644\u0627! \u0644\u0627 \u062A\u062A\u0631\u062F\u062F \u0628\u0627\u0644\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0641\u064A \u062D\u0627\u0644 \u0643\u0627\u0646 \u0644\u062F\u064A\u0643 \u0623\u064A \u0627\u0633\u062A\u0641\u0633\u0627\u0631")), /* @__PURE__ */ React.createElement("div", { className: "space-y-3 mb-8" }, items.map((it, i) => {
     const ItIcon = it.Icon;
-    return /* @__PURE__ */ React.createElement("button", { key: i, className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-2xl px-4 py-4" }, /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }), /* @__PURE__ */ React.createElement("span", { className: "text-sm text-gray-200 flex-1 text-center" }, it.label), /* @__PURE__ */ React.createElement("span", { className: "w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(ItIcon, { className: "w-4 h-4 text-white" })));
-  })), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-500 mb-3 text-center" }, "\u062A\u0627\u0628\u0639\u0646\u0627 \u0639\u0644\u0649 \u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u062A\u0648\u0627\u0635\u0644"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-3" }, socials.map((SocIcon, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "w-11 h-11 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(SocIcon, { className: "w-4 h-4 text-purple-300" })))));
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: i,
+        onClick: () => showToast(it.msg),
+        className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-2xl px-4 py-4"
+      },
+      /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }),
+      /* @__PURE__ */ React.createElement("span", { className: "text-sm text-gray-200 flex-1 text-center" }, it.label),
+      /* @__PURE__ */ React.createElement("span", { className: "w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(ItIcon, { className: "w-4 h-4 text-white" }))
+    );
+  })), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-500 mb-3 text-center" }, "\u062A\u0627\u0628\u0639\u0646\u0627 \u0639\u0644\u0649 \u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u062A\u0648\u0627\u0635\u0644"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-3" }, socials.map(([SocIcon, msg], i) => /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      key: i,
+      onClick: () => showToast(msg),
+      className: "w-11 h-11 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center"
+    },
+    /* @__PURE__ */ React.createElement(SocIcon, { className: "w-4 h-4 text-purple-300" })
+  ))));
 }
 function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user }) {
   const cur = CURRENCIES.find((c) => c.id === currency);
   const initials = (user?.name || "\u061F").trim().slice(0, 2).toUpperCase();
   const menu = [
-    { label: "\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629", Icon: User },
-    { label: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", Icon: Heart },
-    { label: "\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", Icon: Link2, badge: "\u062C\u062F\u064A\u062F" },
-    { label: "\u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640 API", Icon: Key },
-    { label: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", Icon: HelpCircle }
+    { label: "\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629", Icon: User, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
+    { label: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", Icon: Heart, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0641\u0636\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
+    { label: "\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", Icon: Link2, badge: "\u062C\u062F\u064A\u062F", msg: "\u0628\u0631\u0646\u0627\u0645\u062C \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
+    { label: "\u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640 API", Icon: Key, msg: "\u0625\u062F\u0627\u0631\u0629 \u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640API \u0642\u0631\u064A\u0628\u064B\u0627" },
+    { label: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", Icon: HelpCircle, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" }
   ];
   return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-6" }, /* @__PURE__ */ React.createElement(
     "div",
@@ -577,7 +619,15 @@ function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user
       className: currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
     },
     c.id
-  ))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-gray-950 border border-purple-900 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-1" }, "\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u0646\u0641\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.spent)), /* @__PURE__ */ React.createElement("div", { className: "bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-[11px] mb-1" }, "\u0631\u0635\u064A\u062F\u0643 \u0627\u0644\u062D\u0627\u0644\u064A"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.balance))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3 mb-3" }, /* @__PURE__ */ React.createElement("button", { className: "flex-1 flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-3 text-xs text-gray-200" }, /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4" }), " \u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement(
+  ))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-gray-950 border border-purple-900 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-1" }, "\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u0646\u0641\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.spent)), /* @__PURE__ */ React.createElement("div", { className: "bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-[11px] mb-1" }, "\u0631\u0635\u064A\u062F\u0643 \u0627\u0644\u062D\u0627\u0644\u064A"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.balance))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3 mb-3" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627"),
+      className: "flex-1 flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-3 text-xs text-gray-200"
+    },
+    /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4" }),
+    " \u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F"
+  ), /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: onTopUp,
@@ -589,14 +639,34 @@ function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user
   )), /* @__PURE__ */ React.createElement(
     "button",
     {
-      onClick: () => showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641"),
+      onClick: () => {
+        const id = "SS-" + (user?.id ?? "00000");
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(id).then(
+            () => showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641: " + id),
+            () => showToast("\u062A\u0639\u0630\u0631 \u0627\u0644\u0646\u0633\u062E \u2014 \u0627\u0644\u0645\u0639\u0631\u0641: " + id)
+          );
+        } else {
+          showToast("\u0627\u0644\u0645\u0639\u0631\u0641: " + id);
+        }
+      },
       className: "w-full flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-3 text-xs text-gray-300 mb-6"
     },
     /* @__PURE__ */ React.createElement(Copy, { className: "w-3.5 h-3.5" }),
     " \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641"
   ), /* @__PURE__ */ React.createElement("div", { className: "space-y-2 mb-6" }, menu.map((m, i) => {
     const MIcon = m.Icon;
-    return /* @__PURE__ */ React.createElement("button", { key: i, className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3.5" }, /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 flex-1 justify-end text-sm text-gray-200" }, m.badge && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] bg-purple-600 text-white px-1.5 py-0.5 rounded-full" }, m.badge), m.label), /* @__PURE__ */ React.createElement("span", { className: "w-8 h-8 rounded-lg bg-purple-950 flex items-center justify-center ml-2" }, /* @__PURE__ */ React.createElement(MIcon, { className: "w-4 h-4 text-purple-400" })));
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: i,
+        onClick: () => showToast(m.msg),
+        className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3.5"
+      },
+      /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }),
+      /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 flex-1 justify-end text-sm text-gray-200" }, m.badge && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] bg-purple-600 text-white px-1.5 py-0.5 rounded-full" }, m.badge), m.label),
+      /* @__PURE__ */ React.createElement("span", { className: "w-8 h-8 rounded-lg bg-purple-950 flex items-center justify-center ml-2" }, /* @__PURE__ */ React.createElement(MIcon, { className: "w-4 h-4 text-purple-400" }))
+    );
   })), /* @__PURE__ */ React.createElement("button", { onClick: onLogout, className: "w-full flex items-center justify-center gap-2 text-red-400 text-sm py-3 mb-6" }, /* @__PURE__ */ React.createElement(LogOut, { className: "w-4 h-4" }), " \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"));
 }
 function TopUpSheet({ onClose, showToast }) {
@@ -771,6 +841,7 @@ function LoadingSpinner() {
 }
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const searchRef = useRef(null);
   const [authToken, setAuthToken] = useState(null);
   const [tab, setTab] = useState("home");
   const [loading, setLoading] = useState(false);
@@ -839,14 +910,15 @@ function App() {
       }
     );
   }
-  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", className: "min-h-screen bg-black flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full relative text-white font-sans", style: { maxWidth: 480 } }, /* @__PURE__ */ React.createElement(Header, null), /* @__PURE__ */ React.createElement("main", { className: "pb-28" }, loading ? /* @__PURE__ */ React.createElement(LoadingSpinner, null) : /* @__PURE__ */ React.createElement(React.Fragment, null, tab === "home" && /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", className: "min-h-screen bg-black flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full relative text-white font-sans", style: { maxWidth: 480 } }, /* @__PURE__ */ React.createElement(Header, { onSearchClick: () => searchRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), showToast }), /* @__PURE__ */ React.createElement("main", { className: "pb-28" }, loading ? /* @__PURE__ */ React.createElement(LoadingSpinner, null) : /* @__PURE__ */ React.createElement(React.Fragment, null, tab === "home" && /* @__PURE__ */ React.createElement(
     HomeView,
     {
       filter,
       setFilter,
       slide,
       showToast,
-      onOpenProduct: setOpenProduct
+      onOpenProduct: setOpenProduct,
+      searchRef
     }
   ), tab === "rashq" && /* @__PURE__ */ React.createElement(
     RashqPage,
@@ -855,7 +927,7 @@ function App() {
       apiState: rashqApiState,
       onOpenService: (service, platformLabel, unitPrice, isLive) => setRashqOrder({ service, platformLabel, unitPrice, isLive })
     }
-  ), tab === "purchases" && /* @__PURE__ */ React.createElement(PurchasesView, { goHome: () => goTab("home"), purchases }), tab === "support" && /* @__PURE__ */ React.createElement(SupportView, null), tab === "account" && /* @__PURE__ */ React.createElement(
+  ), tab === "purchases" && /* @__PURE__ */ React.createElement(PurchasesView, { goHome: () => goTab("home"), purchases }), tab === "support" && /* @__PURE__ */ React.createElement(SupportView, { showToast }), tab === "account" && /* @__PURE__ */ React.createElement(
     AccountView,
     {
       currency,
