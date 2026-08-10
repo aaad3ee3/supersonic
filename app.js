@@ -221,6 +221,30 @@ var PRODUCT_PACKAGES = {
     ]
   }
 };
+var LIVE_APP_PACKAGES = {
+  idLabel: "\u0622\u064A\u062F\u064A \u0627\u0644\u062D\u0633\u0627\u0628 (User ID)",
+  packages: [
+    { label: "100 \u0643\u0648\u064A\u0646", base: 1.5 },
+    { label: "500 \u0643\u0648\u064A\u0646", base: 7 },
+    { label: "1000 \u0643\u0648\u064A\u0646", base: 13.5 },
+    { label: "5000 \u0643\u0648\u064A\u0646", base: 65 }
+  ]
+};
+MEDIA.forEach((m) => {
+  PRODUCT_PACKAGES[m.name] = LIVE_APP_PACKAGES;
+});
+var WALLET_PACKAGES = {
+  idLabel: "\u0631\u0642\u0645 \u0627\u0644\u0645\u062D\u0641\u0638\u0629 \u0623\u0648 \u0627\u0644\u0647\u0627\u062A\u0641",
+  packages: [
+    { label: "$10", base: 10.3 },
+    { label: "$25", base: 25.6 },
+    { label: "$50", base: 51 },
+    { label: "$100", base: 101.5 }
+  ]
+};
+WALLETS.forEach((w) => {
+  PRODUCT_PACKAGES[w.name] = WALLET_PACKAGES;
+});
 var CURRENCIES = [
   { id: "LYD", balance: "150.500", spent: "42.000" },
   { id: "USD", balance: "32.75", spent: "8.10" },
@@ -402,7 +426,15 @@ function RashqOrderSheet({ order, onClose, showToast }) {
   )));
 }
 var CARDS_CATEGORY_MAP = {
-  "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644": "3889fd74-be30-43eb-8ade-487ae1daedf3"
+  "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644": "3889fd74-be30-43eb-8ade-487ae1daedf3",
+  "\u0641\u0631\u064A \u0641\u0627\u064A\u0631": "278505d4-debb-4173-a270-9681ebed087a",
+  "\u0633\u062A\u064A\u0645": "81db6fb3-ddb9-41dd-abf8-ab3c7783d15b",
+  "\u064A\u0644\u0627 \u0644\u0648\u062F\u0648": "dba62042-3467-4368-9bc9-bf59c2e48c4a",
+  "\u0631\u064A\u0632\u0631 \u062C\u0648\u0644\u062F": "26ce6d67-426f-4688-9232-a1f23f2be5fd",
+  "\u0628\u0644\u0627\u064A\u0633\u062A\u064A\u0634\u0646": "eb6bda9e-ec4f-4962-997a-c05d3e83d25c",
+  "\u0622\u064A\u062A\u0648\u0646\u0632": "faf425b1-5006-43df-8bba-82c03b8873ee",
+  "\u0625\u0643\u0633 \u0628\u0648\u0643\u0633": "1cc049d6-8a56-4678-a3c9-d6df6b06db7a",
+  "\u0646\u062A\u0641\u0644\u064A\u0643\u0633": "30b84760-8972-4128-b242-3dcd60557dc3"
 };
 function ProductSheet({ item, onClose, onPurchased }) {
   const categoryId = CARDS_CATEGORY_MAP[item.name];
@@ -442,17 +474,53 @@ function ProductSheet({ item, onClose, onPurchased }) {
   function unitPriceOf(pkg) {
     return pkg.price != null ? pkg.price : priced(pkg.base);
   }
-  function confirmPurchase() {
-    const code = "SS-" + Math.floor(1e5 + Math.random() * 9e5);
-    setOrderCode(code);
-    onPurchased({
-      id: code,
-      productName: item.name,
-      packageLabel: selected.label,
-      price: fmt(unitPriceOf(selected)),
-      date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", { day: "numeric", month: "short" })
-    });
-    setStep("success");
+  const [purchasing, setPurchasing] = useState(false);
+  const [purchaseError, setPurchaseError] = useState("");
+  async function confirmPurchase() {
+    setPurchaseError("");
+    if (!selected.productId) {
+      const code = "SS-" + Math.floor(1e5 + Math.random() * 9e5);
+      setOrderCode(code);
+      onPurchased({
+        id: code,
+        productName: item.name,
+        packageLabel: selected.label,
+        price: fmt(unitPriceOf(selected)),
+        date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", { day: "numeric", month: "short" })
+      });
+      setStep("success");
+      return;
+    }
+    setPurchasing(true);
+    try {
+      const res = await fetch(`${RASHQ_API_BASE}/api/cards/pay`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Site-Token": RASHQ_SITE_TOKEN },
+        body: JSON.stringify({
+          product_id: selected.productId,
+          ...info.idLabel && playerId.trim() ? { player_id: playerId.trim() } : {}
+        })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setPurchaseError(data.error || "\u062A\u0639\u0630\u0631 \u062A\u0646\u0641\u064A\u0630 \u0627\u0644\u0637\u0644\u0628");
+        return;
+      }
+      const code = data.order_ref ? String(data.order_ref) : "SS-" + Math.floor(1e5 + Math.random() * 9e5);
+      setOrderCode(code);
+      onPurchased({
+        id: code,
+        productName: item.name,
+        packageLabel: selected.label,
+        price: fmt(unitPriceOf(selected)),
+        date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", { day: "numeric", month: "short" })
+      });
+      setStep("success");
+    } catch (e) {
+      setPurchaseError("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0633\u064A\u0631\u0641\u0631");
+    } finally {
+      setPurchasing(false);
+    }
   }
   return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black", style: { opacity: 0.75 }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-gray-950 border-t border-purple-800 rounded-t-3xl p-5 pb-8 overflow-hidden", style: { maxWidth: 480, maxHeight: "85vh", overflowY: "auto" } }, step !== "success" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-sm" }, item.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" }))), step === "packages" && (loadingLive ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-7 h-7 text-purple-500 animate-spin mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u064A\u062C\u064A\u0628 \u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u062D\u064A\u0629...")) : !info ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-10 h-10 text-purple-500 mx-auto mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0627\u0644\u0628\u0627\u0642\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062A\u062C \u0642\u064A\u062F \u0627\u0644\u0625\u0636\u0627\u0641\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0628\u0627\u0644\u062F\u0639\u0645 \u0648\u0628\u0646\u062C\u0647\u0632\u0647\u0627 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-400" }, "\u0627\u062E\u062A\u0631 \u0627\u0644\u0641\u0626\u0629"), info.isLive && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-emerald-400 flex items-center gap-1" }, /* @__PURE__ */ React.createElement("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-400" }), " \u0623\u0633\u0639\u0627\u0631 \u062D\u064A\u0629")), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-2.5 mb-2" }, info.packages.map((p, i) => {
     const active = selected === p;
@@ -484,15 +552,16 @@ function ProductSheet({ item, onClose, onPurchased }) {
       className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none",
       dir: "ltr"
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-gray-900 border border-purple-900 rounded-xl px-4 py-3 mb-5" }, /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 text-gray-300 text-xs" }, /* @__PURE__ */ React.createElement(Wallet, { className: "w-3.5 h-3.5 text-purple-400" }), " \u0627\u0644\u062F\u0641\u0639 \u0645\u0646 \u0631\u0635\u064A\u062F\u0643"), /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "150.500 LYD \u0645\u062A\u0627\u062D")), /* @__PURE__ */ React.createElement(
+  )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-gray-900 border border-purple-900 rounded-xl px-4 py-3 mb-5" }, /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 text-gray-300 text-xs" }, /* @__PURE__ */ React.createElement(Wallet, { className: "w-3.5 h-3.5 text-purple-400" }), " \u0627\u0644\u062F\u0641\u0639 \u0645\u0646 \u0631\u0635\u064A\u062F\u0643"), /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "150.500 LYD \u0645\u062A\u0627\u062D")), purchaseError && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center mb-3" }, purchaseError), /* @__PURE__ */ React.createElement(
     "button",
     {
-      disabled: info.idLabel && !playerId.trim(),
+      disabled: info.idLabel && !playerId.trim() || purchasing,
       onClick: confirmPurchase,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-40",
+      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-40 flex items-center justify-center gap-2",
       style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
     },
-    "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0634\u0631\u0627\u0621"
+    purchasing && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
+    purchasing ? "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0641\u064A\u0630..." : "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0634\u0631\u0627\u0621"
   )), step === "success" && /* @__PURE__ */ React.createElement("div", { className: "relative py-6 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 overflow-hidden pointer-events-none" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null)), /* @__PURE__ */ React.createElement("div", { className: "relative z-10" }, /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -595,9 +664,10 @@ function SupportView({ showToast }) {
     /* @__PURE__ */ React.createElement(SocIcon, { className: "w-4 h-4 text-purple-300" })
   ))));
 }
-function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user }) {
+function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user, authToken }) {
   const cur = CURRENCIES.find((c) => c.id === currency);
   const initials = (user?.name || "\u061F").trim().slice(0, 2).toUpperCase();
+  const [resending, setResending] = useState(false);
   const menu = [
     { label: "\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629", Icon: User, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
     { label: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", Icon: Heart, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0641\u0636\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
@@ -605,6 +675,21 @@ function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user
     { label: "\u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640 API", Icon: Key, msg: "\u0625\u062F\u0627\u0631\u0629 \u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640API \u0642\u0631\u064A\u0628\u064B\u0627" },
     { label: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", Icon: HelpCircle, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" }
   ];
+  async function resendVerification() {
+    setResending(true);
+    try {
+      const res = await fetch(`${RASHQ_API_BASE}/api/auth/resend-verification`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      const data = await res.json();
+      showToast(data.success ? "\u062A\u0645 \u0625\u0631\u0633\u0627\u0644 \u0631\u0627\u0628\u0637 \u0627\u0644\u062A\u0641\u0639\u064A\u0644\u060C \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643" : data.error || "\u062A\u0639\u0630\u0631 \u0627\u0644\u0625\u0631\u0633\u0627\u0644");
+    } catch (e) {
+      showToast("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0633\u064A\u0631\u0641\u0631");
+    } finally {
+      setResending(false);
+    }
+  }
   return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-6" }, /* @__PURE__ */ React.createElement(
     "div",
     {
@@ -612,7 +697,15 @@ function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user
       style: { boxShadow: "0 0 30px rgba(168,85,247,0.5)" }
     },
     initials
-  ), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg" }, user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-2", dir: "ltr" }, user?.email || ""), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full" }, /* @__PURE__ */ React.createElement(ShieldCheck, { className: "w-3 h-3" }), " \u0639\u0636\u0648 \u0645\u0645\u064A\u0632 \u0641\u064A Supersonic")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-4" }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg" }, user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-2", dir: "ltr" }, user?.email || ""), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full" }, /* @__PURE__ */ React.createElement(ShieldCheck, { className: "w-3 h-3" }), " \u0639\u0636\u0648 \u0645\u0645\u064A\u0632 \u0641\u064A Supersonic")), user && user.email_verified === false && /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4" }, /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: resendVerification,
+      disabled: resending,
+      className: "text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50"
+    },
+    resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"
+  ), /* @__PURE__ */ React.createElement("span", { className: "text-amber-200 text-xs text-right flex-1" }, "\u0625\u064A\u0645\u064A\u0644\u0643 \u0645\u0648 \u0645\u0641\u0639\u0651\u0644 \u2014 \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-4" }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement(
     "button",
     {
       key: c.id,
@@ -725,6 +818,72 @@ function TopUpSheet({ onClose, showToast }) {
     "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0643\u0648\u062F"
   ))));
 }
+function ResetPasswordScreen({ token, onDone }) {
+  const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  async function submit(e) {
+    e.preventDefault();
+    setError("");
+    if (password.length < 8) {
+      setError("\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0644\u0627\u0632\u0645 \u062A\u0643\u0648\u0646 8 \u0623\u062D\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${RASHQ_API_BASE}/api/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password })
+      });
+      const data = await res.json();
+      if (data.success) setDone(true);
+      else setError(data.error || "\u062A\u0639\u0630\u0631 \u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631");
+    } catch (e2) {
+      setError("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0633\u064A\u0631\u0641\u0631");
+    } finally {
+      setLoading(false);
+    }
+  }
+  return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-black flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col justify-center px-6 relative overflow-hidden", style: { maxWidth: 480, minHeight: "100vh" } }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10", style: { maxWidth: 380, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-8" }, /* @__PURE__ */ React.createElement(
+    "div",
+    {
+      className: "w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mb-4",
+      style: { boxShadow: "0 0 30px rgba(168,85,247,0.5)" }
+    },
+    /* @__PURE__ */ React.createElement(Zap, { className: "w-8 h-8 text-white" })
+  ), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), done ? /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Check, { className: "w-8 h-8 text-white", strokeWidth: 3 })), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold mb-2" }, "\u062A\u0645 \u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u2705"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-6" }, "\u0633\u062C\u0651\u0644 \u062F\u062E\u0648\u0644\u0643 \u0628\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062C\u062F\u064A\u062F\u0629"), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: onDone,
+      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm",
+      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
+    },
+    "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644"
+  )) : /* @__PURE__ */ React.createElement("form", { onSubmit: submit }, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg mb-1 text-center" }, "\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062C\u062F\u064A\u062F\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-6 text-center" }, "\u0627\u0643\u062A\u0628 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062C\u062F\u064A\u062F\u0629 \u0644\u062D\u0633\u0627\u0628\u0643"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3 mb-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      type: showPass ? "text" : "password",
+      value: password,
+      onChange: (e) => setPassword(e.target.value),
+      placeholder: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062C\u062F\u064A\u062F\u0629 (8 \u0623\u062D\u0631\u0641 \u0641\u0623\u0643\u062B\u0631)",
+      className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1",
+      dir: "ltr"
+    }
+  ), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center mb-3" }, error), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "submit",
+      disabled: loading,
+      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2",
+      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
+    },
+    loading && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
+    loading ? "\u0644\u062D\u0638\u0629..." : "\u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"
+  )))));
+}
 function AuthScreen({ onAuthed }) {
   const [showPass, setShowPass] = useState(false);
   const [mode, setMode] = useState("login");
@@ -733,12 +892,33 @@ function AuthScreen({ onAuthed }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [forgotSent, setForgotSent] = useState(false);
   const backendReady = !RASHQ_API_BASE.includes("REPLACE-WITH");
   async function submit(e) {
     e.preventDefault();
     setError("");
     if (!backendReady) {
       setError("\u0627\u0644\u0628\u0627\u0643 \u0627\u0646\u062F \u0645\u0648 \u0645\u0631\u0628\u0648\u0637 \u0628\u0639\u062F \u2014 \u0631\u0627\u062C\u0639 RASHQ_API_BASE \u0628\u0627\u0644\u0643\u0648\u062F");
+      return;
+    }
+    if (mode === "forgot") {
+      if (!email.trim()) {
+        setError("\u0627\u0643\u062A\u0628 \u0628\u0631\u064A\u062F\u0643 \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A");
+        return;
+      }
+      setLoading(true);
+      try {
+        await fetch(`${RASHQ_API_BASE}/api/auth/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email.trim() })
+        });
+        setForgotSent(true);
+      } catch (err) {
+        setError("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0633\u064A\u0631\u0641\u0631");
+      } finally {
+        setLoading(false);
+      }
       return;
     }
     if (mode === "signup" && !name.trim()) {
@@ -784,7 +964,17 @@ function AuthScreen({ onAuthed }) {
       style: { boxShadow: "0 0 30px rgba(168,85,247,0.5)" }
     },
     /* @__PURE__ */ React.createElement(Zap, { className: "w-8 h-8 text-white" })
-  ), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("h2", { className: "hidden md:block text-white font-bold text-2xl mb-1" }, mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F"), /* @__PURE__ */ React.createElement("p", { className: "hidden md:block text-gray-500 text-xs mb-8" }, mode === "login" ? "\u0623\u0647\u0644\u064B\u0627 \u0628\u0639\u0648\u062F\u062A\u0643" : "\u064A\u0633\u062A\u063A\u0631\u0642 \u0623\u0642\u0644 \u0645\u0646 \u062F\u0642\u064A\u0642\u0629"), /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "space-y-3" }, mode === "signup" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(User, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("h2", { className: "hidden md:block text-white font-bold text-2xl mb-1" }, mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F" : "\u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"), /* @__PURE__ */ React.createElement("p", { className: "hidden md:block text-gray-500 text-xs mb-8" }, mode === "login" ? "\u0623\u0647\u0644\u064B\u0627 \u0628\u0639\u0648\u062F\u062A\u0643" : mode === "signup" ? "\u064A\u0633\u062A\u063A\u0631\u0642 \u0623\u0642\u0644 \u0645\u0646 \u062F\u0642\u064A\u0642\u0629" : "\u0628\u0646\u0628\u0639\u062B\u0644\u0643 \u0631\u0627\u0628\u0637 \u0639\u0628\u0631 \u0627\u0644\u0625\u064A\u0645\u064A\u0644"), mode === "forgot" && forgotSent ? /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Mail, { className: "w-7 h-7 text-white" })), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm mb-6" }, "\u0644\u0648 \u0627\u0644\u0625\u064A\u0645\u064A\u0644 \u0645\u0633\u062C\u0651\u0644 \u0639\u0646\u062F\u0646\u0627\u060C \u0628\u064A\u0648\u0635\u0644\u0643 \u0631\u0627\u0628\u0637 \u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u062E\u0644\u0627\u0644 \u062F\u0642\u0627\u064A\u0642."), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: () => {
+        setMode("login");
+        setForgotSent(false);
+      },
+      className: "text-purple-400 text-xs font-bold"
+    },
+    "\u0631\u062C\u0648\u0639 \u0644\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644"
+  )) : /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "space-y-3" }, mode === "signup" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(User, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
     "input",
     {
       value: name,
@@ -802,7 +992,7 @@ function AuthScreen({ onAuthed }) {
       className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1",
       dir: "ltr"
     }
-  )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
+  )), mode !== "forgot" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: showPass ? "text" : "password",
@@ -812,7 +1002,18 @@ function AuthScreen({ onAuthed }) {
       className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1",
       dir: "ltr"
     }
-  ), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center" }, error), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), mode === "login" && /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      type: "button",
+      onClick: () => {
+        setMode("forgot");
+        setError("");
+      },
+      className: "text-purple-400 text-xs block"
+    },
+    "\u0646\u0633\u064A\u062A \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061F"
+  ), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center" }, error), /* @__PURE__ */ React.createElement(
     "button",
     {
       type: "submit",
@@ -821,8 +1022,8 @@ function AuthScreen({ onAuthed }) {
       style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
     },
     loading && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
-    loading ? "\u0644\u062D\u0638\u0629..." : mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628"
-  )), /* @__PURE__ */ React.createElement("p", { className: "text-center text-xs text-gray-500 mt-5" }, mode === "login" ? "\u0645\u0627 \u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F " : "\u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F ", /* @__PURE__ */ React.createElement(
+    loading ? "\u0644\u062D\u0638\u0629..." : mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628" : "\u0625\u0631\u0633\u0627\u0644 \u0631\u0627\u0628\u0637 \u0627\u0644\u0627\u0633\u062A\u0631\u062C\u0627\u0639"
+  )), mode !== "forgot" && /* @__PURE__ */ React.createElement("p", { className: "text-center text-xs text-gray-500 mt-5" }, mode === "login" ? "\u0645\u0627 \u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F " : "\u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F ", /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: () => {
@@ -857,6 +1058,22 @@ function App() {
   const [purchases, setPurchases] = useState([]);
   const [cardsImages, setCardsImages] = useState({});
   const [toast, setToast] = useState("");
+  const [resetToken, setResetToken] = useState(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const vToken = params.get("verify_token");
+    const rToken = params.get("reset_token");
+    if (vToken && !RASHQ_API_BASE.includes("REPLACE-WITH")) {
+      fetch(`${RASHQ_API_BASE}/api/auth/verify?token=${encodeURIComponent(vToken)}`).then((res) => res.json()).then((data) => setToast(data.success ? "\u062A\u0645 \u062A\u0641\u0639\u064A\u0644 \u0628\u0631\u064A\u062F\u0643 \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A \u2705" : data.error || "\u0631\u0627\u0628\u0637 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D")).catch(() => setToast("\u062A\u0639\u0630\u0631 \u0627\u0644\u062A\u0641\u0639\u064A\u0644\u060C \u062D\u0627\u0648\u0644 \u0644\u0627\u062D\u0642\u064B\u0627"));
+    }
+    if (rToken) setResetToken(rToken);
+    if (vToken || rToken) {
+      params.delete("verify_token");
+      params.delete("reset_token");
+      const clean = window.location.pathname + (params.toString() ? `?${params}` : "");
+      window.history.replaceState({}, "", clean);
+    }
+  }, []);
   useEffect(() => {
     const t = setInterval(() => setSlide((s) => (s + 1) % BANNERS.length), 4e3);
     return () => clearInterval(t);
@@ -918,6 +1135,9 @@ function App() {
     setCurrentUser(null);
     setAuthToken(null);
   }
+  if (resetToken) {
+    return /* @__PURE__ */ React.createElement(ResetPasswordScreen, { token: resetToken, onDone: () => setResetToken(null) });
+  }
   if (!currentUser) {
     return /* @__PURE__ */ React.createElement(
       AuthScreen,
@@ -955,7 +1175,8 @@ function App() {
       onTopUp: () => setShowTopUp(true),
       showToast,
       onLogout: handleLogout,
-      user: currentUser
+      user: currentUser,
+      authToken
     }
   ))), /* @__PURE__ */ React.createElement(BottomNav, { tab, onChange: goTab })), showTopUp && /* @__PURE__ */ React.createElement(TopUpSheet, { onClose: () => setShowTopUp(false), showToast }), rashqOrder && /* @__PURE__ */ React.createElement(RashqOrderSheet, { order: rashqOrder, onClose: () => setRashqOrder(null), showToast }), openProduct && /* @__PURE__ */ React.createElement(
     ProductSheet,
