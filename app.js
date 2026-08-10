@@ -239,15 +239,16 @@ function SpeedStreaks() {
 function GlowOrbs() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "pointer-events-none absolute -top-20 -left-20 w-64 h-64 bg-purple-900 rounded-full blur-3xl opacity-30" }), /* @__PURE__ */ React.createElement("div", { className: "pointer-events-none absolute bottom-0 -right-16 w-56 h-56 bg-purple-800 rounded-full blur-3xl opacity-20" }));
 }
-function CategoryTile({ item, onOpen }) {
+function CategoryTile({ item, onOpen, liveImage }) {
   const ItemIcon = item.Icon || Gift;
+  const img = liveImage || item.img;
   return /* @__PURE__ */ React.createElement(
     "button",
     {
       onClick: () => onOpen(item),
       className: "flex flex-col items-stretch gap-2 active:scale-95 transition-transform text-right"
     },
-    item.img ? /* @__PURE__ */ React.createElement("div", { className: "w-full aspect-square rounded-2xl overflow-hidden border border-purple-800 shadow-lg bg-gray-950" }, /* @__PURE__ */ React.createElement("img", { src: item.img, alt: item.name, className: "w-full h-full object-cover" })) : /* @__PURE__ */ React.createElement("div", { className: `w-full aspect-square rounded-2xl bg-gradient-to-br ${item.from || "from-purple-800"} ${item.to || "to-purple-950"} border border-purple-800 flex items-center justify-center shadow-lg` }, /* @__PURE__ */ React.createElement(ItemIcon, { className: `w-9 h-9 ${item.ic || "text-purple-300"}` })),
+    img ? /* @__PURE__ */ React.createElement("div", { className: "w-full aspect-square rounded-2xl overflow-hidden border border-purple-800 shadow-lg bg-gray-950" }, /* @__PURE__ */ React.createElement("img", { src: img, alt: item.name, className: "w-full h-full object-cover" })) : /* @__PURE__ */ React.createElement("div", { className: `w-full aspect-square rounded-2xl bg-gradient-to-br ${item.from || "from-purple-800"} ${item.to || "to-purple-950"} border border-purple-800 flex items-center justify-center shadow-lg` }, /* @__PURE__ */ React.createElement(ItemIcon, { className: `w-9 h-9 ${item.ic || "text-purple-300"}` })),
     /* @__PURE__ */ React.createElement("span", { className: "text-xs text-gray-200 leading-tight line-clamp-1" }, item.name),
     /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-purple-500" }, item.tag)
   );
@@ -255,8 +256,8 @@ function CategoryTile({ item, onOpen }) {
 function SectionHeader({ title, Icon }) {
   return /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 px-4 mt-7 mb-3" }, /* @__PURE__ */ React.createElement(Icon, { className: "w-4 h-4 text-purple-400" }), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-[15px]" }, title));
 }
-function CategoryRow({ items, onOpen }) {
-  return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-3 gap-3 px-4" }, items.map((item, i) => /* @__PURE__ */ React.createElement(CategoryTile, { key: i, item, onOpen })));
+function CategoryRow({ items, onOpen, cardsImages }) {
+  return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-3 gap-3 px-4" }, items.map((item, i) => /* @__PURE__ */ React.createElement(CategoryTile, { key: i, item, onOpen, liveImage: cardsImages && cardsImages[item.name] })));
 }
 function Header({ onSearchClick, showToast }) {
   return /* @__PURE__ */ React.createElement("header", { className: "sticky top-0 z-20 bg-black border-b border-purple-950 px-4 py-3 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-4 h-4 text-white" })), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("button", { onClick: onSearchClick, className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-300" })), /* @__PURE__ */ React.createElement(
@@ -424,7 +425,7 @@ function ProductSheet({ item, onClose, onPurchased }) {
       const packages = [];
       (data.subCategories || []).forEach((sub) => {
         (sub.products || []).forEach((p) => {
-          if (p.available) packages.push({ label: p.name, price: p.price, productId: p.id });
+          if (p.available) packages.push({ label: p.name, price: p.price, productId: p.id, image: p.image });
         });
       });
       if (!cancelled && packages.length) {
@@ -460,10 +461,10 @@ function ProductSheet({ item, onClose, onPurchased }) {
       {
         key: i,
         onClick: () => setSelected(p),
-        className: active ? "rounded-2xl p-3.5 text-right border bg-purple-600 border-purple-400" : "rounded-2xl p-3.5 text-right border bg-black border-purple-900"
+        className: active ? "rounded-2xl p-3.5 text-right border bg-purple-600 border-purple-400 flex items-center gap-3" : "rounded-2xl p-3.5 text-right border bg-black border-purple-900 flex items-center gap-3"
       },
-      /* @__PURE__ */ React.createElement("span", { className: "block text-white text-sm font-bold mb-1" }, p.label),
-      /* @__PURE__ */ React.createElement("span", { className: active ? "block text-purple-100 text-xs" : "block text-purple-500 text-xs" }, "$", fmt(unitPriceOf(p)))
+      p.image && /* @__PURE__ */ React.createElement("img", { src: p.image, alt: "", className: "w-10 h-10 rounded-lg object-cover shrink-0 bg-gray-900" }),
+      /* @__PURE__ */ React.createElement("span", { className: "flex-1 min-w-0" }, /* @__PURE__ */ React.createElement("span", { className: "block text-white text-sm font-bold mb-1 truncate" }, p.label), /* @__PURE__ */ React.createElement("span", { className: active ? "block text-purple-100 text-xs" : "block text-purple-500 text-xs" }, "$", fmt(unitPriceOf(p))))
     );
   })), /* @__PURE__ */ React.createElement(
     "button",
@@ -509,7 +510,7 @@ function ProductSheet({ item, onClose, onPurchased }) {
     "\u062A\u0645"
   )))));
 }
-function HomeView({ filter, setFilter, slide, showToast, onOpenProduct, searchRef }) {
+function HomeView({ filter, setFilter, slide, showToast, onOpenProduct, searchRef, cardsImages }) {
   const [query, setQuery] = useState("");
   const q = query.trim();
   const baseSections = filter === "all" ? SECTIONS : SECTIONS.filter((s) => s.key === filter);
@@ -535,7 +536,7 @@ function HomeView({ filter, setFilter, slide, showToast, onOpenProduct, searchRe
       className: filter === f.id ? "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
     },
     f.label
-  ))), noResults ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14 text-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-8 h-8 text-purple-700 mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-sm" }, '\u0648\u0644\u0627 \u0646\u062A\u064A\u062C\u0629 \u0644\u0640"', q, '"')) : shown.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key }, /* @__PURE__ */ React.createElement(SectionHeader, { title: s.title, Icon: s.Icon }), /* @__PURE__ */ React.createElement(CategoryRow, { items: s.items, onOpen: onOpenProduct }))), /* @__PURE__ */ React.createElement(Footer, { showToast }));
+  ))), noResults ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14 text-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-8 h-8 text-purple-700 mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-sm" }, '\u0648\u0644\u0627 \u0646\u062A\u064A\u062C\u0629 \u0644\u0640"', q, '"')) : shown.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key }, /* @__PURE__ */ React.createElement(SectionHeader, { title: s.title, Icon: s.Icon }), /* @__PURE__ */ React.createElement(CategoryRow, { items: s.items, onOpen: onOpenProduct, cardsImages }))), /* @__PURE__ */ React.createElement(Footer, { showToast }));
 }
 function RashqPage({ onOpenService, livePrices, apiState }) {
   return /* @__PURE__ */ React.createElement("div", { className: "pt-2" }, /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-2 mb-1 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 flex items-center gap-3" }, /* @__PURE__ */ React.createElement("span", { className: "w-11 h-11 rounded-2xl bg-purple-600 flex items-center justify-center shrink-0" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-6 h-6 text-white" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base" }, "\u0631\u0634\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs" }, "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u0648\u062A\u0641\u0627\u0639\u0644 \u0644\u0643\u0644 \u0645\u0646\u0635\u0627\u062A\u0643 \u0628\u0636\u063A\u0637\u0629 \u0648\u062D\u062F\u0629")))), /* @__PURE__ */ React.createElement(RashqSection, { onOpenService, livePrices, apiState }), /* @__PURE__ */ React.createElement("div", { className: "h-6" }));
@@ -854,10 +855,28 @@ function App() {
   const [rashqApiState, setRashqApiState] = useState("idle");
   const [openProduct, setOpenProduct] = useState(null);
   const [purchases, setPurchases] = useState([]);
+  const [cardsImages, setCardsImages] = useState({});
   const [toast, setToast] = useState("");
   useEffect(() => {
     const t = setInterval(() => setSlide((s) => (s + 1) % BANNERS.length), 4e3);
     return () => clearInterval(t);
+  }, []);
+  useEffect(() => {
+    if (RASHQ_API_BASE.includes("REPLACE-WITH")) return;
+    fetch(`${RASHQ_API_BASE}/api/cards/categories`).then((res) => res.json()).then((data) => {
+      if (!data.success) throw new Error("bad response");
+      const idToName = {};
+      Object.entries(CARDS_CATEGORY_MAP).forEach(([name, id]) => {
+        idToName[id] = name;
+      });
+      const map = {};
+      data.categories.forEach((c) => {
+        const ourName = idToName[c.id];
+        if (ourName && c.image) map[ourName] = c.image;
+      });
+      setCardsImages(map);
+    }).catch(() => {
+    });
   }, []);
   useEffect(() => {
     if (RASHQ_API_BASE.includes("REPLACE-WITH")) return;
@@ -918,7 +937,8 @@ function App() {
       slide,
       showToast,
       onOpenProduct: setOpenProduct,
-      searchRef
+      searchRef,
+      cardsImages
     }
   ), tab === "rashq" && /* @__PURE__ */ React.createElement(
     RashqPage,
