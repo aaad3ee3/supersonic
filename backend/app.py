@@ -959,6 +959,56 @@ def libyana_webhook():
     return jsonify({"ok": True, "matched": True, "charge_id": matched["id"]})
 
 
+# ---------------------------------------------------------------------------
+# تسجيل الويبهوك عند حساب SMS Gate السحابي (مرة وحدة بس، إعداد أولي).
+# نفس الجوال/الحساب اللي يستقبل رسائل ليبيانا للبوت الحالي — نسجّل ويبهوك
+# ثاني منفصل يشاور على موقعنا، بدون ما نلمس تسجيل البوت الموجود أبدًا.
+# شكل طلب SMS Gate API الدقيق غير مؤكد 100% من هنا (ما فيه وصول إنترنت
+# لتوثيقهم من بيئة التطوير) — هذا أفضل تخمين مبني على مشروعهم مفتوح
+# المصدر، ونرجّع رد السيرفر الخام كامل عشان نصلح شكل الطلب لو غلط.
+# ---------------------------------------------------------------------------
+SMSGATE_CLOUD_USERNAME = os.environ.get("SMSGATE_CLOUD_USERNAME")
+SMSGATE_CLOUD_PASSWORD = os.environ.get("SMSGATE_CLOUD_PASSWORD")
+SMSGATE_API_BASE = "https://api.sms-gate.app/3rdparty/v1"
+
+
+@app.get("/api/admin/libyana/register-webhook")
+def libyana_register_webhook():
+    if not secrets.compare_digest(request.args.get("key", ""), LIBYANA_WEBHOOK_SECRET):
+        return jsonify({"ok": False, "error": "unauthorized"}), 401
+
+    ip = client_ip()
+    if rate_limited(f"libyana-register:{ip}", max_requests=10, window=60):
+        return jsonify({"ok": False, "error": "rate_limited"}), 429
+
+    if not SMSGATE_CLOUD_USERNAME or not SMSGATE_CLOUD_PASSWORD:
+        return jsonify({"ok": False, "error": "SMSGATE_CLOUD_USERNAME/SMSGATE_CLOUD_PASSWORD مو مضبوطين بـ Railway"}), 503
+
+    our_webhook_url = f"{request.url_root.rstrip('/')}/api/libyana/webhook?key={LIBYANA_WEBHOOK_SECRET}"
+
+    try:
+        r = requests.post(
+            f"{SMSGATE_API_BASE}/webhooks",
+            auth=(SMSGATE_CLOUD_USERNAME, SMSGATE_CLOUD_PASSWORD),
+            json={"url": our_webhook_url, "event": "sms:received"},
+            timeout=15,
+        )
+        try:
+            body = r.json()
+        except Exception:
+            body = r.text[:800]
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"تعذر الاتصال بـ sms-gate.app: {e}"}), 502
+
+    print(f"[libyana] webhook registration attempt — status={r.status_code} body={body}")
+    return jsonify({
+        "ok": r.ok,
+        "status_code": r.status_code,
+        "response": body,
+        "registered_url": our_webhook_url,
+    })
+
+
 @app.get("/api/rashq/services")
 def list_services():
     ip = client_ip()
