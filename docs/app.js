@@ -1039,6 +1039,7 @@ function AccountView({
   authToken
 }) {
   const cur = CURRENCIES.find((c) => c.id === currency);
+  const displayBalance = currency === "LYD" ? fmt(user?.balance_lyd || 0) : cur.balance;
   const initials = (user?.name || "\u061F").trim().slice(0, 2).toUpperCase();
   const [resending, setResending] = useState(false);
   const menu = [{
@@ -1082,7 +1083,7 @@ function AccountView({
   }
   return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-6" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-purple-950 flex items-center justify-center text-2xl font-black text-white ring-4 ring-purple-700 mb-3", style: {
     boxShadow: "0 0 30px rgba(168,85,247,0.5)"
-  } }, initials), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg" }, user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-2", dir: "ltr" }, user?.email || ""), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full" }, /* @__PURE__ */ React.createElement(ShieldCheck, { className: "w-3 h-3" }), " \u0639\u0636\u0648 \u0645\u0645\u064A\u0632 \u0641\u064A Supersonic")), user && user.email_verified === false && /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4" }, /* @__PURE__ */ React.createElement("button", { onClick: resendVerification, disabled: resending, className: "text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50" }, resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"), /* @__PURE__ */ React.createElement("span", { className: "text-amber-200 text-xs text-right flex-1" }, "\u0625\u064A\u0645\u064A\u0644\u0643 \u0645\u0648 \u0645\u0641\u0639\u0651\u0644 \u2014 \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-4" }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => setCurrency(c.id), className: currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400" }, c.id))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-surface border border-purple-900 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-1" }, "\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u0646\u0641\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.spent)), /* @__PURE__ */ React.createElement("div", { className: "bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-[11px] mb-1" }, "\u0631\u0635\u064A\u062F\u0643 \u0627\u0644\u062D\u0627\u0644\u064A"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.balance))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3 mb-3" }, /* @__PURE__ */ React.createElement("button", { onClick: () => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627"), className: "flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-3 text-xs text-gray-200" }, /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4" }), " \u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("button", { onClick: onTopUp, className: "flex-1 flex items-center justify-center gap-2 bg-purple-600 rounded-xl py-3 text-xs text-white font-bold", style: {
+  } }, initials), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg" }, user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-2", dir: "ltr" }, user?.email || ""), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full" }, /* @__PURE__ */ React.createElement(ShieldCheck, { className: "w-3 h-3" }), " \u0639\u0636\u0648 \u0645\u0645\u064A\u0632 \u0641\u064A Supersonic")), user && user.email_verified === false && /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4" }, /* @__PURE__ */ React.createElement("button", { onClick: resendVerification, disabled: resending, className: "text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50" }, resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"), /* @__PURE__ */ React.createElement("span", { className: "text-amber-200 text-xs text-right flex-1" }, "\u0625\u064A\u0645\u064A\u0644\u0643 \u0645\u0648 \u0645\u0641\u0639\u0651\u0644 \u2014 \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-4" }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => setCurrency(c.id), className: currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400" }, c.id))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-surface border border-purple-900 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-1" }, "\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u0646\u0641\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.spent)), /* @__PURE__ */ React.createElement("div", { className: "bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-[11px] mb-1" }, "\u0631\u0635\u064A\u062F\u0643 \u0627\u0644\u062D\u0627\u0644\u064A"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, displayBalance))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3 mb-3" }, /* @__PURE__ */ React.createElement("button", { onClick: () => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627"), className: "flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-3 text-xs text-gray-200" }, /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4" }), " \u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("button", { onClick: onTopUp, className: "flex-1 flex items-center justify-center gap-2 bg-purple-600 rounded-xl py-3 text-xs text-white font-bold", style: {
     boxShadow: "0 0 20px rgba(168,85,247,0.4)"
   } }, /* @__PURE__ */ React.createElement(Wallet, { className: "w-4 h-4" }), " \u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F")), /* @__PURE__ */ React.createElement("button", { onClick: () => {
     const id = "SS-" + (user?.id ?? "00000");
@@ -1096,11 +1097,104 @@ function AccountView({
     return /* @__PURE__ */ React.createElement("button", { key: i, onClick: () => showToast(m.msg), className: "w-full flex items-center justify-between bg-surface border border-purple-900 rounded-2xl px-4 py-3.5" }, /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 flex-1 justify-end text-sm text-gray-200" }, m.badge && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] bg-accent text-white px-1.5 py-0.5 rounded-full" }, m.badge), m.label), /* @__PURE__ */ React.createElement("span", { className: "w-8 h-8 rounded-lg bg-purple-950 flex items-center justify-center ml-2" }, /* @__PURE__ */ React.createElement(MIcon, { className: "w-4 h-4 text-purple-400" })));
   })), /* @__PURE__ */ React.createElement("button", { onClick: onLogout, className: "w-full flex items-center justify-center gap-2 text-red-400 text-sm py-3 mb-6" }, /* @__PURE__ */ React.createElement(LogOut, { className: "w-4 h-4" }), " \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"));
 }
+function LibyanaTopUp({ authToken, showToast, onPaid }) {
+  const [phone, setPhone] = useState("");
+  const [charge, setCharge] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [amountPaid, setAmountPaid] = useState(null);
+  const [starting, setStarting] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    if (!charge || status === "paid" || status === "expired") return;
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch(`${RASHQ_API_BASE}/api/topup/libyana/status/${charge.charge_id}`, {
+          headers: { Authorization: `Bearer ${authToken}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStatus(data.status);
+          if (data.status === "paid") {
+            setAmountPaid(data.amount_lyd);
+            onPaid(data.amount_lyd);
+          }
+        }
+      } catch (e) {
+      }
+    }, 4e3);
+    return () => clearInterval(poll);
+  }, [charge, status, authToken]);
+  async function start() {
+    setError("");
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.length < 9) {
+      setError("\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062A\u0641 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D");
+      return;
+    }
+    setStarting(true);
+    try {
+      const res = await fetch(`${RASHQ_API_BASE}/api/topup/libyana/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
+        body: JSON.stringify({ phone: cleanPhone })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || "\u062A\u0639\u0630\u0631 \u0628\u062F\u0621 \u0627\u0644\u0634\u062D\u0646");
+        return;
+      }
+      setCharge(data);
+      setStatus("pending");
+    } catch (e) {
+      setError("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0633\u064A\u0631\u0641\u0631");
+    } finally {
+      setStarting(false);
+    }
+  }
+  if (status === "paid") {
+    return /* @__PURE__ */ React.createElement("div", { className: "text-center py-4" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Check, { className: "w-8 h-8 text-white", strokeWidth: 3 })), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold mb-1" }, "\\u062A\\u0645 \\u0634\\u062D\\u0646 ", fmt(amountPaid), " \\u062F.\\u0644 \\u0628\\u0646\\u062C\\u0627\\u062D \\u2705"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\\u0635\\u0627\\u0631 \\u0628\\u0645\\u064A\\u0632\\u0627\\u0646\\u0643\\u060C \\u062A\\u0642\\u062F\\u0631 \\u062A\\u0633\\u0643\\u0631 \\u0647\\u0627\\u0644\\u0646\\u0627\\u0641\\u0630\\u0629"));
+  }
+  if (charge && status !== "expired") {
+    return /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-950 border border-purple-800 rounded-2xl p-4 text-center" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs mb-1" }, "\\u062D\\u0648\\u0651\\u0644 \\u0623\\u064A \\u0645\\u0628\\u0644\\u063A \\u0645\\u0646 \\u0631\\u0642\\u0645\\u0643 (", phone, ") \\u0639\\u0628\\u0631 \\u0644\\u064A\\u0628\\u064A\\u0627\\u0646\\u0627 \\u0644\\u0631\\u0642\\u0645:"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-black text-xl mb-2", dir: "ltr" }, charge.collection_number), /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        onClick: () => {
+          if (navigator.clipboard) navigator.clipboard.writeText(charge.collection_number);
+          showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645");
+        },
+        className: "text-purple-300 text-xs font-bold border border-purple-700 rounded-full px-4 py-1.5"
+      },
+      "\\u0646\\u0633\\u062E \\u0627\\u0644\\u0631\\u0642\\u0645"
+    )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center gap-2 text-gray-500 text-xs" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-3.5 h-3.5 animate-spin" }), "\\u0628\\u0627\\u0646\\u062A\\u0638\\u0627\\u0631 \\u0648\\u0635\\u0648\\u0644 \\u0627\\u0644\\u062A\\u062D\\u0648\\u064A\\u0644 \\u2014 \\u0628\\u064A\\u062A\\u0636\\u0627\\u0641 \\u062A\\u0644\\u0642\\u0627\\u0626\\u064A\\u064B\\u0627 \\u062E\\u0644\\u0627\\u0644 \\u062F\\u0642\\u0627\\u064A\\u0642 \\u0645\\u0646 \\u0625\\u0631\\u0633\\u0627\\u0644\\u0647"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-600 text-[10px] text-center" }, "\\u0635\\u0627\\u0644\\u062D \\u0644\\u0645\\u062F\\u0629 ", charge.expires_minutes, " \\u062F\\u0642\\u064A\\u0642\\u0629"));
+  }
+  return /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, "\\u0631\\u0642\\u0645 \\u0647\\u0627\\u062A\\u0641\\u0643 (\\u0627\\u0644\\u0644\\u064A \\u0628\\u062A\\u062D\\u0648\\u0651\\u0644 \\u0645\\u0646\\u0647)"), /* @__PURE__ */ React.createElement(
+    "input",
+    {
+      value: phone,
+      onChange: (e) => setPhone(e.target.value),
+      placeholder: "09XXXXXXXX",
+      dir: "ltr",
+      className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
+    }
+  ), status === "expired" && /* @__PURE__ */ React.createElement("p", { className: "text-amber-500 text-xs text-center" }, "\\u0627\\u0646\\u062A\\u0647\\u062A \\u0645\\u0647\\u0644\\u0629 \\u0627\\u0644\\u062A\\u062D\\u0648\\u064A\\u0644\\u060C \\u062C\\u0631\\u0651\\u0628 \\u0645\\u0646 \\u062C\\u062F\\u064A\\u062F"), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center" }, error), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      onClick: start,
+      disabled: starting,
+      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2",
+      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
+    },
+    starting && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
+    starting ? "\u0644\u062D\u0638\u0629..." : "\u0645\u062A\u0627\u0628\u0639\u0629"
+  ));
+}
 function TopUpSheet({
   onClose,
-  showToast
+  showToast,
+  authToken,
+  onTopUpSuccess
 }) {
-  const [method, setMethod] = useState("card");
+  const [method, setMethod] = useState("libyana");
   const [step, setStep] = useState("form");
   const [code, setCode] = useState("");
   function submit() {
@@ -1116,8 +1210,11 @@ function TopUpSheet({
     onClose();
   }
   const methods = [{
+    id: "libyana",
+    label: "\u0644\u064A\u0628\u064A\u0627\u0646\u0627"
+  }, {
     id: "card",
-    label: "\u0644\u064A\u0628\u064A\u0627\u0646\u0627 / \u0645\u062F\u0627\u0631"
+    label: "\u0643\u0631\u062A \u0634\u062D\u0646"
   }, {
     id: "bank",
     label: "\u0628\u0637\u0627\u0642\u0629 \u0645\u0635\u0631\u0641\u064A\u0629"
@@ -1129,7 +1226,9 @@ function TopUpSheet({
     opacity: 0.7
   }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-surface border-t border-purple-800 rounded-t-3xl p-5 pb-8", style: {
     maxWidth: 480
-  } }, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, "aria-label": "\u0625\u063A\u0644\u0627\u0642", className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold" }, "\u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("span", { className: "w-8" })), step === "form" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, methods.map((m) => /* @__PURE__ */ React.createElement("button", { key: m.id, onClick: () => setMethod(m.id), className: method === m.id ? "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-transparent border-purple-900 text-gray-400" }, m.label))), method === "card" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0643\u0631\u062A \u0627\u0644\u0634\u062D\u0646"), /* @__PURE__ */ React.createElement("input", { value: code, onChange: (e) => setCode(e.target.value), placeholder: "XXXX-XXXX-XXXX", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), method === "bank" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "\\u0631\\u0642\\u0645 \\u0627\\u0644\\u0628\\u0637\\u0627\\u0642\\u0629", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "MM/YY", className: "w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("input", { placeholder: "CVV", className: "w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }))), method === "transfer" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u064A\u0646\u0627\u0631 \u0644\u064A\u0628\u064A"), /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u0648\u0644\u0627\u0631")), /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u062F\u0648\u0644\u0627\u0631"), /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u0645\u0635\u0631\u0641"))), /* @__PURE__ */ React.createElement("input", { placeholder: "\\u0627\\u0644\\u0645\\u0628\\u0644\\u063A", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), /* @__PURE__ */ React.createElement("button", { onClick: submit, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-5", style: {
+  } }, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, "aria-label": "\u0625\u063A\u0644\u0627\u0642", className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold" }, "\u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("span", { className: "w-8" })), step === "form" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, methods.map((m) => /* @__PURE__ */ React.createElement("button", { key: m.id, onClick: () => setMethod(m.id), className: method === m.id ? "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-transparent border-purple-900 text-gray-400" }, m.label))), method === "libyana" && /* @__PURE__ */ React.createElement(LibyanaTopUp, { authToken, showToast, onPaid: (amount) => {
+    onTopUpSuccess(amount);
+  } }), method === "card" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0643\u0631\u062A \u0627\u0644\u0634\u062D\u0646"), /* @__PURE__ */ React.createElement("input", { value: code, onChange: (e) => setCode(e.target.value), placeholder: "XXXX-XXXX-XXXX", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), method === "bank" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "\u0631\u0642\u0645 \u0627\u0644\u0628\u0637\u0627\u0642\u0629", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "MM/YY", className: "w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("input", { placeholder: "CVV", className: "w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }))), method === "transfer" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u064A\u0646\u0627\u0631 \u0644\u064A\u0628\u064A"), /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u0648\u0644\u0627\u0631")), /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u062F\u0648\u0644\u0627\u0631"), /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u0645\u0635\u0631\u0641"))), /* @__PURE__ */ React.createElement("input", { placeholder: "\u0627\u0644\u0645\u0628\u0644\u063A", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), method !== "libyana" && /* @__PURE__ */ React.createElement("button", { onClick: submit, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-5", style: {
     boxShadow: "0 0 24px rgba(168,85,247,0.45)"
   } }, "\u062A\u0623\u0643\u064A\u062F")), step === "otp" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-xs text-center mb-4" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0627\u0644\u062A\u062D\u0642\u0642 \u0627\u0644\u0645\u0631\u0633\u0644 \u0625\u0644\u0649 \u0631\u0642\u0645 \u0647\u0627\u062A\u0641\u0643"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-2 mb-5", dir: "ltr" }, [0, 1, 2, 3].map((i) => /* @__PURE__ */ React.createElement("input", { key: i, maxLength: 1, className: "w-11 h-12 text-center bg-void border border-purple-800 rounded-xl text-white text-lg outline-none" }))), /* @__PURE__ */ React.createElement("button", { onClick: confirmOtp, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm", style: {
     boxShadow: "0 0 24px rgba(168,85,247,0.45)"
@@ -1423,6 +1522,14 @@ function App() {
     setCurrentUser(null);
     setAuthToken(null);
   }
+  function handleTopUpSuccess(amount) {
+    setCurrentUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, balance_lyd: (prev.balance_lyd || 0) + amount };
+      saveStoredSession(next, authToken);
+      return next;
+    });
+  }
   if (resetToken) {
     return /* @__PURE__ */ React.createElement(ResetPasswordScreen, { token: resetToken, onDone: () => setResetToken(null) });
   }
@@ -1446,7 +1553,7 @@ function App() {
     platformLabel,
     unitPrice,
     isLive
-  }) }), tab === "purchases" && /* @__PURE__ */ React.createElement(PurchasesView, { goHome: () => goTab("home"), purchases }), tab === "support" && /* @__PURE__ */ React.createElement(SupportView, { showToast }), tab === "account" && /* @__PURE__ */ React.createElement(AccountView, { currency, setCurrency, onTopUp: () => setShowTopUp(true), showToast, onLogout: handleLogout, user: currentUser, authToken }))), /* @__PURE__ */ React.createElement(BottomNav, { tab, onChange: goTab })), showTopUp && /* @__PURE__ */ React.createElement(TopUpSheet, { onClose: () => setShowTopUp(false), showToast }), rashqOrder && /* @__PURE__ */ React.createElement(RashqOrderSheet, { order: rashqOrder, onClose: () => setRashqOrder(null), showToast }), openProduct && /* @__PURE__ */ React.createElement(ProductSheet, { item: openProduct, onClose: () => setOpenProduct(null), onPurchased: (record) => setPurchases((prev) => [record, ...prev]) }), toast && /* @__PURE__ */ React.createElement(Toast, { message: toast }));
+  }) }), tab === "purchases" && /* @__PURE__ */ React.createElement(PurchasesView, { goHome: () => goTab("home"), purchases }), tab === "support" && /* @__PURE__ */ React.createElement(SupportView, { showToast }), tab === "account" && /* @__PURE__ */ React.createElement(AccountView, { currency, setCurrency, onTopUp: () => setShowTopUp(true), showToast, onLogout: handleLogout, user: currentUser, authToken }))), /* @__PURE__ */ React.createElement(BottomNav, { tab, onChange: goTab })), showTopUp && /* @__PURE__ */ React.createElement(TopUpSheet, { onClose: () => setShowTopUp(false), showToast, authToken, onTopUpSuccess: handleTopUpSuccess }), rashqOrder && /* @__PURE__ */ React.createElement(RashqOrderSheet, { order: rashqOrder, onClose: () => setRashqOrder(null), showToast }), openProduct && /* @__PURE__ */ React.createElement(ProductSheet, { item: openProduct, onClose: () => setOpenProduct(null), onPurchased: (record) => setPurchases((prev) => [record, ...prev]) }), toast && /* @__PURE__ */ React.createElement(Toast, { message: toast }));
 }
 createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
 export {

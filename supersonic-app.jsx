@@ -1040,6 +1040,7 @@ function AccountView({
   authToken
 }) {
   const cur = CURRENCIES.find(c => c.id === currency);
+  const displayBalance = currency === "LYD" ? fmt(user?.balance_lyd || 0) : cur.balance;
   const initials = (user?.name || "\u061F").trim().slice(0, 2).toUpperCase();
   const [resending, setResending] = useState(false);
   const menu = [{
@@ -1083,7 +1084,7 @@ function AccountView({
   }
   return /* @__PURE__ */<div className="px-4 pt-6"><div className="flex flex-col items-center mb-6"><div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-purple-950 flex items-center justify-center text-2xl font-black text-white ring-4 ring-purple-700 mb-3" style={{
         boxShadow: "0 0 30px rgba(168,85,247,0.5)"
-      }}>{initials}</div><h2 className="text-white font-bold text-lg">{user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"}</h2><p className="text-gray-500 text-xs mb-2" dir="ltr">{user?.email || ""}</p><span className="flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full"><ShieldCheck className="w-3 h-3" /> عضو مميز في Supersonic</span></div>{user && user.email_verified === false && /* @__PURE__ */<div className="flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4"><button onClick={resendVerification} disabled={resending} className="text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50">{resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"}</button><span className="text-amber-200 text-xs text-right flex-1">إيميلك مو مفعّل — تفقّد بريدك</span></div>}<div className="flex gap-2 mb-4">{CURRENCIES.map(c => /* @__PURE__ */<button key={c.id} onClick={() => setCurrency(c.id)} className={currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400"}>{c.id}</button>)}</div><div className="grid grid-cols-2 gap-3 mb-4"><div className="bg-surface border border-purple-900 rounded-2xl p-4"><p className="text-gray-500 text-[11px] mb-1">الرصيد المنفق</p><p className="text-white font-bold">{cur.spent}</p></div><div className="bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4"><p className="text-purple-300 text-[11px] mb-1">رصيدك الحالي</p><p className="text-white font-bold">{cur.balance}</p></div></div><div className="flex gap-3 mb-3"><button onClick={() => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627")} className="flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-3 text-xs text-gray-200"><ArrowLeftRight className="w-4 h-4" /> تحويل الرصيد</button><button onClick={onTopUp} className="flex-1 flex items-center justify-center gap-2 bg-purple-600 rounded-xl py-3 text-xs text-white font-bold" style={{
+      }}>{initials}</div><h2 className="text-white font-bold text-lg">{user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"}</h2><p className="text-gray-500 text-xs mb-2" dir="ltr">{user?.email || ""}</p><span className="flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full"><ShieldCheck className="w-3 h-3" /> عضو مميز في Supersonic</span></div>{user && user.email_verified === false && /* @__PURE__ */<div className="flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4"><button onClick={resendVerification} disabled={resending} className="text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50">{resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"}</button><span className="text-amber-200 text-xs text-right flex-1">إيميلك مو مفعّل — تفقّد بريدك</span></div>}<div className="flex gap-2 mb-4">{CURRENCIES.map(c => /* @__PURE__ */<button key={c.id} onClick={() => setCurrency(c.id)} className={currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400"}>{c.id}</button>)}</div><div className="grid grid-cols-2 gap-3 mb-4"><div className="bg-surface border border-purple-900 rounded-2xl p-4"><p className="text-gray-500 text-[11px] mb-1">الرصيد المنفق</p><p className="text-white font-bold">{cur.spent}</p></div><div className="bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4"><p className="text-purple-300 text-[11px] mb-1">رصيدك الحالي</p><p className="text-white font-bold">{displayBalance}</p></div></div><div className="flex gap-3 mb-3"><button onClick={() => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627")} className="flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-3 text-xs text-gray-200"><ArrowLeftRight className="w-4 h-4" /> تحويل الرصيد</button><button onClick={onTopUp} className="flex-1 flex items-center justify-center gap-2 bg-purple-600 rounded-xl py-3 text-xs text-white font-bold" style={{
         boxShadow: "0 0 20px rgba(168,85,247,0.4)"
       }}><Wallet className="w-4 h-4" /> شحن الرصيد</button></div><button onClick={() => {
       const id = "SS-" + (user?.id ?? "00000");
@@ -1097,11 +1098,130 @@ function AccountView({
         return /* @__PURE__ */<button key={i} onClick={() => showToast(m.msg)} className="w-full flex items-center justify-between bg-surface border border-purple-900 rounded-2xl px-4 py-3.5"><ChevronLeft className="w-4 h-4 text-gray-600" /><span className="flex items-center gap-2 flex-1 justify-end text-sm text-gray-200">{m.badge && /* @__PURE__ */<span className="text-[10px] bg-accent text-white px-1.5 py-0.5 rounded-full">{m.badge}</span>}{m.label}</span><span className="w-8 h-8 rounded-lg bg-purple-950 flex items-center justify-center ml-2"><MIcon className="w-4 h-4 text-purple-400" /></span></button>;
       })}</div><button onClick={onLogout} className="w-full flex items-center justify-center gap-2 text-red-400 text-sm py-3 mb-6"><LogOut className="w-4 h-4" /> تسجيل الخروج</button></div>;
 }
+function LibyanaTopUp({ authToken, showToast, onPaid }) {
+  const [phone, setPhone] = useState("");
+  const [charge, setCharge] = useState(null); // { charge_id, collection_number, expires_minutes }
+  const [status, setStatus] = useState(null); // pending | paid | expired
+  const [amountPaid, setAmountPaid] = useState(null);
+  const [starting, setStarting] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!charge || status === "paid" || status === "expired") return;
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch(`${RASHQ_API_BASE}/api/topup/libyana/status/${charge.charge_id}`, {
+          headers: { Authorization: `Bearer ${authToken}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStatus(data.status);
+          if (data.status === "paid") {
+            setAmountPaid(data.amount_lyd);
+            onPaid(data.amount_lyd);
+          }
+        }
+      } catch (e) {}
+    }, 4000);
+    return () => clearInterval(poll);
+  }, [charge, status, authToken]);
+
+  async function start() {
+    setError("");
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.length < 9) {
+      setError("\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062A\u0641 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D");
+      return;
+    }
+    setStarting(true);
+    try {
+      const res = await fetch(`${RASHQ_API_BASE}/api/topup/libyana/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
+        body: JSON.stringify({ phone: cleanPhone })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.error || "\u062A\u0639\u0630\u0631 \u0628\u062F\u0621 \u0627\u0644\u0634\u062D\u0646");
+        return;
+      }
+      setCharge(data);
+      setStatus("pending");
+    } catch (e) {
+      setError("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0633\u064A\u0631\u0641\u0631");
+    } finally {
+      setStarting(false);
+    }
+  }
+
+  if (status === "paid") {
+    return (
+      <div className="text-center py-4">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4">
+          <Check className="w-8 h-8 text-white" strokeWidth={3} />
+        </div>
+        <p className="text-white font-bold mb-1">\u062A\u0645 \u0634\u062D\u0646 {fmt(amountPaid)} \u062F.\u0644 \u0628\u0646\u062C\u0627\u062D \u2705</p>
+        <p className="text-gray-500 text-xs">\u0635\u0627\u0631 \u0628\u0645\u064A\u0632\u0627\u0646\u0643\u060C \u062A\u0642\u062F\u0631 \u062A\u0633\u0643\u0631 \u0647\u0627\u0644\u0646\u0627\u0641\u0630\u0629</p>
+      </div>
+    );
+  }
+
+  if (charge && status !== "expired") {
+    return (
+      <div className="space-y-3">
+        <div className="bg-purple-950 border border-purple-800 rounded-2xl p-4 text-center">
+          <p className="text-purple-300 text-xs mb-1">\u062D\u0648\u0651\u0644 \u0623\u064A \u0645\u0628\u0644\u063A \u0645\u0646 \u0631\u0642\u0645\u0643 ({phone}) \u0639\u0628\u0631 \u0644\u064A\u0628\u064A\u0627\u0646\u0627 \u0644\u0631\u0642\u0645:</p>
+          <p className="text-white font-black text-xl mb-2" dir="ltr">{charge.collection_number}</p>
+          <button
+            onClick={() => {
+              if (navigator.clipboard) navigator.clipboard.writeText(charge.collection_number);
+              showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645");
+            }}
+            className="text-purple-300 text-xs font-bold border border-purple-700 rounded-full px-4 py-1.5"
+          >
+            \u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645
+          </button>
+        </div>
+        <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          \u0628\u0627\u0646\u062A\u0638\u0627\u0631 \u0648\u0635\u0648\u0644 \u0627\u0644\u062A\u062D\u0648\u064A\u0644 \u2014 \u0628\u064A\u062A\u0636\u0627\u0641 \u062A\u0644\u0642\u0627\u0626\u064A\u064B\u0627 \u062E\u0644\u0627\u0644 \u062F\u0642\u0627\u064A\u0642 \u0645\u0646 \u0625\u0631\u0633\u0627\u0644\u0647
+        </div>
+        <p className="text-gray-600 text-[10px] text-center">\u0635\u0627\u0644\u062D \u0644\u0645\u062F\u0629 {charge.expires_minutes} \u062F\u0642\u064A\u0642\u0629</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <label className="text-xs text-gray-400 block mb-1.5">\u0631\u0642\u0645 \u0647\u0627\u062A\u0641\u0643 (\u0627\u0644\u0644\u064A \u0628\u062A\u062D\u0648\u0651\u0644 \u0645\u0646\u0647)</label>
+      <input
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="09XXXXXXXX"
+        dir="ltr"
+        className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
+      />
+      {status === "expired" && <p className="text-amber-500 text-xs text-center">\u0627\u0646\u062A\u0647\u062A \u0645\u0647\u0644\u0629 \u0627\u0644\u062A\u062D\u0648\u064A\u0644\u060C \u062C\u0631\u0651\u0628 \u0645\u0646 \u062C\u062F\u064A\u062F</p>}
+      {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+      <button
+        onClick={start}
+        disabled={starting}
+        className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2"
+        style={{ boxShadow: "0 0 24px rgba(168,85,247,0.45)" }}
+      >
+        {starting && <Loader2 className="w-4 h-4 animate-spin" />}
+        {starting ? "\u0644\u062D\u0638\u0629..." : "\u0645\u062A\u0627\u0628\u0639\u0629"}
+      </button>
+    </div>
+  );
+}
 function TopUpSheet({
   onClose,
-  showToast
+  showToast,
+  authToken,
+  onTopUpSuccess
 }) {
-  const [method, setMethod] = useState("card");
+  const [method, setMethod] = useState("libyana");
   const [step, setStep] = useState("form");
   const [code, setCode] = useState("");
   function submit() {
@@ -1117,8 +1237,11 @@ function TopUpSheet({
     onClose();
   }
   const methods = [{
+    id: "libyana",
+    label: "\u0644\u064A\u0628\u064A\u0627\u0646\u0627"
+  }, {
     id: "card",
-    label: "\u0644\u064A\u0628\u064A\u0627\u0646\u0627 / \u0645\u062F\u0627\u0631"
+    label: "\u0643\u0631\u062A \u0634\u062D\u0646"
   }, {
     id: "bank",
     label: "\u0628\u0637\u0627\u0642\u0629 \u0645\u0635\u0631\u0641\u064A\u0629"
@@ -1130,9 +1253,11 @@ function TopUpSheet({
       opacity: 0.7
     }} onClick={onClose} /><div className="relative w-full bg-surface border-t border-purple-800 rounded-t-3xl p-5 pb-8" style={{
       maxWidth: 480
-    }}><div className="w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" /><div className="flex items-center justify-between mb-5"><button onClick={onClose} aria-label="إغلاق" className="w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center"><X className="w-4 h-4 text-gray-400" /></button><h3 className="text-white font-bold">شحن الرصيد</h3><span className="w-8" /></div>{step === "form" && /* @__PURE__ */<React.Fragment><div className="flex gap-2 mb-5">{methods.map(m => /* @__PURE__ */<button key={m.id} onClick={() => setMethod(m.id)} className={method === m.id ? "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-transparent border-purple-900 text-gray-400"}>{m.label}</button>)}</div>{method === "card" && /* @__PURE__ */<div className="space-y-3"><label className="text-xs text-gray-400">أدخل كود كرت الشحن</label><input value={code} onChange={e => setCode(e.target.value)} placeholder="XXXX-XXXX-XXXX" className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /></div>}{method === "bank" && /* @__PURE__ */<div className="space-y-3"><input placeholder="\u0631\u0642\u0645 \u0627\u0644\u0628\u0637\u0627\u0642\u0629" className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /><div className="flex gap-3"><input placeholder="MM/YY" className="w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /><input placeholder="CVV" className="w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /></div></div>}{method === "transfer" && /* @__PURE__ */<div className="space-y-3"><div className="flex items-center gap-3"><select className="flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none"><option>من: دينار ليبي</option><option>من: دولار</option></select><ArrowLeftRight className="w-4 h-4 text-purple-500" /><select className="flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none"><option>إلى: دولار</option><option>إلى: مصرف</option></select></div><input placeholder="\u0627\u0644\u0645\u0628\u0644\u063A" className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /></div>}<button onClick={submit} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-5" style={{
+    }}><div className="w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" /><div className="flex items-center justify-between mb-5"><button onClick={onClose} aria-label="إغلاق" className="w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center"><X className="w-4 h-4 text-gray-400" /></button><h3 className="text-white font-bold">شحن الرصيد</h3><span className="w-8" /></div>{step === "form" && /* @__PURE__ */<React.Fragment><div className="flex gap-2 mb-5">{methods.map(m => /* @__PURE__ */<button key={m.id} onClick={() => setMethod(m.id)} className={method === m.id ? "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-transparent border-purple-900 text-gray-400"}>{m.label}</button>)}</div>{method === "libyana" && /* @__PURE__ */<LibyanaTopUp authToken={authToken} showToast={showToast} onPaid={amount => {
+          onTopUpSuccess(amount);
+        }} />}{method === "card" && /* @__PURE__ */<div className="space-y-3"><label className="text-xs text-gray-400">أدخل كود كرت الشحن</label><input value={code} onChange={e => setCode(e.target.value)} placeholder="XXXX-XXXX-XXXX" className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /></div>}{method === "bank" && /* @__PURE__ */<div className="space-y-3"><input placeholder="رقم البطاقة" className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /><div className="flex gap-3"><input placeholder="MM/YY" className="w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /><input placeholder="CVV" className="w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /></div></div>}{method === "transfer" && /* @__PURE__ */<div className="space-y-3"><div className="flex items-center gap-3"><select className="flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none"><option>من: دينار ليبي</option><option>من: دولار</option></select><ArrowLeftRight className="w-4 h-4 text-purple-500" /><select className="flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none"><option>إلى: دولار</option><option>إلى: مصرف</option></select></div><input placeholder="المبلغ" className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" /></div>}{method !== "libyana" && /* @__PURE__ */<button onClick={submit} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-5" style={{
           boxShadow: "0 0 24px rgba(168,85,247,0.45)"
-        }}>تأكيد</button></React.Fragment>}{step === "otp" && /* @__PURE__ */<div><p className="text-gray-400 text-xs text-center mb-4">أدخل كود التحقق المرسل إلى رقم هاتفك</p><div className="flex justify-center gap-2 mb-5" dir="ltr">{[0, 1, 2, 3].map(i => /* @__PURE__ */<input key={i} maxLength={1} className="w-11 h-12 text-center bg-void border border-purple-800 rounded-xl text-white text-lg outline-none" />)}</div><button onClick={confirmOtp} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm" style={{
+        }}>تأكيد</button>}</React.Fragment>}{step === "otp" && /* @__PURE__ */<div><p className="text-gray-400 text-xs text-center mb-4">أدخل كود التحقق المرسل إلى رقم هاتفك</p><div className="flex justify-center gap-2 mb-5" dir="ltr">{[0, 1, 2, 3].map(i => /* @__PURE__ */<input key={i} maxLength={1} className="w-11 h-12 text-center bg-void border border-purple-800 rounded-xl text-white text-lg outline-none" />)}</div><button onClick={confirmOtp} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm" style={{
           boxShadow: "0 0 24px rgba(168,85,247,0.45)"
         }}>تأكيد الكود</button></div>}</div></div>;
 }
@@ -1423,6 +1548,14 @@ function App() {
     setCurrentUser(null);
     setAuthToken(null);
   }
+  function handleTopUpSuccess(amount) {
+    setCurrentUser(prev => {
+      if (!prev) return prev;
+      const next = { ...prev, balance_lyd: (prev.balance_lyd || 0) + amount };
+      saveStoredSession(next, authToken);
+      return next;
+    });
+  }
   if (resetToken) {
     return /* @__PURE__ */<ResetPasswordScreen token={resetToken} onDone={() => setResetToken(null)} />;
   }
@@ -1446,7 +1579,7 @@ function App() {
             platformLabel,
             unitPrice,
             isLive
-          })} />}{tab === "purchases" && /* @__PURE__ */<PurchasesView goHome={() => goTab("home")} purchases={purchases} />}{tab === "support" && /* @__PURE__ */<SupportView showToast={showToast} />}{tab === "account" && /* @__PURE__ */<AccountView currency={currency} setCurrency={setCurrency} onTopUp={() => setShowTopUp(true)} showToast={showToast} onLogout={handleLogout} user={currentUser} authToken={authToken} />}</React.Fragment>}</main><BottomNav tab={tab} onChange={goTab} /></div>{showTopUp && /* @__PURE__ */<TopUpSheet onClose={() => setShowTopUp(false)} showToast={showToast} />}{rashqOrder && /* @__PURE__ */<RashqOrderSheet order={rashqOrder} onClose={() => setRashqOrder(null)} showToast={showToast} />}{openProduct && /* @__PURE__ */<ProductSheet item={openProduct} onClose={() => setOpenProduct(null)} onPurchased={record => setPurchases(prev => [record, ...prev])} />}{toast && /* @__PURE__ */<Toast message={toast} />}</div>;
+          })} />}{tab === "purchases" && /* @__PURE__ */<PurchasesView goHome={() => goTab("home")} purchases={purchases} />}{tab === "support" && /* @__PURE__ */<SupportView showToast={showToast} />}{tab === "account" && /* @__PURE__ */<AccountView currency={currency} setCurrency={setCurrency} onTopUp={() => setShowTopUp(true)} showToast={showToast} onLogout={handleLogout} user={currentUser} authToken={authToken} />}</React.Fragment>}</main><BottomNav tab={tab} onChange={goTab} /></div>{showTopUp && /* @__PURE__ */<TopUpSheet onClose={() => setShowTopUp(false)} showToast={showToast} authToken={authToken} onTopUpSuccess={handleTopUpSuccess} />}{rashqOrder && /* @__PURE__ */<RashqOrderSheet order={rashqOrder} onClose={() => setRashqOrder(null)} showToast={showToast} />}{openProduct && /* @__PURE__ */<ProductSheet item={openProduct} onClose={() => setOpenProduct(null)} onPurchased={record => setPurchases(prev => [record, ...prev])} />}{toast && /* @__PURE__ */<Toast message={toast} />}</div>;
 }
 createRoot(document.getElementById("root")).render(/* @__PURE__ */<App />);
 export { App as default };
