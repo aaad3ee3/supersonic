@@ -27,7 +27,15 @@ DAILY_CAP_USD = float(os.environ.get("DAILY_CAP_USD", "20"))  # hard stop on rea
 DB_PATH = os.environ.get("DB_PATH", "app.db")  # point this at a Railway Volume — see README
 
 PLUS_BASE = "https://hamadh.net/api/v2"
-MARKUP = 1.25  # 25% margin, applied here on the server — the browser never sees the base cost
+
+# PLUS API (رشق) prices come back in USD. Convert to LYD then add margin —
+# both applied here on the server, the browser never sees the USD base cost.
+RASHQ_USD_TO_LYD = 12.5
+RASHQ_MARKUP = 1.20  # +20% profit on top of the converted LYD price
+
+# Libya Cards (كروت) prices come back already in LYD (it's a Libya-only
+# platform) — just add margin, no currency conversion needed.
+CARDS_MARKUP = 1.20  # +20% profit
 
 # Server-side allow-list. Mirrors the front-end catalog on purpose: even if someone
 # crafts a raw request straight to this API (skipping the website entirely), only
@@ -552,7 +560,7 @@ def list_services():
                 "name": s.get("name"),
                 "min": s.get("min"),
                 "max": s.get("max"),
-                "price_per_1000_usd": round(base_price * MARKUP, 4),
+                "price_per_1000_lyd": round(base_price * RASHQ_USD_TO_LYD * RASHQ_MARKUP, 2),
             })
     return jsonify({"success": True, "services": out})
 
@@ -797,7 +805,7 @@ def card_category_products(category_id):
             products.append({
                 "id": p.get("id"),
                 "name": p.get("name"),
-                "price": round(base_price * MARKUP, 3),
+                "price": round(base_price * CARDS_MARKUP, 2),
                 "available": bool(p.get("available")),
                 "image": p.get("image"),
             })
