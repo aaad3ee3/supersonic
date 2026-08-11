@@ -470,6 +470,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
             phone TEXT NOT NULL,
+            amount_expected REAL NOT NULL,
             status TEXT NOT NULL DEFAULT 'pending',
             amount_lyd REAL DEFAULT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -478,6 +479,10 @@ def init_db():
         )
     """)
     conn.execute("CREATE INDEX IF NOT EXISTS idx_libyana_charges_phone_status ON libyana_charges(phone, status)")
+    try:
+        conn.execute("ALTER TABLE libyana_charges ADD COLUMN amount_expected REAL")
+    except sqlite3.OperationalError:
+        pass  # already there (or fresh DB, created with it above already)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS libyana_unmatched (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -808,9 +813,12 @@ def reset_password():
 
 
 # ---------------------------------------------------------------------------
-# شحن رصيد — ليبيانا: العميل يحوّل من رقمه لرقم التحصيل (LIBYANA_COLLECTION_NUMBER)،
-# تطبيق SMS Gateway على جوال رقم التحصيل يفوّر رسائل التحويل لهذا الويبهوك،
-# نطابقها مع أقدم طلب شحن معلّق بنفس الرقم (FIFO) ونزيد رصيد المستخدم.
+# شحن رصيد — ليبيانا: العميل يكتب رقمه والمبلغ اللي بينوي يحوّله، السيرفر
+# يحفظ طلب معلّق بالمبلغ المحدد بالضبط. لما تطبيق SMS Gateway يفوّر رسالة
+# التحويل الحقيقية لهذا الويبهوك، نطابقها على (نفس الرقم + نفس المبلغ
+# بالضبط) — مو بس أقدم طلب لنفس الرقم (FIFO) زي قبل. هذا أدق وأوضح للعميل
+# (يعرف بالضبط أي مبلغ يحوّل) ويقلل احتمال تطابق خاطئ لو صار أكثر من طلب
+# معلّق لنفس الرقم بنفس الوقت.
 # ---------------------------------------------------------------------------
 LIBYANA_PHONE_RE = re.compile(r"^\d{9,15}$")
 
@@ -832,25 +840,35 @@ def libyana_start():
     if not LIBYANA_PHONE_RE.match(phone):
         return jsonify({"success": False, "error": "رقم الهاتف غير صالح"}), 400
 
+    try:
+        amount = round(float(body.get("amount")), 3)
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "error": "المبلغ غير صالح"}), 400
+    if amount <= 0 or amount > 100000:
+        return jsonify({"success": False, "error": "المبلغ غير صالح"}), 400
+
     conn = get_db()
     try:
         expires_at = (
             datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=LIBYANA_CHARGE_TTL_MINUTES)
         ).strftime("%Y-%m-%d %H:%M:%S")
         cur = conn.execute(
-            "INSERT INTO libyana_charges (user_id, phone, status, expires_at) VALUES (?, ?, 'pending', ?)",
-            (user["id"], phone, expires_at),
+            "INSERT INTO libyana_charges (user_id, phone, amount_expected, status, expires_at) "
+            "VALUES (?, ?, ?, 'pending', ?)",
+            (user["id"], phone, amount, expires_at),
         )
         charge_id = cur.lastrowid
         conn.commit()
     finally:
         conn.close()
 
-    print(f"[libyana] charge created — ip={ip} user_id={user['id']} charge_id={charge_id}")
+    print(f"[libyana] charge created — ip={ip} user_id={user['id']} charge_id={charge_id} "
+          f"phone={phone} amount_expected={amount}")
     return jsonify({
         "success": True,
         "charge_id": charge_id,
         "collection_number": LIBYANA_COLLECTION_NUMBER,
+        "amount": amount,
         "expires_minutes": LIBYANA_CHARGE_TTL_MINUTES,
     })
 
@@ -923,10 +941,12 @@ def libyana_webhook():
     conn = get_db()
     try:
         # UPDATE-by-correlated-subquery instead of SELECT-then-UPDATE — claims
-        # the oldest matching pending charge atomically in one statement, so
-        # two webhook calls landing at the same instant can't both match the
-        # same charge (a plain SELECT first would race between the read and
-        # the write).
+        # the matching pending charge atomically in one statement, so two
+        # webhook calls landing at the same instant can't both match the same
+        # charge (a plain SELECT first would race between the read and the
+        # write). Matches on phone AND the exact expected amount (rounded to
+        # 3 decimals) — not just phone + oldest-pending — so two simultaneous
+        # pending charges for the same phone can't cross-match each other.
         cur = conn.execute(
             """
             UPDATE libyana_charges
@@ -934,10 +954,11 @@ def libyana_webhook():
             WHERE id = (
                 SELECT id FROM libyana_charges
                 WHERE phone = ? AND status = 'pending' AND expires_at > ?
+                  AND ROUND(amount_expected, 3) = ROUND(?, 3)
                 ORDER BY created_at ASC LIMIT 1
             )
             """,
-            (amount_lyd, phone, now_str),
+            (amount_lyd, phone, now_str, amount_lyd),
         )
 
         if cur.rowcount == 0:

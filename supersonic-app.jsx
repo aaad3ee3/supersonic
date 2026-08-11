@@ -733,7 +733,7 @@ function Header({
   onSearchClick,
   showToast
 }) {
-  return /* @__PURE__ */<header className="sticky top-0 z-20 bg-void border-b border-purple-950 px-4 py-3 flex items-center justify-between"><div className="flex items-center gap-1.5"><span className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center"><Zap className="w-4 h-4 text-white" /></span><span className="text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent">Supersonic</span></div><div className="flex items-center gap-2"><button onClick={onSearchClick} aria-label="\u0628\u062D\u062B" className="w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center"><Search className="w-4 h-4 text-purple-300" /></button><button onClick={() => showToast("\u0648\u0644\u0627 \u0625\u0634\u0639\u0627\u0631 \u062C\u062F\u064A\u062F \u062D\u0627\u0644\u064A\u064B\u0627")} aria-label="\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A" className="w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center relative"><Bell className="w-4 h-4 text-purple-300" /><span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" /></button></div></header>;
+  return /* @__PURE__ */<header className="sticky top-0 z-20 bg-void border-b border-purple-950 px-4 py-3 flex items-center justify-between"><div className="flex items-center gap-1.5"><span className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center"><Zap className="w-4 h-4 text-white" /></span><span className="text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent">Supersonic</span></div><div className="flex items-center gap-2"><button onClick={onSearchClick} aria-label="بحث" className="w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center"><Search className="w-4 h-4 text-purple-300" /></button><button onClick={() => showToast("\u0648\u0644\u0627 \u0625\u0634\u0639\u0627\u0631 \u062C\u062F\u064A\u062F \u062D\u0627\u0644\u064A\u064B\u0627")} aria-label="الإشعارات" className="w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center relative"><Bell className="w-4 h-4 text-purple-300" /><span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" /></button></div></header>;
 }
 function BottomNav({
   tab,
@@ -986,7 +986,7 @@ function HomeView({
   return /* @__PURE__ */<div><div className="mx-4 mt-4 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden h-32 flex flex-col justify-center"><SpeedStreaks />{(() => {
         const BannerIcon = BANNERS[slide].icon;
         return /* @__PURE__ */<BannerIcon className="w-7 h-7 text-purple-300 mb-2 relative z-10" />;
-      })()}<h2 className="text-white font-bold text-base relative z-10">{BANNERS[slide].title}</h2><p className="text-purple-300 text-xs mt-1 relative z-10">{BANNERS[slide].sub}</p><div className="flex gap-1.5 absolute bottom-3 left-5 z-10">{BANNERS.map((_, i) => /* @__PURE__ */<span key={i} className={i === slide ? "h-1.5 w-5 rounded-full bg-purple-400" : "h-1.5 w-1.5 rounded-full bg-purple-900"} />)}</div></div><div ref={searchRef} className="mx-4 mt-4 flex items-center gap-2 bg-surface border border-purple-900 rounded-2xl px-4 py-3"><Search className="w-4 h-4 text-purple-500" /><input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="\u0627\u0628\u062D\u062B \u0639\u0646 \u0645\u0646\u062A\u062C\u060C \u0641\u0626\u0629 \u0623\u0648 \u062E\u062F\u0645\u0629..." className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" />{query && /* @__PURE__ */<button onClick={() => setQuery("")} aria-label="مسح البحث"><X className="w-4 h-4 text-gray-500" /></button>}</div><div className="flex gap-2 px-4 mt-4 overflow-x-auto" style={{
+      })()}<h2 className="text-white font-bold text-base relative z-10">{BANNERS[slide].title}</h2><p className="text-purple-300 text-xs mt-1 relative z-10">{BANNERS[slide].sub}</p><div className="flex gap-1.5 absolute bottom-3 left-5 z-10">{BANNERS.map((_, i) => /* @__PURE__ */<span key={i} className={i === slide ? "h-1.5 w-5 rounded-full bg-purple-400" : "h-1.5 w-1.5 rounded-full bg-purple-900"} />)}</div></div><div ref={searchRef} className="mx-4 mt-4 flex items-center gap-2 bg-surface border border-purple-900 rounded-2xl px-4 py-3"><Search className="w-4 h-4 text-purple-500" /><input type="text" value={query} onChange={e => setQuery(e.target.value)} placeholder="ابحث عن منتج، فئة أو خدمة..." className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" />{query && /* @__PURE__ */<button onClick={() => setQuery("")} aria-label="مسح البحث"><X className="w-4 h-4 text-gray-500" /></button>}</div><div className="flex gap-2 px-4 mt-4 overflow-x-auto" style={{
       scrollbarWidth: "none"
     }}>{FILTERS.map(f => /* @__PURE__ */<button key={f.id} onClick={() => setFilter(f.id)} className={filter === f.id ? "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-transparent border-purple-900 text-gray-400"}>{f.label}</button>)}</div>{noResults ? /* @__PURE__ */<div className="flex flex-col items-center py-14 text-center"><Search className="w-8 h-8 text-purple-700 mb-3" /><p className="text-gray-400 text-sm">ولا نتيجة لـ"{q}"</p></div> : shown.map(s => /* @__PURE__ */<div key={s.key}><SectionHeader title={s.title} Icon={s.Icon} /><CategoryRow items={s.items} onOpen={onOpenProduct} cardsImages={cardsImages} /></div>)}<Footer showToast={showToast} /></div>;
 }
@@ -1100,7 +1100,8 @@ function AccountView({
 }
 function LibyanaTopUp({ authToken, showToast, onPaid }) {
   const [phone, setPhone] = useState("");
-  const [charge, setCharge] = useState(null); // { charge_id, collection_number, expires_minutes }
+  const [amount, setAmount] = useState("");
+  const [charge, setCharge] = useState(null); // { charge_id, collection_number, amount, expires_minutes }
   const [status, setStatus] = useState(null); // pending | paid | expired
   const [amountPaid, setAmountPaid] = useState(null);
   const [starting, setStarting] = useState(false);
@@ -1133,12 +1134,17 @@ function LibyanaTopUp({ authToken, showToast, onPaid }) {
       setError("\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062A\u0641 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D");
       return;
     }
+    const cleanAmount = Number(amount);
+    if (!amount || !(cleanAmount > 0)) {
+      setError("\u0627\u0643\u062A\u0628 \u0627\u0644\u0645\u0628\u0644\u063A \u0627\u0644\u0644\u064A \u0628\u062A\u062D\u0648\u0651\u0644\u0647");
+      return;
+    }
     setStarting(true);
     try {
       const res = await fetch(`${RASHQ_API_BASE}/api/topup/libyana/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
-        body: JSON.stringify({ phone: cleanPhone })
+        body: JSON.stringify({ phone: cleanPhone, amount: cleanAmount })
       });
       const data = await res.json();
       if (!data.success) {
@@ -1160,8 +1166,8 @@ function LibyanaTopUp({ authToken, showToast, onPaid }) {
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4">
           <Check className="w-8 h-8 text-white" strokeWidth={3} />
         </div>
-        <p className="text-white font-bold mb-1">\u062A\u0645 \u0634\u062D\u0646 {fmt(amountPaid)} \u062F.\u0644 \u0628\u0646\u062C\u0627\u062D \u2705</p>
-        <p className="text-gray-500 text-xs">\u0635\u0627\u0631 \u0628\u0645\u064A\u0632\u0627\u0646\u0643\u060C \u062A\u0642\u062F\u0631 \u062A\u0633\u0643\u0631 \u0647\u0627\u0644\u0646\u0627\u0641\u0630\u0629</p>
+        <p className="text-white font-bold mb-1">تم شحن {fmt(amountPaid)} د.ل بنجاح ✅</p>
+        <p className="text-gray-500 text-xs">صار بميزانك، تقدر تسكر هالنافذة</p>
       </div>
     );
   }
@@ -1169,39 +1175,68 @@ function LibyanaTopUp({ authToken, showToast, onPaid }) {
   if (charge && status !== "expired") {
     return (
       <div className="space-y-3">
-        <div className="bg-purple-950 border border-purple-800 rounded-2xl p-4 text-center">
-          <p className="text-purple-300 text-xs mb-1">\u062D\u0648\u0651\u0644 \u0623\u064A \u0645\u0628\u0644\u063A \u0645\u0646 \u0631\u0642\u0645\u0643 ({phone}) \u0639\u0628\u0631 \u0644\u064A\u0628\u064A\u0627\u0646\u0627 \u0644\u0631\u0642\u0645:</p>
-          <p className="text-white font-black text-xl mb-2" dir="ltr">{charge.collection_number}</p>
+        <div className="bg-purple-950 border border-purple-800 rounded-2xl p-4">
+          <p className="text-purple-300 text-xs font-bold mb-3 text-center">اتبع الخطوات بالترتيب:</p>
+          <div className="space-y-2.5 text-xs text-gray-200">
+            <div className="flex items-start gap-2">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">1</span>
+              <span>افتح تطبيق ليبيانا من رقمك ({phone})</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">2</span>
+              <span>
+                حوّل <b className="text-white">{fmt(charge.amount)} د.ل</b> بالضبط (مو أكتر ولا أقل) لهذا الرقم:
+                <span className="block text-white font-black text-lg mt-1" dir="ltr">{charge.collection_number}</span>
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="shrink-0 w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">3</span>
+              <span>استنى — الرصيد يضاف تلقائيًا خلال ثواني من وصول التحويل، بدون ما تسوي شي ثاني</span>
+            </div>
+          </div>
           <button
             onClick={() => {
               if (navigator.clipboard) navigator.clipboard.writeText(charge.collection_number);
               showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645");
             }}
-            className="text-purple-300 text-xs font-bold border border-purple-700 rounded-full px-4 py-1.5"
+            className="w-full mt-3 text-purple-300 text-xs font-bold border border-purple-700 rounded-full py-2"
           >
-            \u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645
+            نسخ رقم التحصيل
           </button>
         </div>
         <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          \u0628\u0627\u0646\u062A\u0638\u0627\u0631 \u0648\u0635\u0648\u0644 \u0627\u0644\u062A\u062D\u0648\u064A\u0644 \u2014 \u0628\u064A\u062A\u0636\u0627\u0641 \u062A\u0644\u0642\u0627\u0626\u064A\u064B\u0627 \u062E\u0644\u0627\u0644 \u062F\u0642\u0627\u064A\u0642 \u0645\u0646 \u0625\u0631\u0633\u0627\u0644\u0647
+          بانتظار وصول التحويل...
         </div>
-        <p className="text-gray-600 text-[10px] text-center">\u0635\u0627\u0644\u062D \u0644\u0645\u062F\u0629 {charge.expires_minutes} \u062F\u0642\u064A\u0642\u0629</p>
+        <p className="text-gray-600 text-[10px] text-center">صالح لمدة {charge.expires_minutes} دقيقة — لو حوّلت مبلغ مختلف، ما بيتطابق</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-3">
-      <label className="text-xs text-gray-400 block mb-1.5">\u0631\u0642\u0645 \u0647\u0627\u062A\u0641\u0643 (\u0627\u0644\u0644\u064A \u0628\u062A\u062D\u0648\u0651\u0644 \u0645\u0646\u0647)</label>
-      <input
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        placeholder="09XXXXXXXX"
-        dir="ltr"
-        className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
-      />
-      {status === "expired" && <p className="text-amber-500 text-xs text-center">\u0627\u0646\u062A\u0647\u062A \u0645\u0647\u0644\u0629 \u0627\u0644\u062A\u062D\u0648\u064A\u0644\u060C \u062C\u0631\u0651\u0628 \u0645\u0646 \u062C\u062F\u064A\u062F</p>}
+      <div>
+        <label className="text-xs text-gray-400 block mb-1.5">رقم هاتفك (اللي بتحوّل منه)</label>
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="09XXXXXXXX"
+          dir="ltr"
+          className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
+        />
+      </div>
+      <div>
+        <label className="text-xs text-gray-400 block mb-1.5">المبلغ اللي بتحوّله (بالدينار)</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="مثلاً 25"
+          dir="ltr"
+          className="w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
+        />
+      </div>
+      {status === "expired" && <p className="text-amber-500 text-xs text-center">انتهت مهلة التحويل، جرّب من جديد</p>}
       {error && <p className="text-red-400 text-xs text-center">{error}</p>}
       <button
         onClick={start}
@@ -1308,7 +1343,7 @@ function ResetPasswordScreen({
             boxShadow: "0 0 30px rgba(168,85,247,0.5)"
           }}><Zap className="w-8 h-8 text-white" /></div><h1 className="text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent">Supersonic</h1></div>{done ? /* @__PURE__ */<div className="text-center"><div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-white" strokeWidth={3} /></div><p className="text-white font-bold mb-2">تم تغيير كلمة المرور ✅</p><p className="text-gray-500 text-xs mb-6">سجّل دخولك بكلمة المرور الجديدة</p><button onClick={onDone} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm" style={{
             boxShadow: "0 0 24px rgba(168,85,247,0.45)"
-          }}>تسجيل الدخول</button></div> : /* @__PURE__ */<form onSubmit={submit}><h2 className="text-white font-bold text-lg mb-1 text-center">كلمة مرور جديدة</h2><p className="text-gray-500 text-xs mb-6 text-center">اكتب كلمة مرور جديدة لحسابك</p><div className="flex items-center gap-2 bg-surface border border-purple-900 rounded-xl px-4 py-3 mb-3"><Lock className="w-4 h-4 text-purple-500" /><input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062C\u062F\u064A\u062F\u0629 (8 \u0623\u062D\u0631\u0641 \u0641\u0623\u0643\u062B\u0631)" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" dir="ltr" /><button onClick={() => setShowPass(v => !v)} type="button" aria-label={showPass ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>{showPass ? /* @__PURE__ */<EyeOff className="w-4 h-4 text-gray-500" /> : /* @__PURE__ */<Eye className="w-4 h-4 text-gray-500" />}</button></div>{error && /* @__PURE__ */<p className="text-red-400 text-xs text-center mb-3">{error}</p>}<button type="submit" disabled={loading} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2" style={{
+          }}>تسجيل الدخول</button></div> : /* @__PURE__ */<form onSubmit={submit}><h2 className="text-white font-bold text-lg mb-1 text-center">كلمة مرور جديدة</h2><p className="text-gray-500 text-xs mb-6 text-center">اكتب كلمة مرور جديدة لحسابك</p><div className="flex items-center gap-2 bg-surface border border-purple-900 rounded-xl px-4 py-3 mb-3"><Lock className="w-4 h-4 text-purple-500" /><input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="كلمة المرور الجديدة (8 أحرف فأكثر)" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" dir="ltr" /><button onClick={() => setShowPass(v => !v)} type="button" aria-label={showPass ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>{showPass ? /* @__PURE__ */<EyeOff className="w-4 h-4 text-gray-500" /> : /* @__PURE__ */<Eye className="w-4 h-4 text-gray-500" />}</button></div>{error && /* @__PURE__ */<p className="text-red-400 text-xs text-center mb-3">{error}</p>}<button type="submit" disabled={loading} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2" style={{
             boxShadow: "0 0 24px rgba(168,85,247,0.45)"
           }}>{loading && /* @__PURE__ */<Loader2 className="w-4 h-4 animate-spin" />}{loading ? "\u0644\u062D\u0638\u0629..." : "\u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"}</button></form>}</div></div></div>;
 }
@@ -1409,7 +1444,7 @@ function AuthScreen({
             }}><Zap className="w-8 h-8 text-white" /></div><h1 className="text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent">Supersonic</h1></div><h2 className="hidden md:block text-white font-bold text-2xl mb-1">{mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F" : "\u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"}</h2><p className="hidden md:block text-gray-500 text-xs mb-8">{mode === "login" ? "\u0623\u0647\u0644\u064B\u0627 \u0628\u0639\u0648\u062F\u062A\u0643" : mode === "signup" ? "\u064A\u0633\u062A\u063A\u0631\u0642 \u0623\u0642\u0644 \u0645\u0646 \u062F\u0642\u064A\u0642\u0629" : "\u0628\u0646\u0628\u0639\u062B\u0644\u0643 \u0631\u0627\u0628\u0637 \u0639\u0628\u0631 \u0627\u0644\u0625\u064A\u0645\u064A\u0644"}</p>{mode === "forgot" && forgotSent ? /* @__PURE__ */<div className="text-center"><div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4"><Mail className="w-7 h-7 text-white" /></div><p className="text-gray-300 text-sm mb-6">لو الإيميل مسجّل عندنا، بيوصلك رابط استرجاع كلمة المرور خلال دقايق.</p><button onClick={() => {
               setMode("login");
               setForgotSent(false);
-            }} className="text-purple-400 text-xs font-bold">رجوع لتسجيل الدخول</button></div> : /* @__PURE__ */<form onSubmit={submit} className="space-y-3">{mode === "signup" && /* @__PURE__ */<div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3"><User className="w-4 h-4 text-purple-500" /><input value={name} onChange={e => setName(e.target.value)} placeholder="\u0627\u0633\u0645\u0643" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" /></div>}<div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3"><Mail className="w-4 h-4 text-purple-500" /><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="\u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" dir="ltr" /></div>{mode !== "forgot" && /* @__PURE__ */<div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3"><Lock className="w-4 h-4 text-purple-500" /><input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 (8 \u0623\u062D\u0631\u0641 \u0641\u0623\u0643\u062B\u0631)" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" dir="ltr" /><button onClick={() => setShowPass(v => !v)} type="button" aria-label={showPass ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>{showPass ? /* @__PURE__ */<EyeOff className="w-4 h-4 text-gray-500" /> : /* @__PURE__ */<Eye className="w-4 h-4 text-gray-500" />}</button></div>}{mode === "login" && /* @__PURE__ */<button type="button" onClick={() => {
+            }} className="text-purple-400 text-xs font-bold">رجوع لتسجيل الدخول</button></div> : /* @__PURE__ */<form onSubmit={submit} className="space-y-3">{mode === "signup" && /* @__PURE__ */<div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3"><User className="w-4 h-4 text-purple-500" /><input value={name} onChange={e => setName(e.target.value)} placeholder="اسمك" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" /></div>}<div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3"><Mail className="w-4 h-4 text-purple-500" /><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="البريد الإلكتروني" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" dir="ltr" /></div>{mode !== "forgot" && /* @__PURE__ */<div className="flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3"><Lock className="w-4 h-4 text-purple-500" /><input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="كلمة المرور (8 أحرف فأكثر)" className="bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" dir="ltr" /><button onClick={() => setShowPass(v => !v)} type="button" aria-label={showPass ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>{showPass ? /* @__PURE__ */<EyeOff className="w-4 h-4 text-gray-500" /> : /* @__PURE__ */<Eye className="w-4 h-4 text-gray-500" />}</button></div>}{mode === "login" && /* @__PURE__ */<button type="button" onClick={() => {
               setMode("forgot");
               setError("");
             }} className="text-purple-400 text-xs block">نسيت كلمة المرور؟</button>}{error && /* @__PURE__ */<p className="text-red-400 text-xs text-center">{error}</p>}<button type="submit" disabled={loading} className="w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2" style={{
