@@ -901,12 +901,19 @@ def libyana_webhook():
     message = str(data.get("message") or data.get("text") or "")
     sender = str(data.get("sender") or "").strip().lower()
 
+    # سجل كل استدعاء يوصل، بصرف النظر عن النتيجة — لو ما ظهر أي سطر [libyana]
+    # incoming بالـ Deploy Logs وقت تحويل حقيقي، معناها SMS Gate أصلاً ما نادى
+    # هالرابط (مشكلة تسجيل الويبهوك)، مو مشكلة بمطابقة النص.
+    print(f"[libyana] webhook incoming — ip={ip} sender={sender!r} raw_body={data!r}")
+
     # نتحقق إن الرسالة جاية من رقم ليبيانا الرسمي بس — حماية من انتحال أرقام
     if sender and sender not in LIBYANA_TRUSTED_SENDERS:
+        print(f"[libyana] IGNORED untrusted_sender — sender={sender!r}")
         return jsonify({"ok": True, "ignored": "untrusted_sender"})
 
     match = LIBYANA_SMS_PATTERN.search(message)
     if not match:
+        print(f"[libyana] IGNORED no_match — raw message text: {message!r}")
         return jsonify({"ok": True, "ignored": "no_match"})
 
     amount_lyd = float(match.group(1).replace(",", ""))
