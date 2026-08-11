@@ -57,7 +57,14 @@ if not os.environ.get("LIBYANA_WEBHOOK_SECRET"):
 
 
 def normalize_phone(phone):
-    return re.sub(r"\D", "", phone or "")
+    # أرقام ليبيانا تنكتب محليًا بصفر بالأول (0928111895) لكن رسائل SMS
+    # الحقيقية تذكر الرقم المرسل بدون الصفر ("من الرقم 928111895") — نشيل
+    # صفر واحد بالأول (بس لو الرقم بعده 9 خانات فأكثر) عشان نفس الرقم يتطابق
+    # سواء جاي من نموذج المستخدم أو من نص رسالة SMS.
+    digits = re.sub(r"\D", "", phone or "")
+    if digits.startswith("0") and len(digits) > 9:
+        digits = digits[1:]
+    return digits
 
 # Server-side allow-list. Mirrors the front-end catalog on purpose: even if someone
 # crafts a raw request straight to this API (skipping the website entirely), only
@@ -916,8 +923,14 @@ def libyana_webhook():
         return jsonify({"ok": False, "error": "unauthorized"}), 401
 
     data = request.get_json(force=True, silent=True) or {}
-    message = str(data.get("message") or data.get("text") or "")
-    sender = str(data.get("sender") or "").strip().lower()
+    # الشكل الحقيقي المؤكد من SMS Gate (event=sms:received): نص الرسالة والمرسل
+    # جوّا data["payload"]["message"] / data["payload"]["sender"]، مو بمستوى
+    # الجذر — نجرب payload الأول ونرجع لمستوى الجذر كاحتياط لو تغيّر الشكل.
+    payload = data.get("payload") or {}
+    message = str(payload.get("message") or payload.get("text") or data.get("message") or data.get("text") or "")
+    sender = str(
+        payload.get("sender") or payload.get("phoneNumber") or data.get("sender") or ""
+    ).strip().lower()
 
     # سجل كل استدعاء يوصل، بصرف النظر عن النتيجة — لو ما ظهر أي سطر [libyana]
     # incoming بالـ Deploy Logs وقت تحويل حقيقي، معناها SMS Gate أصلاً ما نادى
