@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0B0B0E" />
+  <meta name="theme-color" content="#0F0F23" />
 
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
@@ -38,6 +38,22 @@
   <!-- ====== نهاية قسم الـSEO ====== -->
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void: "#0F0F23",
+            surface: "#1E1C35",
+            accent: {
+              DEFAULT: "#F43F5E",
+              soft: "#FB7185"
+            }
+          }
+        }
+      }
+    };
+  </script>
 
   <script type="importmap">
   {
@@ -61,7 +77,7 @@
     }
   </style>
 </head>
-<body style="background:#000;margin:0;">
+<body style="background:#0F0F23;margin:0;">
   <div id="root">
     <!-- محتوى بديل يظهر لثانية قبل تحميل الموقع، ويساعد محركات البحث تقرأ اسم ووصف الموقع حتى قبل تشغيل JavaScript -->
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;color:#c4b5fd;font-family:sans-serif;">
