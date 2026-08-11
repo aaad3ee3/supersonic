@@ -2,18 +2,24 @@
 
 أنت تكمل تطوير متجر رقمي (ألعاب، بطاقات هدايا، شحن رصيد، خدمات رشق/SMM) اسمه **Supersonic**، مبني بالكامل بمحادثة سابقة مع Claude.ai. هذا الملف يلخّص كل قرار وحالة تقنية عشان ما تعيد اكتشافها أو تكسرها بالغلط.
 
-## البنية — Repo وحدين منفصلين عمدًا
+## البنية — صار ريبو واحد (`rashq-backend` القديم اتلغى)
 
-1. **`supersonic`** (GitHub, **Public** — لازم يضل Public عشان GitHub Pages يشتغل مجانًا)
-   - الموقع نفسه، منشور على: `https://aaad3ee3.github.io/supersonic/`
-   - الملفات: `index.html`, `app.js`, `robots.txt`, `sitemap.xml`
-   - **مافيه أي build tool أو npm بجهة النشر.** `app.js` هو ناتج تجميع (compile) لملف React JSX واحد (`supersonic-app.jsx`) عبر esbuild، مصدّر كـ ES module خارجي (external: react, react-dom, lucide-react) ومحمّل بالمتصفح عبر **import map** بـ`index.html` يشاور على esm.sh. Tailwind محمّل من CDN (`cdn.tailwindcss.com`) مو كـ npm package.
-   - **أي تعديل على منطق الموقع، لازم يصير على `supersonic-app.jsx` (المصدر)، وبعدين يتصدّر app.js من جديد بنفس طريقة esbuild** (bundle:true, format:esm, jsx:'transform', external تلك الثلاثة). لا تلمس app.js يدويًا.
-   - React state بس، **ممنوع localStorage/sessionStorage نهائيًا** (قيد كان من بيئة Claude.ai artifacts، بس خليناه مبدأ ثابت بكل الملف). يعني تسجيل الدخول يفقد الجلسة عند تحديث الصفحة — نقطة مفتوحة تقدر تحلها الحين لأنك خارج تلك البيئة.
+**`supersonic`** (GitHub, **Public** — لازم يضل Public عشان GitHub Pages يشتغل مجانًا) فيه الموقع والباك اند مع بعض:
 
-2. **`rashq-backend`** (GitHub, **Private**) → منشور على Railway: `https://rashq-backend-production.up.railway.app`
-   - Flask (Python)، ملف وحيد `app.py`، قاعدة بيانات SQLite (`DB_PATH`).
-   - **ملاحظة:** ما فيه Railway Volume مفعّل بعد — يعني قاعدة البيانات (المستخدمين) تنمسح مع كل إعادة نشر. يحتاج المستخدم يضيف Volume بمسار `/data` ويغيّر `DB_PATH=/data/app.db`.
+- **الموقع** (`docs/` — هذا مجلد GitHub Pages الفعلي، مو الجذر):
+  - `docs/index.html`, `docs/app.js`, `docs/robots.txt`, `docs/sitemap.xml`, `docs/favicon.png`, `docs/apple-touch-icon.png`
+  - منشور على: `https://aaad3ee3.github.io/supersonic/`
+  - **مافيه أي build tool أو npm بجهة النشر.** `docs/app.js` هو ناتج تجميع (compile) لملف React JSX (`supersonic-app.jsx` **بجذر الريبو**، مو داخل `docs/`) عبر esbuild، مصدّر كـ ES module خارجي (external: react, react-dom, lucide-react) ومحمّل بالمتصفح عبر **import map** بـ`docs/index.html` يشاور على esm.sh. Tailwind محمّل من CDN (`cdn.tailwindcss.com`) + تخصيص ألوان عبر `tailwind.config` inline بنفس الملف (شيفت مو npm package). GlassMorphism مطبّق على شاشة الدخول/التسجيل بالتحديد.
+  - **أي تعديل على منطق الموقع، لازم يصير على `supersonic-app.jsx` (المصدر الحقيقي الوحيد)، وبعدين يتصدّر `docs/app.js` من جديد بنفس أمر esbuild**: `esbuild supersonic-app.jsx --bundle --format=esm --jsx=transform --external:react --external:react-dom --external:lucide-react --outfile=docs/app.js`. لا تلمس `docs/app.js` يدويًا. (ملاحظة: النسخة الأصلية اللي بناها Claude.ai ما كانت مسوّية commit لملف `supersonic-app.jsx` أصلًا رغم إنها توثّق هالقاعدة — رجّعناه آليًا من `docs/app.js` بمقارنة حرفية لكل نص/رقم بالملف، صفر فقدان بيانات، وصار الحين مصدر حقيقي متابَع بـ git.)
+  - **الجلسة تضل بعد تحديث الصفحة الحين** (`localStorage`، مفتاح `supersonic_session`) — القيد القديم كان خاص ببيئة Claude.ai artifacts بس، اتلغى.
+  - مثبّت فيه skill اسمه `ui-ux-pro-max` (بمجلد `.claude/skills/`) — قاعدة بيانات أنماط/ألوان/خطوط جاهزة، استخدمناها فعليًا لتحديث لوحة الألوان (`void`/`surface`/`accent`) والـGlassmorphism.
+
+- **الباك اند** (`backend/` بنفس الريبو):
+  - Flask (Python)، ملف وحيد `backend/app.py`، قاعدة بيانات SQLite (`DB_PATH`)، `backend/requirements.txt`, `backend/Procfile`.
+  - منشور على Railway: `https://rashq-backend-production.up.railway.app`
+  - **⚠️ تحقق بنفسك من إعداد Railway:** لازم يكون الـ Root Directory بـ Railway مضبوط على `backend/` وياخذ من فرع `main` بهالريبو نفسه — مو من ريبو `rashq-backend` القديم (المستخدم أكّد إنه لغاه ونقل كل شي هنا). لو Railway لسه مربوط بالريبو القديم، أي تعديل بـ`backend/app.py` هنا **ما بينعكس على الموقع الحي أبدًا**.
+  - **ملاحظة:** ما فيه Railway Volume مفعّل بعد — يعني قاعدة البيانات (المستخدمين) تنمسح مع كل إعادة نشر. يحتاج المستخدم يضيف Volume بمسار `/data` ويغيّر `DB_PATH=/data/app.db`.
+  - **إصلاحات أمان حقيقية صارت (راجع git log):** `X-Forwarded-For` كان يثق بأول قيمة (attacker-controlled) بدل آخر وحدة — يبطّل كل حدود الطلبات بالكامل، `secrets.compare_digest` بدل `==` لمقارنة `X-Site-Token`، `/api/cards/pay` كان يرجّع رد المورد الخام كامل للمتصفح، `X-Frame-Options`/`Strict-Transport-Security` مضافة، انتهاء صلاحية رابط تفعيل البريد (24 ساعة، كان ما ينتهي أبدًا).
 
 ## الحالة الحالية — شغال ومُختبر (Flask test_client + SSR React، مو Live)
 
@@ -63,8 +69,10 @@
 
 ## الناقص الحالي (بترتيب الأولوية الأغلب)
 
-1. رفع Volume بـ Railway لـ SQLite (قبل ما يصير فيه مستخدمين حقيقيين)
-2. تأكيد `/api/cards/pay` ضد طلب شراء حقيقي فعلي وتعديل شكل الطلب لو احتاج
-3. روابط تواصل حقيقية (واتساب/تيليجرام/سوشيال ميديا) — لسه Placeholder
-4. مورد حقيقي لبلود سترايك/لوردس موبايل/الفاتحون + البرامج الصوتية + المحافظ الرقمية
-5. إعادة النظر بتخزين الجلسة (localStorage) بما إنك خارج قيد بيئة Claude.ai artifacts
+1. **تأكيد إعداد Railway** — Root Directory = `backend/` وياخذ من هالريبو (`supersonic`) فرع `main`، مو ريبو `rashq-backend` الملغي. بدون هالتأكيد، إصلاحات الأمان بـ`backend/app.py` موجودة بالكود بس مش شغالة فعليًا على الموقع الحي.
+2. رفع Volume بـ Railway لـ SQLite (قبل ما يصير فيه مستخدمين حقيقيين)
+3. تأكيد `/api/cards/pay` ضد طلب شراء حقيقي فعلي وتعديل شكل الطلب لو احتاج
+4. روابط تواصل حقيقية (واتساب/تيليجرام/سوشيال ميديا) — لسه Placeholder
+5. مورد حقيقي لبلود سترايك/لوردس موبايل/الفاتحون + البرامج الصوتية + المحافظ الرقمية
+
+**خلص:** ✅ تخزين الجلسة (localStorage)، ✅ ثغرة X-Forwarded-For، ✅ روابط REPLACE-USERNAME، ✅ favicon، ✅ إتاحة (aria-labels)، ✅ مصدر JSX حقيقي متابَع بـ git.
