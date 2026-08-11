@@ -20,7 +20,7 @@ app = Flask(__name__)
 # Config — everything here comes from Railway → Variables. Nothing secret is
 # hardcoded. See README.md for what to set and why.
 # ---------------------------------------------------------------------------
-ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://REPLACE-USERNAME.github.io")
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://aaad3ee3.github.io")
 PLUS_API_KEY = os.environ["PLUS_API_KEY"]
 SITE_TOKEN = os.environ.get("SITE_TOKEN")  # optional extra gate, see README
 DAILY_CAP_USD = float(os.environ.get("DAILY_CAP_USD", "20"))  # hard stop on real spend/day
@@ -66,9 +66,16 @@ RATE_LIMIT_MAX_REQUESTS = 20  # per IP, per window, on the order endpoint
 
 
 def client_ip():
+    # Railway sits as a single reverse proxy in front of this app and appends
+    # the real client IP as the LAST hop of X-Forwarded-For. Trusting the
+    # FIRST hop instead (a common mistake) lets any client bypass every
+    # IP-based rate limit below just by sending its own fake header, e.g.
+    # `X-Forwarded-For: 1.2.3.4` on every request.
     fwd = request.headers.get("X-Forwarded-For", "")
     if fwd:
-        return fwd.split(",")[0].strip()
+        parts = [p.strip() for p in fwd.split(",") if p.strip()]
+        if parts:
+            return parts[-1]
     return request.remote_addr or "unknown"
 
 
@@ -119,7 +126,9 @@ def valid_link(link):
 def site_token_ok():
     if not SITE_TOKEN:
         return True  # not configured — see README, recommended but not required
-    return request.headers.get("X-Site-Token") == SITE_TOKEN
+    # secrets.compare_digest instead of == — same constant-time-comparison
+    # principle already used for login()'s password check, applied here too.
+    return secrets.compare_digest(request.headers.get("X-Site-Token", ""), SITE_TOKEN)
 
 
 # ---------------------------------------------------------------------------
@@ -138,7 +147,7 @@ DUMMY_HASH = generate_password_hash(secrets.token_hex(16))
 # account you already have + a Google "App Password" for it, see README). ---
 SMTP_EMAIL = os.environ.get("SMTP_EMAIL")
 SMTP_APP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD")
-SITE_URL = os.environ.get("SITE_URL", "https://REPLACE-USERNAME.github.io/supersonic")
+SITE_URL = os.environ.get("SITE_URL", "https://aaad3ee3.github.io/supersonic")
 
 
 def send_email(to_email, subject, body):
@@ -876,7 +885,10 @@ def card_pay():
         order_ref = raw["data"].get("id") or raw["data"].get("order_id") or raw["data"].get("code")
     print(f"[cards] PAY SUCCESS — ip={ip} product={product_id} order_ref={order_ref} cost=${estimated_cost}")
 
-    return jsonify({"success": True, "order_ref": order_ref, "raw": raw})
+    # The full provider response is logged above for debugging, but never sent
+    # to the client — it can carry internal identifiers or pricing detail the
+    # frontend has no business seeing (and would expose our markup margin).
+    return jsonify({"success": True, "order_ref": order_ref})
 
 
 if __name__ == "__main__":
