@@ -1,364 +1,594 @@
-// supersonic-app.entry.jsx
+// supersonic-app.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  Home,
-  Ticket,
-  Headphones,
-  User,
-  Search,
-  Bell,
-  Gamepad2,
-  Gift,
-  Radio,
-  Wallet,
-  ChevronLeft,
-  X,
-  Copy,
-  ArrowLeftRight,
-  Link2,
-  Key,
-  HelpCircle,
-  LogOut,
-  Heart,
-  MessageCircle,
-  Send,
-  Instagram,
-  Facebook,
-  Youtube,
-  Music2,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  Check,
-  Loader2,
-  PackageSearch,
-  Smartphone,
-  Download,
-  Zap,
-  ShieldCheck,
-  Target,
-  Flame,
-  Swords,
-  Crown,
-  Shield,
-  Dice5,
-  Disc,
-  Gem,
-  Box,
-  Clapperboard,
-  Music4,
-  Monitor,
-  CreditCard
-} from "lucide-react";
-var BANNERS = [
-  { title: "\u0627\u0634\u062D\u0646 \u062C\u0645\u064A\u0639 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0644\u0627\u064A\u0641 \u0627\u0644\u0622\u0646", sub: "\u0623\u0633\u0631\u0639 \u0648\u0642\u062A \u0648\u0623\u0641\u0636\u0644 \u0633\u0639\u0631 \u0639\u0628\u0631 Supersonic", icon: Radio },
-  { title: "\u0628\u0637\u0627\u0642\u0627\u062A \u0647\u062F\u0627\u064A\u0627 \u0639\u0627\u0644\u0645\u064A\u0629", sub: "\u0628\u0644\u0627\u064A\u0633\u062A\u064A\u0634\u0646\u060C \u0646\u062A\u0641\u0644\u064A\u0643\u0633\u060C \u0633\u062A\u064A\u0645 \u0648\u0623\u0643\u062B\u0631", icon: Gift },
-  { title: "\u0645\u062D\u0627\u0641\u0638 \u0631\u0642\u0645\u064A\u0629 \u0628\u0644\u0645\u0633\u0629 \u0648\u062D\u062F\u0629", sub: "\u0632\u064A\u0646 \u0643\u0627\u0634\u060C \u0634\u0627\u0645 \u0643\u0627\u0634\u060C \u0628\u0627\u064A\u0633\u0644", icon: Wallet }
-];
-var FILTERS = [
-  { id: "all", label: "\u0627\u0644\u0643\u0644" },
-  { id: "games", label: "\u0627\u0644\u0623\u0644\u0639\u0627\u0628" },
-  { id: "media", label: "\u0645\u064A\u062F\u064A\u0627" },
-  { id: "gifts", label: "\u0647\u062F\u0627\u064A\u0627" },
-  { id: "wallets", label: "\u0628\u0631\u0627\u0645\u062C" }
-];
-var GAMES = [
-  { name: "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644", tag: "2 \u0641\u0626\u0629", Icon: Target, from: "from-amber-700", to: "to-amber-950", ic: "text-amber-300" },
-  { name: "\u0641\u0631\u064A \u0641\u0627\u064A\u0631", tag: "2 \u0641\u0626\u0629", Icon: Flame, from: "from-orange-600", to: "to-orange-950", ic: "text-orange-300" },
-  { name: "\u0628\u0644\u0648\u062F \u0633\u062A\u0631\u0627\u064A\u0643", tag: "2 \u0641\u0626\u0629", Icon: Swords, from: "from-red-700", to: "to-red-950", ic: "text-red-300" },
-  { name: "\u0644\u0648\u0631\u062F\u0633 \u0645\u0648\u0628\u0627\u064A\u0644", tag: "3 \u0645\u0646\u062A\u062C", Icon: Crown, from: "from-yellow-600", to: "to-yellow-950", ic: "text-yellow-200" },
-  { name: "\u0627\u0644\u0641\u0627\u062A\u062D\u0648\u0646 \u0627\u0644\u0630\u0647\u0628\u064A", tag: "5 \u0645\u0646\u062A\u062C", Icon: Shield, from: "from-amber-500", to: "to-amber-900", ic: "text-amber-100" },
-  { name: "\u064A\u0644\u0627 \u0644\u0648\u062F\u0648", tag: "1 \u0645\u0646\u062A\u062C", Icon: Dice5, from: "from-emerald-600", to: "to-emerald-950", ic: "text-emerald-300" }
-];
-var GIFTS = [
-  { name: "\u0628\u0644\u0627\u064A\u0633\u062A\u064A\u0634\u0646", tag: "13 \u0641\u0626\u0629", Icon: Disc, from: "from-blue-700", to: "to-blue-950", ic: "text-blue-300" },
-  { name: "\u0631\u064A\u0632\u0631 \u062C\u0648\u0644\u062F", tag: "3 \u0641\u0626\u0629", Icon: Gem, from: "from-green-600", to: "to-green-950", ic: "text-green-300" },
-  { name: "\u0625\u0643\u0633 \u0628\u0648\u0643\u0633", tag: "6 \u0641\u0626\u0629", Icon: Box, from: "from-emerald-700", to: "to-emerald-950", ic: "text-emerald-200" },
-  { name: "\u0646\u062A\u0641\u0644\u064A\u0643\u0633", tag: "3 \u0641\u0626\u0629", Icon: Clapperboard, from: "from-red-700", to: "to-red-950", ic: "text-red-300" },
-  { name: "\u0622\u064A\u062A\u0648\u0646\u0632", tag: "6 \u0641\u0626\u0629", Icon: Music4, from: "from-pink-600", to: "to-pink-950", ic: "text-pink-200" },
-  { name: "\u0633\u062A\u064A\u0645", tag: "4 \u0641\u0626\u0629", Icon: Monitor, from: "from-slate-600", to: "to-slate-950", ic: "text-slate-300" }
-];
-var MEDIA_COLORS = [
-  { from: "from-cyan-700", to: "to-cyan-950", ic: "text-cyan-300" },
-  { from: "from-fuchsia-700", to: "to-fuchsia-950", ic: "text-fuchsia-300" },
-  { from: "from-rose-700", to: "to-rose-950", ic: "text-rose-300" },
-  { from: "from-indigo-700", to: "to-indigo-950", ic: "text-indigo-300" }
-];
-var MEDIA = [
-  { name: "\u0623\u0648\u0644\u0648 \u0644\u0627\u064A\u0641", tag: "1 \u0645\u0646\u062A\u062C" },
-  { name: "\u0623\u0648\u0644\u0627\u0645\u064A\u062A", tag: "1 \u0645\u0646\u062A\u062C" },
-  { name: "\u0623\u0648\u0647\u0644\u0627 \u0634\u0627\u062A", tag: "1 \u0645\u0646\u062A\u062C" },
-  { name: "\u0628\u064A\u062C\u0648 \u0644\u0627\u064A\u0641", tag: "1 \u0645\u0646\u062A\u062C" },
-  { name: "\u064A\u0644\u0627 \u0644\u0627\u064A\u0641", tag: "3 \u0645\u0646\u062A\u062C" },
-  { name: "\u0647\u0648\u0628\u064A", tag: "1 \u0645\u0646\u062A\u062C" }
-].map((m, i) => ({ ...m, Icon: Radio, ...MEDIA_COLORS[i % MEDIA_COLORS.length] }));
-var WALLETS = [
-  { name: "\u0632\u064A\u0646 \u0643\u0627\u0634", tag: "Zain Cash", Icon: Wallet, from: "from-purple-700", to: "to-purple-950", ic: "text-purple-300" },
-  { name: "\u0628\u0627\u064A\u0633\u0644", tag: "Paycell", Icon: CreditCard, from: "from-sky-700", to: "to-sky-950", ic: "text-sky-300" },
-  { name: "\u0634\u0627\u0645 \u0643\u0627\u0634", tag: "Sham Cash", Icon: Wallet, from: "from-teal-700", to: "to-teal-950", ic: "text-teal-300" },
-  { name: "\u0648\u064A\u0634 \u0645\u0648\u0646\u064A", tag: "Wish Money", Icon: CreditCard, from: "from-pink-700", to: "to-pink-950", ic: "text-pink-300" }
-];
+import { Home, Ticket, Headphones, User, Search, Bell, Gamepad2, Gift, Radio, Wallet, ChevronLeft, X, Copy, ArrowLeftRight, Link2, Key, HelpCircle, LogOut, Heart, MessageCircle, Send, Instagram, Facebook, Youtube, Music2, Mail, Lock, Eye, EyeOff, Check, Loader2, PackageSearch, Smartphone, Download, Zap, ShieldCheck, Target, Flame, Swords, Crown, Shield, Dice5, Disc, Gem, Box, Clapperboard, Music4, Monitor, CreditCard } from "lucide-react";
+var BANNERS = [{
+  title: "\u0627\u0634\u062D\u0646 \u062C\u0645\u064A\u0639 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0644\u0627\u064A\u0641 \u0627\u0644\u0622\u0646",
+  sub: "\u0623\u0633\u0631\u0639 \u0648\u0642\u062A \u0648\u0623\u0641\u0636\u0644 \u0633\u0639\u0631 \u0639\u0628\u0631 Supersonic",
+  icon: Radio
+}, {
+  title: "\u0628\u0637\u0627\u0642\u0627\u062A \u0647\u062F\u0627\u064A\u0627 \u0639\u0627\u0644\u0645\u064A\u0629",
+  sub: "\u0628\u0644\u0627\u064A\u0633\u062A\u064A\u0634\u0646\u060C \u0646\u062A\u0641\u0644\u064A\u0643\u0633\u060C \u0633\u062A\u064A\u0645 \u0648\u0623\u0643\u062B\u0631",
+  icon: Gift
+}, {
+  title: "\u0645\u062D\u0627\u0641\u0638 \u0631\u0642\u0645\u064A\u0629 \u0628\u0644\u0645\u0633\u0629 \u0648\u062D\u062F\u0629",
+  sub: "\u0632\u064A\u0646 \u0643\u0627\u0634\u060C \u0634\u0627\u0645 \u0643\u0627\u0634\u060C \u0628\u0627\u064A\u0633\u0644",
+  icon: Wallet
+}];
+var FILTERS = [{
+  id: "all",
+  label: "\u0627\u0644\u0643\u0644"
+}, {
+  id: "games",
+  label: "\u0627\u0644\u0623\u0644\u0639\u0627\u0628"
+}, {
+  id: "media",
+  label: "\u0645\u064A\u062F\u064A\u0627"
+}, {
+  id: "gifts",
+  label: "\u0647\u062F\u0627\u064A\u0627"
+}, {
+  id: "wallets",
+  label: "\u0628\u0631\u0627\u0645\u062C"
+}];
+var GAMES = [{
+  name: "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644",
+  tag: "2 \u0641\u0626\u0629",
+  Icon: Target,
+  from: "from-amber-700",
+  to: "to-amber-950",
+  ic: "text-amber-300"
+}, {
+  name: "\u0641\u0631\u064A \u0641\u0627\u064A\u0631",
+  tag: "2 \u0641\u0626\u0629",
+  Icon: Flame,
+  from: "from-orange-600",
+  to: "to-orange-950",
+  ic: "text-orange-300"
+}, {
+  name: "\u0628\u0644\u0648\u062F \u0633\u062A\u0631\u0627\u064A\u0643",
+  tag: "2 \u0641\u0626\u0629",
+  Icon: Swords,
+  from: "from-red-700",
+  to: "to-red-950",
+  ic: "text-red-300"
+}, {
+  name: "\u0644\u0648\u0631\u062F\u0633 \u0645\u0648\u0628\u0627\u064A\u0644",
+  tag: "3 \u0645\u0646\u062A\u062C",
+  Icon: Crown,
+  from: "from-yellow-600",
+  to: "to-yellow-950",
+  ic: "text-yellow-200"
+}, {
+  name: "\u0627\u0644\u0641\u0627\u062A\u062D\u0648\u0646 \u0627\u0644\u0630\u0647\u0628\u064A",
+  tag: "5 \u0645\u0646\u062A\u062C",
+  Icon: Shield,
+  from: "from-amber-500",
+  to: "to-amber-900",
+  ic: "text-amber-100"
+}, {
+  name: "\u064A\u0644\u0627 \u0644\u0648\u062F\u0648",
+  tag: "1 \u0645\u0646\u062A\u062C",
+  Icon: Dice5,
+  from: "from-emerald-600",
+  to: "to-emerald-950",
+  ic: "text-emerald-300"
+}];
+var GIFTS = [{
+  name: "\u0628\u0644\u0627\u064A\u0633\u062A\u064A\u0634\u0646",
+  tag: "13 \u0641\u0626\u0629",
+  Icon: Disc,
+  from: "from-blue-700",
+  to: "to-blue-950",
+  ic: "text-blue-300"
+}, {
+  name: "\u0631\u064A\u0632\u0631 \u062C\u0648\u0644\u062F",
+  tag: "3 \u0641\u0626\u0629",
+  Icon: Gem,
+  from: "from-green-600",
+  to: "to-green-950",
+  ic: "text-green-300"
+}, {
+  name: "\u0625\u0643\u0633 \u0628\u0648\u0643\u0633",
+  tag: "6 \u0641\u0626\u0629",
+  Icon: Box,
+  from: "from-emerald-700",
+  to: "to-emerald-950",
+  ic: "text-emerald-200"
+}, {
+  name: "\u0646\u062A\u0641\u0644\u064A\u0643\u0633",
+  tag: "3 \u0641\u0626\u0629",
+  Icon: Clapperboard,
+  from: "from-red-700",
+  to: "to-red-950",
+  ic: "text-red-300"
+}, {
+  name: "\u0622\u064A\u062A\u0648\u0646\u0632",
+  tag: "6 \u0641\u0626\u0629",
+  Icon: Music4,
+  from: "from-pink-600",
+  to: "to-pink-950",
+  ic: "text-pink-200"
+}, {
+  name: "\u0633\u062A\u064A\u0645",
+  tag: "4 \u0641\u0626\u0629",
+  Icon: Monitor,
+  from: "from-slate-600",
+  to: "to-slate-950",
+  ic: "text-slate-300"
+}];
+var MEDIA_COLORS = [{
+  from: "from-cyan-700",
+  to: "to-cyan-950",
+  ic: "text-cyan-300"
+}, {
+  from: "from-fuchsia-700",
+  to: "to-fuchsia-950",
+  ic: "text-fuchsia-300"
+}, {
+  from: "from-rose-700",
+  to: "to-rose-950",
+  ic: "text-rose-300"
+}, {
+  from: "from-indigo-700",
+  to: "to-indigo-950",
+  ic: "text-indigo-300"
+}];
+var MEDIA = [{
+  name: "\u0623\u0648\u0644\u0648 \u0644\u0627\u064A\u0641",
+  tag: "1 \u0645\u0646\u062A\u062C"
+}, {
+  name: "\u0623\u0648\u0644\u0627\u0645\u064A\u062A",
+  tag: "1 \u0645\u0646\u062A\u062C"
+}, {
+  name: "\u0623\u0648\u0647\u0644\u0627 \u0634\u0627\u062A",
+  tag: "1 \u0645\u0646\u062A\u062C"
+}, {
+  name: "\u0628\u064A\u062C\u0648 \u0644\u0627\u064A\u0641",
+  tag: "1 \u0645\u0646\u062A\u062C"
+}, {
+  name: "\u064A\u0644\u0627 \u0644\u0627\u064A\u0641",
+  tag: "3 \u0645\u0646\u062A\u062C"
+}, {
+  name: "\u0647\u0648\u0628\u064A",
+  tag: "1 \u0645\u0646\u062A\u062C"
+}].map((m, i) => ({
+  ...m,
+  Icon: Radio,
+  ...MEDIA_COLORS[i % MEDIA_COLORS.length]
+}));
+var WALLETS = [{
+  name: "\u0632\u064A\u0646 \u0643\u0627\u0634",
+  tag: "Zain Cash",
+  Icon: Wallet,
+  from: "from-purple-700",
+  to: "to-purple-950",
+  ic: "text-purple-300"
+}, {
+  name: "\u0628\u0627\u064A\u0633\u0644",
+  tag: "Paycell",
+  Icon: CreditCard,
+  from: "from-sky-700",
+  to: "to-sky-950",
+  ic: "text-sky-300"
+}, {
+  name: "\u0634\u0627\u0645 \u0643\u0627\u0634",
+  tag: "Sham Cash",
+  Icon: Wallet,
+  from: "from-teal-700",
+  to: "to-teal-950",
+  ic: "text-teal-300"
+}, {
+  name: "\u0648\u064A\u0634 \u0645\u0648\u0646\u064A",
+  tag: "Wish Money",
+  Icon: CreditCard,
+  from: "from-pink-700",
+  to: "to-pink-950",
+  ic: "text-pink-300"
+}];
 var RASHQ_API_BASE = "https://rashq-backend-production.up.railway.app";
 var RASHQ_SITE_TOKEN = "5d4e7a6a5a4986a1bfed3b38c9bf2e74f81315a2f6794694";
 var MARKUP = 1.25;
+var SESSION_STORAGE_KEY = "supersonic_session";
+function loadStoredSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.token ? parsed : null;
+  } catch (e) {
+    return null;
+  }
+}
+function saveStoredSession(user, token) {
+  try {
+    localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ user, token }));
+  } catch (e) {
+  }
+}
+function clearStoredSession() {
+  try {
+    localStorage.removeItem(SESSION_STORAGE_KEY);
+  } catch (e) {
+  }
+}
 function priced(base) {
   return base * MARKUP;
 }
 function fmt(n) {
   return n >= 1 ? n.toFixed(2) : n.toFixed(4);
 }
-var RASHQ_PLATFORMS = [
-  {
-    key: "instagram",
-    label: "\u0627\u0646\u0633\u062A\u0642\u0631\u0627\u0645",
-    Icon: Instagram,
-    services: [
-      { id: 401, name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u062D\u0642\u064A\u0642\u064A \u0633\u0631\u0639\u0629 \u2014 \u0628\u062F\u0648\u0646 \u0636\u0645\u0627\u0646", min: 100, max: 1e6, base: 0.532 },
-      { id: 402, name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u062D\u0642\u064A\u0642\u064A \u0633\u0631\u0639\u0629 \u2014 \u0636\u0645\u0627\u0646 30 \u064A\u0648\u0645", min: 100, max: 1e6, base: 0.644 },
-      { id: 283, name: "\u0644\u0627\u064A\u0643\u0627\u062A \u0641\u0648\u0631\u064A\u0629 \u2014 \u0645\u062F\u0649 \u0627\u0644\u062D\u064A\u0627\u0629", min: 10, max: 1e6, base: 0.04004 }
-    ]
-  },
-  {
-    key: "tiktok",
-    label: "\u062A\u064A\u0643 \u062A\u0648\u0643",
-    Icon: Music2,
-    services: [
-      { id: 139, name: "\u0645\u0634\u0627\u0647\u062F\u0627\u062A \u0633\u0631\u064A\u0639\u0629 \u2014 \u062B\u0627\u0628\u062A 30 \u064A\u0648\u0645", min: 100, max: 217545811, base: 0.018 },
-      { id: 130, name: "\u0644\u0627\u064A\u0643\u0627\u062A \u2014 \u062B\u0627\u0628\u062A 30 \u064A\u0648\u0645", min: 50, max: 5e6, base: 0.085 },
-      { id: 132, name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u0641\u0648\u0631\u064A \u2014 \u0628\u062F\u0648\u0646 \u062A\u0639\u0648\u064A\u0636", min: 10, max: 1e6, base: 1.976510067114094 }
-    ]
-  },
-  {
-    key: "facebook",
-    label: "\u0641\u064A\u0633\u0628\u0648\u0643",
-    Icon: Facebook,
-    services: [
-      { id: 363, name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u062C\u0648\u062F\u0629 \u0639\u0627\u0644\u064A\u0629 \u2014 \u0628\u062F\u0648\u0646 \u0636\u0645\u0627\u0646", min: 10, max: 1e4, base: 0.296325 },
-      { id: 397, name: "\u0625\u0639\u062C\u0627\u0628\u0627\u062A \u2014 \u062B\u0627\u0628\u062A 30 \u064A\u0648\u0645 \u0648\u0633\u0631\u064A\u0639", min: 10, max: 1e6, base: 0.40932 }
-    ]
-  },
-  {
-    key: "telegram",
-    label: "\u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645",
-    Icon: Send,
-    services: [
-      { id: 287, name: "\u0623\u0639\u0636\u0627\u0621 \u0642\u0646\u0627\u0629 \u2014 \u0636\u0645\u0627\u0646 7 \u0623\u064A\u0627\u0645", min: 1, max: 1e6, base: 0.155115 },
-      { id: 460, name: "\u0646\u062C\u0648\u0645 Stars \u0644\u062A\u0641\u0627\u0639\u0644 \u0645\u0646\u0634\u0648\u0631", min: 1, max: 1e4, base: 26.286 }
-    ]
-  },
-  {
-    key: "youtube",
-    label: "\u064A\u0648\u062A\u064A\u0648\u0628",
-    Icon: Youtube,
-    services: [
-      { id: 269, name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u2014 \u0633\u0631\u064A\u0639", min: 200, max: 1e5, base: 0.3 },
-      { id: 270, name: "\u0644\u0627\u064A\u0643\u0627\u062A \u2014 \u0636\u0645\u0627\u0646 30 \u064A\u0648\u0645", min: 10, max: 2e4, base: 0.48 }
-    ]
-  },
-  {
-    key: "whatsapp",
-    label: "\u0648\u0627\u062A\u0633\u0627\u0628",
-    Icon: MessageCircle,
-    services: [
-      { id: 140, name: "\u0623\u0639\u0636\u0627\u0621 \u0642\u0646\u0627\u0629 \u062D\u0642\u064A\u0642\u064A\u0648\u0646", min: 10, max: 1e4, base: 2.5 },
-      { id: 414, name: "\u062A\u0641\u0627\u0639\u0644 \u0645\u0646\u0634\u0648\u0631 \u{1F44F}", min: 10, max: 1e5, base: 1.10214 }
-    ]
-  }
-];
-var SECTIONS = [
-  { key: "games", title: "\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u0623\u0644\u0639\u0627\u0628", Icon: Gamepad2, items: GAMES },
-  { key: "media", title: "\u0628\u0631\u0627\u0645\u062C \u0627\u0644\u0644\u0627\u064A\u0641 \u0648\u0627\u0644\u0634\u0627\u062A", Icon: Radio, items: MEDIA },
-  { key: "gifts", title: "\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u0647\u062F\u0627\u064A\u0627", Icon: Gift, items: GIFTS },
-  { key: "wallets", title: "\u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0627\u0644\u0631\u0642\u0645\u064A\u0629", Icon: Wallet, items: WALLETS }
-];
+var RASHQ_PLATFORMS = [{
+  key: "instagram",
+  label: "\u0627\u0646\u0633\u062A\u0642\u0631\u0627\u0645",
+  Icon: Instagram,
+  services: [{
+    id: 401,
+    name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u062D\u0642\u064A\u0642\u064A \u0633\u0631\u0639\u0629 \u2014 \u0628\u062F\u0648\u0646 \u0636\u0645\u0627\u0646",
+    min: 100,
+    max: 1e6,
+    base: 0.532
+  }, {
+    id: 402,
+    name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u062D\u0642\u064A\u0642\u064A \u0633\u0631\u0639\u0629 \u2014 \u0636\u0645\u0627\u0646 30 \u064A\u0648\u0645",
+    min: 100,
+    max: 1e6,
+    base: 0.644
+  }, {
+    id: 283,
+    name: "\u0644\u0627\u064A\u0643\u0627\u062A \u0641\u0648\u0631\u064A\u0629 \u2014 \u0645\u062F\u0649 \u0627\u0644\u062D\u064A\u0627\u0629",
+    min: 10,
+    max: 1e6,
+    base: 0.04004
+  }]
+}, {
+  key: "tiktok",
+  label: "\u062A\u064A\u0643 \u062A\u0648\u0643",
+  Icon: Music2,
+  services: [{
+    id: 139,
+    name: "\u0645\u0634\u0627\u0647\u062F\u0627\u062A \u0633\u0631\u064A\u0639\u0629 \u2014 \u062B\u0627\u0628\u062A 30 \u064A\u0648\u0645",
+    min: 100,
+    max: 217545811,
+    base: 0.018
+  }, {
+    id: 130,
+    name: "\u0644\u0627\u064A\u0643\u0627\u062A \u2014 \u062B\u0627\u0628\u062A 30 \u064A\u0648\u0645",
+    min: 50,
+    max: 5e6,
+    base: 0.085
+  }, {
+    id: 132,
+    name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u0641\u0648\u0631\u064A \u2014 \u0628\u062F\u0648\u0646 \u062A\u0639\u0648\u064A\u0636",
+    min: 10,
+    max: 1e6,
+    base: 1.976510067114094
+  }]
+}, {
+  key: "facebook",
+  label: "\u0641\u064A\u0633\u0628\u0648\u0643",
+  Icon: Facebook,
+  services: [{
+    id: 363,
+    name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u062C\u0648\u062F\u0629 \u0639\u0627\u0644\u064A\u0629 \u2014 \u0628\u062F\u0648\u0646 \u0636\u0645\u0627\u0646",
+    min: 10,
+    max: 1e4,
+    base: 0.296325
+  }, {
+    id: 397,
+    name: "\u0625\u0639\u062C\u0627\u0628\u0627\u062A \u2014 \u062B\u0627\u0628\u062A 30 \u064A\u0648\u0645 \u0648\u0633\u0631\u064A\u0639",
+    min: 10,
+    max: 1e6,
+    base: 0.40932
+  }]
+}, {
+  key: "telegram",
+  label: "\u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645",
+  Icon: Send,
+  services: [{
+    id: 287,
+    name: "\u0623\u0639\u0636\u0627\u0621 \u0642\u0646\u0627\u0629 \u2014 \u0636\u0645\u0627\u0646 7 \u0623\u064A\u0627\u0645",
+    min: 1,
+    max: 1e6,
+    base: 0.155115
+  }, {
+    id: 460,
+    name: "\u0646\u062C\u0648\u0645 Stars \u0644\u062A\u0641\u0627\u0639\u0644 \u0645\u0646\u0634\u0648\u0631",
+    min: 1,
+    max: 1e4,
+    base: 26.286
+  }]
+}, {
+  key: "youtube",
+  label: "\u064A\u0648\u062A\u064A\u0648\u0628",
+  Icon: Youtube,
+  services: [{
+    id: 269,
+    name: "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u2014 \u0633\u0631\u064A\u0639",
+    min: 200,
+    max: 1e5,
+    base: 0.3
+  }, {
+    id: 270,
+    name: "\u0644\u0627\u064A\u0643\u0627\u062A \u2014 \u0636\u0645\u0627\u0646 30 \u064A\u0648\u0645",
+    min: 10,
+    max: 2e4,
+    base: 0.48
+  }]
+}, {
+  key: "whatsapp",
+  label: "\u0648\u0627\u062A\u0633\u0627\u0628",
+  Icon: MessageCircle,
+  services: [{
+    id: 140,
+    name: "\u0623\u0639\u0636\u0627\u0621 \u0642\u0646\u0627\u0629 \u062D\u0642\u064A\u0642\u064A\u0648\u0646",
+    min: 10,
+    max: 1e4,
+    base: 2.5
+  }, {
+    id: 414,
+    name: "\u062A\u0641\u0627\u0639\u0644 \u0645\u0646\u0634\u0648\u0631 \u{1F44F}",
+    min: 10,
+    max: 1e5,
+    base: 1.10214
+  }]
+}];
+var SECTIONS = [{
+  key: "games",
+  title: "\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u0623\u0644\u0639\u0627\u0628",
+  Icon: Gamepad2,
+  items: GAMES
+}, {
+  key: "media",
+  title: "\u0628\u0631\u0627\u0645\u062C \u0627\u0644\u0644\u0627\u064A\u0641 \u0648\u0627\u0644\u0634\u0627\u062A",
+  Icon: Radio,
+  items: MEDIA
+}, {
+  key: "gifts",
+  title: "\u0628\u0637\u0627\u0642\u0627\u062A \u0627\u0644\u0647\u062F\u0627\u064A\u0627",
+  Icon: Gift,
+  items: GIFTS
+}, {
+  key: "wallets",
+  title: "\u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0627\u0644\u0631\u0642\u0645\u064A\u0629",
+  Icon: Wallet,
+  items: WALLETS
+}];
 var PRODUCT_PACKAGES = {
   "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644": {
     idLabel: "\u0622\u064A\u062F\u064A \u0627\u0644\u0644\u0627\u0639\u0628 (Player ID)",
-    packages: [
-      { label: "60 UC", base: 0.99 },
-      { label: "325 UC", base: 4.99 },
-      { label: "660 UC", base: 9.99 },
-      { label: "1800 UC", base: 24.99 },
-      { label: "3850 UC", base: 49.99 },
-      { label: "8100 UC", base: 99.99 }
-    ]
+    packages: [{
+      label: "60 UC",
+      base: 0.99
+    }, {
+      label: "325 UC",
+      base: 4.99
+    }, {
+      label: "660 UC",
+      base: 9.99
+    }, {
+      label: "1800 UC",
+      base: 24.99
+    }, {
+      label: "3850 UC",
+      base: 49.99
+    }, {
+      label: "8100 UC",
+      base: 99.99
+    }]
   },
   "\u0641\u0631\u064A \u0641\u0627\u064A\u0631": {
     idLabel: "\u0622\u064A\u062F\u064A \u0627\u0644\u0644\u0627\u0639\u0628 (Player ID)",
-    packages: [
-      { label: "100 \u062C\u0648\u0647\u0631\u0629", base: 0.99 },
-      { label: "310 \u062C\u0648\u0647\u0631\u0629", base: 2.99 },
-      { label: "520 \u062C\u0648\u0647\u0631\u0629", base: 4.99 },
-      { label: "1060 \u062C\u0648\u0647\u0631\u0629", base: 9.99 },
-      { label: "2180 \u062C\u0648\u0647\u0631\u0629", base: 19.99 }
-    ]
+    packages: [{
+      label: "100 \u062C\u0648\u0647\u0631\u0629",
+      base: 0.99
+    }, {
+      label: "310 \u062C\u0648\u0647\u0631\u0629",
+      base: 2.99
+    }, {
+      label: "520 \u062C\u0648\u0647\u0631\u0629",
+      base: 4.99
+    }, {
+      label: "1060 \u062C\u0648\u0647\u0631\u0629",
+      base: 9.99
+    }, {
+      label: "2180 \u062C\u0648\u0647\u0631\u0629",
+      base: 19.99
+    }]
   },
   "\u0646\u062A\u0641\u0644\u064A\u0643\u0633": {
     idLabel: null,
-    packages: [
-      { label: "\u0628\u0637\u0627\u0642\u0629 $10", base: 10.5 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $25", base: 25.8 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $50", base: 51 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $100", base: 101.5 }
-    ]
+    packages: [{
+      label: "\u0628\u0637\u0627\u0642\u0629 $10",
+      base: 10.5
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $25",
+      base: 25.8
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $50",
+      base: 51
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $100",
+      base: 101.5
+    }]
   },
   "\u0628\u0644\u0627\u064A\u0633\u062A\u064A\u0634\u0646": {
     idLabel: null,
-    packages: [
-      { label: "\u0628\u0637\u0627\u0642\u0629 $10", base: 10.5 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $25", base: 25.8 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $50", base: 51 }
-    ]
+    packages: [{
+      label: "\u0628\u0637\u0627\u0642\u0629 $10",
+      base: 10.5
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $25",
+      base: 25.8
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $50",
+      base: 51
+    }]
   },
   "\u0633\u062A\u064A\u0645": {
     idLabel: null,
-    packages: [
-      { label: "\u0628\u0637\u0627\u0642\u0629 $20", base: 20.6 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $50", base: 51 },
-      { label: "\u0628\u0637\u0627\u0642\u0629 $100", base: 101.5 }
-    ]
+    packages: [{
+      label: "\u0628\u0637\u0627\u0642\u0629 $20",
+      base: 20.6
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $50",
+      base: 51
+    }, {
+      label: "\u0628\u0637\u0627\u0642\u0629 $100",
+      base: 101.5
+    }]
   }
 };
 var LIVE_APP_PACKAGES = {
   idLabel: "\u0622\u064A\u062F\u064A \u0627\u0644\u062D\u0633\u0627\u0628 (User ID)",
-  packages: [
-    { label: "100 \u0643\u0648\u064A\u0646", base: 1.5 },
-    { label: "500 \u0643\u0648\u064A\u0646", base: 7 },
-    { label: "1000 \u0643\u0648\u064A\u0646", base: 13.5 },
-    { label: "5000 \u0643\u0648\u064A\u0646", base: 65 }
-  ]
+  packages: [{
+    label: "100 \u0643\u0648\u064A\u0646",
+    base: 1.5
+  }, {
+    label: "500 \u0643\u0648\u064A\u0646",
+    base: 7
+  }, {
+    label: "1000 \u0643\u0648\u064A\u0646",
+    base: 13.5
+  }, {
+    label: "5000 \u0643\u0648\u064A\u0646",
+    base: 65
+  }]
 };
 MEDIA.forEach((m) => {
   PRODUCT_PACKAGES[m.name] = LIVE_APP_PACKAGES;
 });
 var WALLET_PACKAGES = {
   idLabel: "\u0631\u0642\u0645 \u0627\u0644\u0645\u062D\u0641\u0638\u0629 \u0623\u0648 \u0627\u0644\u0647\u0627\u062A\u0641",
-  packages: [
-    { label: "$10", base: 10.3 },
-    { label: "$25", base: 25.6 },
-    { label: "$50", base: 51 },
-    { label: "$100", base: 101.5 }
-  ]
+  packages: [{
+    label: "$10",
+    base: 10.3
+  }, {
+    label: "$25",
+    base: 25.6
+  }, {
+    label: "$50",
+    base: 51
+  }, {
+    label: "$100",
+    base: 101.5
+  }]
 };
 WALLETS.forEach((w) => {
   PRODUCT_PACKAGES[w.name] = WALLET_PACKAGES;
 });
-var CURRENCIES = [
-  { id: "LYD", balance: "150.500", spent: "42.000" },
-  { id: "USD", balance: "32.75", spent: "8.10" },
-  { id: "BANK", balance: "0.00", spent: "0.00" }
-];
-var NAV_ITEMS = [
-  { id: "home", label: "\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629", Icon: Home },
-  { id: "purchases", label: "\u0645\u0634\u062A\u0631\u064A\u0627\u062A\u064A", Icon: Ticket },
-  { id: "rashq", label: "\u0631\u0634\u0642", Icon: Zap },
-  { id: "support", label: "\u0627\u0644\u062F\u0639\u0645", Icon: Headphones },
-  { id: "account", label: "\u062D\u0633\u0627\u0628\u064A", Icon: User }
-];
+var CURRENCIES = [{
+  id: "LYD",
+  balance: "150.500",
+  spent: "42.000"
+}, {
+  id: "USD",
+  balance: "32.75",
+  spent: "8.10"
+}, {
+  id: "BANK",
+  balance: "0.00",
+  spent: "0.00"
+}];
+var NAV_ITEMS = [{
+  id: "home",
+  label: "\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629",
+  Icon: Home
+}, {
+  id: "purchases",
+  label: "\u0645\u0634\u062A\u0631\u064A\u0627\u062A\u064A",
+  Icon: Ticket
+}, {
+  id: "rashq",
+  label: "\u0631\u0634\u0642",
+  Icon: Zap
+}, {
+  id: "support",
+  label: "\u0627\u0644\u062F\u0639\u0645",
+  Icon: Headphones
+}, {
+  id: "account",
+  label: "\u062D\u0633\u0627\u0628\u064A",
+  Icon: User
+}];
 function SpeedStreaks() {
   return /* @__PURE__ */ React.createElement("div", { className: "pointer-events-none absolute inset-0 overflow-hidden" }, /* @__PURE__ */ React.createElement("div", { className: "absolute -right-8 top-3 w-52 h-2.5 bg-gradient-to-l from-purple-300 to-transparent rotate-12 blur-sm opacity-70" }), /* @__PURE__ */ React.createElement("div", { className: "absolute -right-2 top-11 w-36 h-1.5 bg-gradient-to-l from-purple-200 to-transparent rotate-12 blur-sm opacity-50" }), /* @__PURE__ */ React.createElement("div", { className: "absolute -right-14 top-20 w-60 h-3 bg-gradient-to-l from-purple-600 to-transparent rotate-12 blur-md opacity-40" }));
 }
 function GlowOrbs() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "pointer-events-none absolute -top-20 -left-20 w-64 h-64 bg-purple-900 rounded-full blur-3xl opacity-30" }), /* @__PURE__ */ React.createElement("div", { className: "pointer-events-none absolute bottom-0 -right-16 w-56 h-56 bg-purple-800 rounded-full blur-3xl opacity-20" }));
 }
-function CategoryTile({ item, onOpen, liveImage }) {
+function CategoryTile({
+  item,
+  onOpen,
+  liveImage
+}) {
   const ItemIcon = item.Icon || Gift;
   const img = liveImage || item.img;
-  return /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => onOpen(item),
-      className: "flex flex-col items-stretch gap-2 active:scale-95 transition-transform text-right"
-    },
-    img ? /* @__PURE__ */ React.createElement("div", { className: "w-full aspect-square rounded-2xl overflow-hidden border border-purple-800 shadow-lg bg-gray-950" }, /* @__PURE__ */ React.createElement("img", { src: img, alt: item.name, className: "w-full h-full object-cover" })) : /* @__PURE__ */ React.createElement("div", { className: `w-full aspect-square rounded-2xl bg-gradient-to-br ${item.from || "from-purple-800"} ${item.to || "to-purple-950"} border border-purple-800 flex items-center justify-center shadow-lg` }, /* @__PURE__ */ React.createElement(ItemIcon, { className: `w-9 h-9 ${item.ic || "text-purple-300"}` })),
-    /* @__PURE__ */ React.createElement("span", { className: "text-xs text-gray-200 leading-tight line-clamp-1" }, item.name),
-    /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-purple-500" }, item.tag)
-  );
+  return /* @__PURE__ */ React.createElement("button", { onClick: () => onOpen(item), className: "flex flex-col items-stretch gap-2 active:scale-95 transition-transform text-right" }, img ? /* @__PURE__ */ React.createElement("div", { className: "w-full aspect-square rounded-2xl overflow-hidden border border-purple-800 shadow-lg bg-surface" }, /* @__PURE__ */ React.createElement("img", { src: img, alt: item.name, loading: "lazy", className: "w-full h-full object-cover" })) : /* @__PURE__ */ React.createElement("div", { className: `w-full aspect-square rounded-2xl bg-gradient-to-br ${item.from || "from-purple-800"} ${item.to || "to-purple-950"} border border-purple-800 flex items-center justify-center shadow-lg` }, /* @__PURE__ */ React.createElement(ItemIcon, { className: `w-9 h-9 ${item.ic || "text-purple-300"}` })), /* @__PURE__ */ React.createElement("span", { className: "text-xs text-gray-200 leading-tight line-clamp-1" }, item.name), /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-purple-500" }, item.tag));
 }
-function SectionHeader({ title, Icon }) {
+function SectionHeader({
+  title,
+  Icon
+}) {
   return /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 px-4 mt-7 mb-3" }, /* @__PURE__ */ React.createElement(Icon, { className: "w-4 h-4 text-purple-400" }), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-[15px]" }, title));
 }
-function CategoryRow({ items, onOpen, cardsImages }) {
+function CategoryRow({
+  items,
+  onOpen,
+  cardsImages
+}) {
   return /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-3 gap-3 px-4" }, items.map((item, i) => /* @__PURE__ */ React.createElement(CategoryTile, { key: i, item, onOpen, liveImage: cardsImages && cardsImages[item.name] })));
 }
-function Header({ onSearchClick, showToast }) {
-  return /* @__PURE__ */ React.createElement("header", { className: "sticky top-0 z-20 bg-black border-b border-purple-950 px-4 py-3 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-4 h-4 text-white" })), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("button", { onClick: onSearchClick, className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-300" })), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => showToast("\u0648\u0644\u0627 \u0625\u0634\u0639\u0627\u0631 \u062C\u062F\u064A\u062F \u062D\u0627\u0644\u064A\u064B\u0627"),
-      className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center relative"
-    },
-    /* @__PURE__ */ React.createElement(Bell, { className: "w-4 h-4 text-purple-300" }),
-    /* @__PURE__ */ React.createElement("span", { className: "absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-purple-400 rounded-full" })
-  )));
+function Header({
+  onSearchClick,
+  showToast
+}) {
+  return /* @__PURE__ */ React.createElement("header", { className: "sticky top-0 z-20 bg-void border-b border-purple-950 px-4 py-3 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ React.createElement("span", { className: "w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-4 h-4 text-white" })), /* @__PURE__ */ React.createElement("span", { className: "text-lg font-black italic tracking-tight bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement("button", { onClick: onSearchClick, "aria-label": "\\u0628\\u062D\\u062B", className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-300" })), /* @__PURE__ */ React.createElement("button", { onClick: () => showToast("\u0648\u0644\u0627 \u0625\u0634\u0639\u0627\u0631 \u062C\u062F\u064A\u062F \u062D\u0627\u0644\u064A\u064B\u0627"), "aria-label": "\\u0627\\u0644\\u0625\\u0634\\u0639\\u0627\\u0631\\u0627\\u062A", className: "w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center relative" }, /* @__PURE__ */ React.createElement(Bell, { className: "w-4 h-4 text-purple-300" }), /* @__PURE__ */ React.createElement("span", { className: "absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" }))));
 }
-function BottomNav({ tab, onChange }) {
-  return /* @__PURE__ */ React.createElement(
-    "nav",
-    {
-      className: "fixed bottom-0 inset-x-0 z-20 bg-black border-t border-purple-950",
-      style: { maxWidth: 480, margin: "0 auto" }
-    },
-    /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-around py-2" }, NAV_ITEMS.map(({ id, label, Icon }) => {
-      const active = tab === id;
-      return /* @__PURE__ */ React.createElement(
-        "button",
-        {
-          key: id,
-          onClick: () => onChange(id),
-          className: "flex flex-col items-center gap-1 px-3 py-1.5 relative"
-        },
-        active && /* @__PURE__ */ React.createElement("span", { className: "absolute -top-2 w-8 h-1 rounded-full bg-purple-500" }),
-        /* @__PURE__ */ React.createElement(Icon, { className: active ? "w-5 h-5 text-purple-400" : "w-5 h-5 text-gray-500", strokeWidth: active ? 2.5 : 2 }),
-        /* @__PURE__ */ React.createElement("span", { className: active ? "text-[10px] text-purple-300 font-bold" : "text-[10px] text-gray-500" }, label)
-      );
-    }))
-  );
+function BottomNav({
+  tab,
+  onChange
+}) {
+  return /* @__PURE__ */ React.createElement("nav", { className: "fixed bottom-0 inset-x-0 z-20 bg-void border-t border-purple-950", style: {
+    maxWidth: 480,
+    margin: "0 auto"
+  } }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-around py-2" }, NAV_ITEMS.map(({
+    id,
+    label,
+    Icon
+  }) => {
+    const active = tab === id;
+    return /* @__PURE__ */ React.createElement("button", { key: id, onClick: () => onChange(id), "aria-current": active ? "page" : void 0, className: "flex flex-col items-center gap-1 px-3 py-1.5 relative" }, active && /* @__PURE__ */ React.createElement("span", { className: "absolute -top-2 w-8 h-1 rounded-full bg-purple-500" }), /* @__PURE__ */ React.createElement(Icon, { className: active ? "w-5 h-5 text-purple-400" : "w-5 h-5 text-gray-500", strokeWidth: active ? 2.5 : 2 }), /* @__PURE__ */ React.createElement("span", { className: active ? "text-[10px] text-purple-300 font-bold" : "text-[10px] text-gray-500" }, label));
+  })));
 }
-function Footer({ showToast }) {
-  const links = [
-    ["\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", "\u0628\u0631\u0646\u0627\u0645\u062C \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"],
-    ["\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"],
-    ["API", "\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0640 API \u0642\u0631\u064A\u0628\u064B\u0627"]
-  ];
-  return /* @__PURE__ */ React.createElement("footer", { className: "mt-10 mx-4 mb-6 border-t border-purple-950 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-x-5 gap-y-2 text-xs text-purple-400 mb-5" }, links.map(([label, msg]) => /* @__PURE__ */ React.createElement("button", { key: label, onClick: () => showToast(msg) }, label))), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500 space-y-1 mb-5" }, /* @__PURE__ */ React.createElement("p", null, "\u062E\u062F\u0645\u0629 \u0627\u0644\u0639\u0645\u0644\u0627\u0621: support@supersonic.ly"), /* @__PURE__ */ React.createElement("p", null, "\u0648\u0627\u062A\u0633\u0627\u0628: 0910000000")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => showToast("\u0642\u0631\u064A\u0628\u064B\u0627 \u0639\u0644\u0649 Google Play"),
-      className: "flex-1 flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-2.5 text-xs text-gray-300"
-    },
-    /* @__PURE__ */ React.createElement(Download, { className: "w-3.5 h-3.5" }),
-    " Google Play"
-  ), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => showToast("\u0642\u0631\u064A\u0628\u064B\u0627 \u0639\u0644\u0649 App Store"),
-      className: "flex-1 flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-2.5 text-xs text-gray-300"
-    },
-    /* @__PURE__ */ React.createElement(Smartphone, { className: "w-3.5 h-3.5" }),
-    " App Store"
-  )), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-gray-600 text-center" }, "\xA9 Supersonic \u2014 \u062C\u0645\u064A\u0639 \u0627\u0644\u062D\u0642\u0648\u0642 \u0645\u062D\u0641\u0648\u0638\u0629"));
+function Footer({
+  showToast
+}) {
+  const links = [["\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", "\u0628\u0631\u0646\u0627\u0645\u062C \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"], ["\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"], ["API", "\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0640 API \u0642\u0631\u064A\u0628\u064B\u0627"]];
+  return /* @__PURE__ */ React.createElement("footer", { className: "mt-10 mx-4 mb-6 border-t border-purple-950 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-wrap gap-x-5 gap-y-2 text-xs text-purple-400 mb-5" }, links.map(([label, msg]) => /* @__PURE__ */ React.createElement("button", { key: label, onClick: () => showToast(msg) }, label))), /* @__PURE__ */ React.createElement("div", { className: "text-xs text-gray-500 space-y-1 mb-5" }, /* @__PURE__ */ React.createElement("p", null, "\u062E\u062F\u0645\u0629 \u0627\u0644\u0639\u0645\u0644\u0627\u0621: support@supersonic.ly"), /* @__PURE__ */ React.createElement("p", null, "\u0648\u0627\u062A\u0633\u0627\u0628: 0910000000")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: () => showToast("\u0642\u0631\u064A\u0628\u064B\u0627 \u0639\u0644\u0649 Google Play"), className: "flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-2.5 text-xs text-gray-300" }, /* @__PURE__ */ React.createElement(Download, { className: "w-3.5 h-3.5" }), " Google Play"), /* @__PURE__ */ React.createElement("button", { onClick: () => showToast("\u0642\u0631\u064A\u0628\u064B\u0627 \u0639\u0644\u0649 App Store"), className: "flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-2.5 text-xs text-gray-300" }, /* @__PURE__ */ React.createElement(Smartphone, { className: "w-3.5 h-3.5" }), " App Store")), /* @__PURE__ */ React.createElement("p", { className: "text-[10px] text-gray-600 text-center" }, "\xA9 Supersonic \u2014 \u062C\u0645\u064A\u0639 \u0627\u0644\u062D\u0642\u0648\u0642 \u0645\u062D\u0641\u0648\u0638\u0629"));
 }
-function RashqSection({ onOpenService, livePrices, apiState }) {
+function RashqSection({
+  onOpenService,
+  livePrices,
+  apiState
+}) {
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between px-4 mt-7 mb-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-4 h-4 text-purple-400" }), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-[15px]" }, "\u0631\u0634\u0642 \u2014 \u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u0648\u062A\u0641\u0627\u0639\u0644")), apiState === "error" && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-amber-500" }, "\u0623\u0633\u0639\u0627\u0631 \u062A\u0642\u062F\u064A\u0631\u064A\u0629 \u2014 \u0627\u0644\u0628\u0627\u0643 \u0627\u0646\u062F \u063A\u064A\u0631 \u0645\u062A\u0635\u0644"), apiState === "loading" && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-gray-500" }, "\u064A\u062D\u062F\u0651\u062B \u0627\u0644\u0623\u0633\u0639\u0627\u0631...")), /* @__PURE__ */ React.createElement("div", { className: "px-4 space-y-5" }, RASHQ_PLATFORMS.map((p) => /* @__PURE__ */ React.createElement("div", { key: p.key }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-1.5 mb-2" }, /* @__PURE__ */ React.createElement(p.Icon, { className: "w-3.5 h-3.5 text-purple-400" }), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs font-bold" }, p.label)), /* @__PURE__ */ React.createElement("div", { className: "space-y-2" }, p.services.map((s) => {
     const unitPrice = livePrices[s.id] ?? priced(s.base);
     const isLive = livePrices[s.id] != null;
-    return /* @__PURE__ */ React.createElement(
-      "button",
-      {
-        key: s.id,
-        onClick: () => onOpenService(s, p.label, unitPrice, isLive),
-        className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-xl px-3.5 py-3"
-      },
-      /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600 shrink-0" }),
-      /* @__PURE__ */ React.createElement("span", { className: "flex-1 text-right px-3" }, /* @__PURE__ */ React.createElement("span", { className: "block text-gray-200 text-xs" }, s.name), /* @__PURE__ */ React.createElement("span", { className: "block text-purple-500 text-[10px] mt-1" }, "\u0645\u0646 ", fmt(unitPrice), "$ / 1000"))
-    );
+    return /* @__PURE__ */ React.createElement("button", { key: s.id, onClick: () => onOpenService(s, p.label, unitPrice, isLive), className: "w-full flex items-center justify-between bg-surface border border-purple-900 rounded-xl px-3.5 py-3" }, /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600 shrink-0" }), /* @__PURE__ */ React.createElement("span", { className: "flex-1 text-right px-3" }, /* @__PURE__ */ React.createElement("span", { className: "block text-gray-200 text-xs" }, s.name), /* @__PURE__ */ React.createElement("span", { className: "block text-purple-500 text-[10px] mt-1" }, "\u0645\u0646 ", fmt(unitPrice), "$ / 1000")));
   }))))));
 }
-function RashqOrderSheet({ order, onClose, showToast }) {
-  const { service, platformLabel, unitPrice, isLive } = order;
+function RashqOrderSheet({
+  order,
+  onClose,
+  showToast
+}) {
+  const {
+    service,
+    platformLabel,
+    unitPrice,
+    isLive
+  } = order;
   const [qty, setQty] = useState(service.min);
   const [link, setLink] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -378,8 +608,15 @@ function RashqOrderSheet({ order, onClose, showToast }) {
     try {
       const res = await fetch(`${RASHQ_API_BASE}/api/rashq/order`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Site-Token": RASHQ_SITE_TOKEN },
-        body: JSON.stringify({ service_id: service.id, quantity: qty, link: link.trim() })
+        headers: {
+          "Content-Type": "application/json",
+          "X-Site-Token": RASHQ_SITE_TOKEN
+        },
+        body: JSON.stringify({
+          service_id: service.id,
+          quantity: qty,
+          link: link.trim()
+        })
       });
       const data = await res.json();
       if (data.success) {
@@ -394,36 +631,13 @@ function RashqOrderSheet({ order, onClose, showToast }) {
       setSubmitting(false);
     }
   }
-  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black", style: { opacity: 0.7 }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-gray-950 border-t border-purple-800 rounded-t-3xl p-5 pb-8", style: { maxWidth: 480 } }, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-4" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-xs" }, platformLabel, " \u2014 ", service.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" })), /* @__PURE__ */ React.createElement("div", { className: "space-y-3 mb-4" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, "\u0627\u0644\u0631\u0627\u0628\u0637"), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      value: link,
-      onChange: (e) => setLink(e.target.value),
-      placeholder: "https://...",
-      className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none",
-      dir: "ltr"
-    }
-  )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, "\u0627\u0644\u0643\u0645\u064A\u0629 \u2014 \u0627\u0644\u062D\u062F \u0627\u0644\u0623\u062F\u0646\u0649 ", service.min.toLocaleString("en-US"), " \u0648\u0627\u0644\u0623\u0642\u0635\u0649 ", service.max.toLocaleString("en-US")), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "number",
-      value: qty,
-      min: service.min,
-      max: service.max,
-      onChange: (e) => setQty(Number(e.target.value) || 0),
-      className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
-    }
-  ))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-purple-950 border border-purple-800 rounded-xl px-4 py-3 mb-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0625\u062C\u0645\u0627\u0644\u064A ", isLive ? "(\u0633\u0639\u0631 \u062D\u064A)" : "(\u062A\u0642\u062F\u064A\u0631\u064A)"), /* @__PURE__ */ React.createElement("span", { className: "text-white font-bold" }, "$", fmt(total))), !backendReady && /* @__PURE__ */ React.createElement("p", { className: "text-amber-500 text-[10px] text-center mb-3" }, "\u0627\u0644\u0628\u0627\u0643 \u0627\u0646\u062F \u0645\u0648 \u0645\u0631\u0628\u0648\u0637 \u0628\u0639\u062F \u2014 \u0627\u0644\u0637\u0644\u0628 \u0644\u0646 \u064A\u0646\u0641\u0630 \u0641\u0639\u0644\u064A\u064B\u0627 \u062D\u062A\u0649 \u062A\u0636\u064A\u0641 \u0631\u0627\u0628\u0637 Railway \u0628\u062B\u0627\u0628\u062A RASHQ_API_BASE"), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: submit,
-      disabled: submitting,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm flex items-center justify-center gap-2 disabled:opacity-60",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    submitting && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
-    submitting ? "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0641\u064A\u0630..." : "\u062A\u0646\u0641\u064A\u0630 \u0627\u0644\u0637\u0644\u0628"
-  )));
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-void", style: {
+    opacity: 0.7
+  }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-surface border-t border-purple-800 rounded-t-3xl p-5 pb-8", style: {
+    maxWidth: 480
+  } }, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-4" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, "aria-label": "\u0625\u063A\u0644\u0627\u0642", className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-xs" }, platformLabel, " \u2014 ", service.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" })), /* @__PURE__ */ React.createElement("div", { className: "space-y-3 mb-4" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, "\u0627\u0644\u0631\u0627\u0628\u0637"), /* @__PURE__ */ React.createElement("input", { value: link, onChange: (e) => setLink(e.target.value), placeholder: "https://...", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none", dir: "ltr" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, "\u0627\u0644\u0643\u0645\u064A\u0629 \u2014 \u0627\u0644\u062D\u062F \u0627\u0644\u0623\u062F\u0646\u0649 ", service.min.toLocaleString("en-US"), " \u0648\u0627\u0644\u0623\u0642\u0635\u0649 ", service.max.toLocaleString("en-US")), /* @__PURE__ */ React.createElement("input", { type: "number", value: qty, min: service.min, max: service.max, onChange: (e) => setQty(Number(e.target.value) || 0), className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }))), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-purple-950 border border-purple-800 rounded-xl px-4 py-3 mb-2" }, /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0625\u062C\u0645\u0627\u0644\u064A ", isLive ? "(\u0633\u0639\u0631 \u062D\u064A)" : "(\u062A\u0642\u062F\u064A\u0631\u064A)"), /* @__PURE__ */ React.createElement("span", { className: "text-white font-bold" }, "$", fmt(total))), !backendReady && /* @__PURE__ */ React.createElement("p", { className: "text-amber-500 text-[10px] text-center mb-3" }, "\u0627\u0644\u0628\u0627\u0643 \u0627\u0646\u062F \u0645\u0648 \u0645\u0631\u0628\u0648\u0637 \u0628\u0639\u062F \u2014 \u0627\u0644\u0637\u0644\u0628 \u0644\u0646 \u064A\u0646\u0641\u0630 \u0641\u0639\u0644\u064A\u064B\u0627 \u062D\u062A\u0649 \u062A\u0636\u064A\u0641 \u0631\u0627\u0628\u0637 Railway \u0628\u062B\u0627\u0628\u062A RASHQ_API_BASE"), /* @__PURE__ */ React.createElement("button", { onClick: submit, disabled: submitting, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm flex items-center justify-center gap-2 disabled:opacity-60", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, submitting && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }), submitting ? "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0641\u064A\u0630..." : "\u062A\u0646\u0641\u064A\u0630 \u0627\u0644\u0637\u0644\u0628")));
 }
 var CARDS_CATEGORY_MAP = {
   "\u0628\u0628\u062C\u064A \u0645\u0648\u0628\u0627\u064A\u0644": "3889fd74-be30-43eb-8ade-487ae1daedf3",
@@ -436,7 +650,11 @@ var CARDS_CATEGORY_MAP = {
   "\u0625\u0643\u0633 \u0628\u0648\u0643\u0633": "1cc049d6-8a56-4678-a3c9-d6df6b06db7a",
   "\u0646\u062A\u0641\u0644\u064A\u0643\u0633": "30b84760-8972-4128-b242-3dcd60557dc3"
 };
-function ProductSheet({ item, onClose, onPurchased }) {
+function ProductSheet({
+  item,
+  onClose,
+  onPurchased
+}) {
   const categoryId = CARDS_CATEGORY_MAP[item.name];
   const cardsReady = !RASHQ_API_BASE.includes("REPLACE-WITH");
   const [liveInfo, setLiveInfo] = useState(null);
@@ -451,17 +669,24 @@ function ProductSheet({ item, onClose, onPurchased }) {
     let cancelled = false;
     fetch(`${RASHQ_API_BASE}/api/cards/category/${categoryId}`).then((res) => res.json()).then((data) => {
       if (cancelled || !data.success) throw new Error("bad response");
-      const needsId = (data.subCategories || []).some(
-        (s) => s.how_to_use && (s.how_to_use.includes("\u0627\u064A\u062F\u064A") || s.how_to_use.includes("ID"))
-      );
+      const needsId = (data.subCategories || []).some((s) => s.how_to_use && (s.how_to_use.includes("\u0627\u064A\u062F\u064A") || s.how_to_use.includes("ID")));
       const packages = [];
       (data.subCategories || []).forEach((sub) => {
         (sub.products || []).forEach((p) => {
-          if (p.available) packages.push({ label: p.name, price: p.price, productId: p.id, image: p.image });
+          if (p.available) packages.push({
+            label: p.name,
+            price: p.price,
+            productId: p.id,
+            image: p.image
+          });
         });
       });
       if (!cancelled && packages.length) {
-        setLiveInfo({ idLabel: needsId ? "\u0622\u064A\u062F\u064A \u0627\u0644\u0644\u0627\u0639\u0628 (Player ID)" : null, packages, isLive: true });
+        setLiveInfo({
+          idLabel: needsId ? "\u0622\u064A\u062F\u064A \u0627\u0644\u0644\u0627\u0639\u0628 (Player ID)" : null,
+          packages,
+          isLive: true
+        });
       }
     }).catch(() => {
     }).finally(() => {
@@ -486,7 +711,10 @@ function ProductSheet({ item, onClose, onPurchased }) {
         productName: item.name,
         packageLabel: selected.label,
         price: fmt(unitPriceOf(selected)),
-        date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", { day: "numeric", month: "short" })
+        date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", {
+          day: "numeric",
+          month: "short"
+        })
       });
       setStep("success");
       return;
@@ -495,10 +723,15 @@ function ProductSheet({ item, onClose, onPurchased }) {
     try {
       const res = await fetch(`${RASHQ_API_BASE}/api/cards/pay`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Site-Token": RASHQ_SITE_TOKEN },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Site-Token": RASHQ_SITE_TOKEN
+        },
         body: JSON.stringify({
           product_id: selected.productId,
-          ...info.idLabel && playerId.trim() ? { player_id: playerId.trim() } : {}
+          ...info.idLabel && playerId.trim() ? {
+            player_id: playerId.trim()
+          } : {}
         })
       });
       const data = await res.json();
@@ -513,7 +746,10 @@ function ProductSheet({ item, onClose, onPurchased }) {
         productName: item.name,
         packageLabel: selected.label,
         price: fmt(unitPriceOf(selected)),
-        date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", { day: "numeric", month: "short" })
+        date: (/* @__PURE__ */ new Date()).toLocaleDateString("ar-LY", {
+          day: "numeric",
+          month: "short"
+        })
       });
       setStep("success");
     } catch (e) {
@@ -522,165 +758,131 @@ function ProductSheet({ item, onClose, onPurchased }) {
       setPurchasing(false);
     }
   }
-  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black", style: { opacity: 0.75 }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-gray-950 border-t border-purple-800 rounded-t-3xl p-5 pb-8 overflow-hidden", style: { maxWidth: 480, maxHeight: "85vh", overflowY: "auto" } }, step !== "success" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-sm" }, item.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" }))), step === "packages" && (loadingLive ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-7 h-7 text-purple-500 animate-spin mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u064A\u062C\u064A\u0628 \u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u062D\u064A\u0629...")) : !info ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-10 h-10 text-purple-500 mx-auto mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0627\u0644\u0628\u0627\u0642\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062A\u062C \u0642\u064A\u062F \u0627\u0644\u0625\u0636\u0627\u0641\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0628\u0627\u0644\u062F\u0639\u0645 \u0648\u0628\u0646\u062C\u0647\u0632\u0647\u0627 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-400" }, "\u0627\u062E\u062A\u0631 \u0627\u0644\u0641\u0626\u0629"), info.isLive && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-emerald-400 flex items-center gap-1" }, /* @__PURE__ */ React.createElement("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-400" }), " \u0623\u0633\u0639\u0627\u0631 \u062D\u064A\u0629")), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-2.5 mb-2" }, info.packages.map((p, i) => {
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-void", style: {
+    opacity: 0.75
+  }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-surface border-t border-purple-800 rounded-t-3xl p-5 pb-8 overflow-hidden", style: {
+    maxWidth: 480,
+    maxHeight: "85vh",
+    overflowY: "auto"
+  } }, step !== "success" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, "aria-label": "\u0625\u063A\u0644\u0627\u0642", className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-sm" }, item.name), /* @__PURE__ */ React.createElement("span", { className: "w-8" }))), step === "packages" && (loadingLive ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-7 h-7 text-purple-500 animate-spin mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u064A\u062C\u064A\u0628 \u0627\u0644\u0623\u0633\u0639\u0627\u0631 \u0627\u0644\u062D\u064A\u0629...")) : !info ? /* @__PURE__ */ React.createElement("div", { className: "text-center py-10" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-10 h-10 text-purple-500 mx-auto mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0627\u0644\u0628\u0627\u0642\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0646\u062A\u062C \u0642\u064A\u062F \u0627\u0644\u0625\u0636\u0627\u0641\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs" }, "\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0628\u0627\u0644\u062F\u0639\u0645 \u0648\u0628\u0646\u062C\u0647\u0632\u0647\u0627 \u0644\u0643 \u0628\u0633\u0631\u0639\u0629")) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-400" }, "\u0627\u062E\u062A\u0631 \u0627\u0644\u0641\u0626\u0629"), info.isLive && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] text-emerald-400 flex items-center gap-1" }, /* @__PURE__ */ React.createElement("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-400" }), " \u0623\u0633\u0639\u0627\u0631 \u062D\u064A\u0629")), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-2.5 mb-2" }, info.packages.map((p, i) => {
     const active = selected === p;
-    return /* @__PURE__ */ React.createElement(
-      "button",
-      {
-        key: i,
-        onClick: () => setSelected(p),
-        className: active ? "rounded-2xl p-3.5 text-right border bg-purple-600 border-purple-400 flex items-center gap-3" : "rounded-2xl p-3.5 text-right border bg-black border-purple-900 flex items-center gap-3"
-      },
-      p.image && /* @__PURE__ */ React.createElement("img", { src: p.image, alt: "", className: "w-10 h-10 rounded-lg object-cover shrink-0 bg-gray-900" }),
-      /* @__PURE__ */ React.createElement("span", { className: "flex-1 min-w-0" }, /* @__PURE__ */ React.createElement("span", { className: "block text-white text-sm font-bold mb-1 truncate" }, p.label), /* @__PURE__ */ React.createElement("span", { className: active ? "block text-purple-100 text-xs" : "block text-purple-500 text-xs" }, "$", fmt(unitPriceOf(p))))
-    );
-  })), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      disabled: !selected,
-      onClick: () => setStep("checkout"),
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-4 disabled:opacity-40",
-      style: selected ? { boxShadow: "0 0 24px rgba(168,85,247,0.45)" } : void 0
-    },
-    "\u0645\u062A\u0627\u0628\u0639\u0629"
-  ))), step === "checkout" && selected && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-950 border border-purple-800 rounded-2xl p-4 mb-4 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, selected.label), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-xs" }, item.name)), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, "$", fmt(unitPriceOf(selected)))), info.idLabel && /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, info.idLabel), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      value: playerId,
-      onChange: (e) => setPlayerId(e.target.value),
-      placeholder: "123456789",
-      className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none",
-      dir: "ltr"
-    }
-  )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-gray-900 border border-purple-900 rounded-xl px-4 py-3 mb-5" }, /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 text-gray-300 text-xs" }, /* @__PURE__ */ React.createElement(Wallet, { className: "w-3.5 h-3.5 text-purple-400" }), " \u0627\u0644\u062F\u0641\u0639 \u0645\u0646 \u0631\u0635\u064A\u062F\u0643"), /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "150.500 LYD \u0645\u062A\u0627\u062D")), purchaseError && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center mb-3" }, purchaseError), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      disabled: info.idLabel && !playerId.trim() || purchasing,
-      onClick: confirmPurchase,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-40 flex items-center justify-center gap-2",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    purchasing && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
-    purchasing ? "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0641\u064A\u0630..." : "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0634\u0631\u0627\u0621"
-  )), step === "success" && /* @__PURE__ */ React.createElement("div", { className: "relative py-6 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 overflow-hidden pointer-events-none" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null)), /* @__PURE__ */ React.createElement("div", { className: "relative z-10" }, /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4",
-      style: { boxShadow: "0 0 40px rgba(168,85,247,0.6)" }
-    },
-    /* @__PURE__ */ React.createElement(Check, { className: "w-10 h-10 text-white", strokeWidth: 3 })
-  ), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-lg mb-1" }, "\u062A\u0645 \u0627\u0644\u0634\u0631\u0627\u0621 \u0628\u0646\u062C\u0627\u062D"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-xs mb-5" }, selected?.label, " \u2014 ", item.name), /* @__PURE__ */ React.createElement("div", { className: "inline-flex items-center gap-2 bg-purple-950 border border-purple-700 rounded-full px-4 py-2 mb-6" }, /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "\u0631\u0642\u0645 \u0627\u0644\u0637\u0644\u0628"), /* @__PURE__ */ React.createElement("span", { className: "text-white text-xs font-bold", dir: "ltr" }, orderCode)), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-6" }, "\u062A\u0645\u062A \u0625\u0636\u0627\u0641\u062A\u0647 \u0644\u0635\u0641\u062D\u0629 \u0645\u0634\u062A\u0631\u064A\u0627\u062A\u064A"), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: onClose,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    "\u062A\u0645"
-  )))));
+    return /* @__PURE__ */ React.createElement("button", { key: i, onClick: () => setSelected(p), className: active ? "rounded-2xl p-3.5 text-right border bg-purple-600 border-purple-400 flex items-center gap-3" : "rounded-2xl p-3.5 text-right border bg-void border-purple-900 flex items-center gap-3" }, p.image && /* @__PURE__ */ React.createElement("img", { src: p.image, alt: "", loading: "lazy", className: "w-10 h-10 rounded-lg object-cover shrink-0 bg-gray-900" }), /* @__PURE__ */ React.createElement("span", { className: "flex-1 min-w-0" }, /* @__PURE__ */ React.createElement("span", { className: "block text-white text-sm font-bold mb-1 truncate" }, p.label), /* @__PURE__ */ React.createElement("span", { className: active ? "block text-purple-100 text-xs" : "block text-purple-500 text-xs" }, "$", fmt(unitPriceOf(p)))));
+  })), /* @__PURE__ */ React.createElement("button", { disabled: !selected, onClick: () => setStep("checkout"), className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-4 disabled:opacity-40", style: selected ? {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } : void 0 }, "\u0645\u062A\u0627\u0628\u0639\u0629"))), step === "checkout" && selected && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-950 border border-purple-800 rounded-2xl p-4 mb-4 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, selected.label), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-xs" }, item.name)), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, "$", fmt(unitPriceOf(selected)))), info.idLabel && /* @__PURE__ */ React.createElement("div", { className: "mb-4" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400 block mb-1.5" }, info.idLabel), /* @__PURE__ */ React.createElement("input", { value: playerId, onChange: (e) => setPlayerId(e.target.value), placeholder: "123456789", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none", dir: "ltr" })), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between bg-gray-900 border border-purple-900 rounded-xl px-4 py-3 mb-5" }, /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 text-gray-300 text-xs" }, /* @__PURE__ */ React.createElement(Wallet, { className: "w-3.5 h-3.5 text-purple-400" }), " \u0627\u0644\u062F\u0641\u0639 \u0645\u0646 \u0631\u0635\u064A\u062F\u0643"), /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "150.500 LYD \u0645\u062A\u0627\u062D")), purchaseError && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center mb-3" }, purchaseError), /* @__PURE__ */ React.createElement("button", { disabled: info.idLabel && !playerId.trim() || purchasing, onClick: confirmPurchase, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-40 flex items-center justify-center gap-2", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, purchasing && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }), purchasing ? "\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0641\u064A\u0630..." : "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0634\u0631\u0627\u0621")), step === "success" && /* @__PURE__ */ React.createElement("div", { className: "relative py-6 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 overflow-hidden pointer-events-none" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null)), /* @__PURE__ */ React.createElement("div", { className: "relative z-10" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4", style: {
+    boxShadow: "0 0 40px rgba(168,85,247,0.6)"
+  } }, /* @__PURE__ */ React.createElement(Check, { className: "w-10 h-10 text-white", strokeWidth: 3 })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold text-lg mb-1" }, "\u062A\u0645 \u0627\u0644\u0634\u0631\u0627\u0621 \u0628\u0646\u062C\u0627\u062D"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-xs mb-5" }, selected?.label, " \u2014 ", item.name), /* @__PURE__ */ React.createElement("div", { className: "inline-flex items-center gap-2 bg-purple-950 border border-purple-700 rounded-full px-4 py-2 mb-6" }, /* @__PURE__ */ React.createElement("span", { className: "text-purple-300 text-xs" }, "\u0631\u0642\u0645 \u0627\u0644\u0637\u0644\u0628"), /* @__PURE__ */ React.createElement("span", { className: "text-white text-xs font-bold", dir: "ltr" }, orderCode)), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-6" }, "\u062A\u0645\u062A \u0625\u0636\u0627\u0641\u062A\u0647 \u0644\u0635\u0641\u062D\u0629 \u0645\u0634\u062A\u0631\u064A\u0627\u062A\u064A"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, "\u062A\u0645")))));
 }
-function HomeView({ filter, setFilter, slide, showToast, onOpenProduct, searchRef, cardsImages }) {
+function HomeView({
+  filter,
+  setFilter,
+  slide,
+  showToast,
+  onOpenProduct,
+  searchRef,
+  cardsImages
+}) {
   const [query, setQuery] = useState("");
   const q = query.trim();
   const baseSections = filter === "all" ? SECTIONS : SECTIONS.filter((s) => s.key === filter);
-  const shown = !q ? baseSections : baseSections.map((s) => ({ ...s, items: s.items.filter((item) => item.name.includes(q)) })).filter((s) => s.items.length > 0);
+  const shown = !q ? baseSections : baseSections.map((s) => ({
+    ...s,
+    items: s.items.filter((item) => item.name.includes(q))
+  })).filter((s) => s.items.length > 0);
   const noResults = q && shown.length === 0;
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-4 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden h-32 flex flex-col justify-center" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null), (() => {
     const BannerIcon = BANNERS[slide].icon;
     return /* @__PURE__ */ React.createElement(BannerIcon, { className: "w-7 h-7 text-purple-300 mb-2 relative z-10" });
-  })(), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base relative z-10" }, BANNERS[slide].title), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs mt-1 relative z-10" }, BANNERS[slide].sub), /* @__PURE__ */ React.createElement("div", { className: "flex gap-1.5 absolute bottom-3 left-5 z-10" }, BANNERS.map((_, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: i === slide ? "h-1.5 w-5 rounded-full bg-purple-400" : "h-1.5 w-1.5 rounded-full bg-purple-900" })))), /* @__PURE__ */ React.createElement("div", { ref: searchRef, className: "mx-4 mt-4 flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "text",
-      value: query,
-      onChange: (e) => setQuery(e.target.value),
-      placeholder: "\u0627\u0628\u062D\u062B \u0639\u0646 \u0645\u0646\u062A\u062C\u060C \u0641\u0626\u0629 \u0623\u0648 \u062E\u062F\u0645\u0629...",
-      className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1"
-    }
-  ), query && /* @__PURE__ */ React.createElement("button", { onClick: () => setQuery("") }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-500" }))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 px-4 mt-4 overflow-x-auto", style: { scrollbarWidth: "none" } }, FILTERS.map((f) => /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      key: f.id,
-      onClick: () => setFilter(f.id),
-      className: filter === f.id ? "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
-    },
-    f.label
-  ))), noResults ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14 text-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-8 h-8 text-purple-700 mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-sm" }, '\u0648\u0644\u0627 \u0646\u062A\u064A\u062C\u0629 \u0644\u0640"', q, '"')) : shown.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key }, /* @__PURE__ */ React.createElement(SectionHeader, { title: s.title, Icon: s.Icon }), /* @__PURE__ */ React.createElement(CategoryRow, { items: s.items, onOpen: onOpenProduct, cardsImages }))), /* @__PURE__ */ React.createElement(Footer, { showToast }));
+  })(), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base relative z-10" }, BANNERS[slide].title), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs mt-1 relative z-10" }, BANNERS[slide].sub), /* @__PURE__ */ React.createElement("div", { className: "flex gap-1.5 absolute bottom-3 left-5 z-10" }, BANNERS.map((_, i) => /* @__PURE__ */ React.createElement("span", { key: i, className: i === slide ? "h-1.5 w-5 rounded-full bg-purple-400" : "h-1.5 w-1.5 rounded-full bg-purple-900" })))), /* @__PURE__ */ React.createElement("div", { ref: searchRef, className: "mx-4 mt-4 flex items-center gap-2 bg-surface border border-purple-900 rounded-2xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Search, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("input", { type: "text", value: query, onChange: (e) => setQuery(e.target.value), placeholder: "\\u0627\\u0628\\u062D\\u062B \\u0639\\u0646 \\u0645\\u0646\\u062A\\u062C\\u060C \\u0641\\u0626\\u0629 \\u0623\\u0648 \\u062E\\u062F\\u0645\\u0629...", className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" }), query && /* @__PURE__ */ React.createElement("button", { onClick: () => setQuery(""), "aria-label": "\u0645\u0633\u062D \u0627\u0644\u0628\u062D\u062B" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-500" }))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 px-4 mt-4 overflow-x-auto", style: {
+    scrollbarWidth: "none"
+  } }, FILTERS.map((f) => /* @__PURE__ */ React.createElement("button", { key: f.id, onClick: () => setFilter(f.id), className: filter === f.id ? "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "shrink-0 px-4 py-1.5 rounded-full text-xs font-bold border bg-transparent border-purple-900 text-gray-400" }, f.label))), noResults ? /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center py-14 text-center" }, /* @__PURE__ */ React.createElement(Search, { className: "w-8 h-8 text-purple-700 mb-3" }), /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-sm" }, '\u0648\u0644\u0627 \u0646\u062A\u064A\u062C\u0629 \u0644\u0640"', q, '"')) : shown.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.key }, /* @__PURE__ */ React.createElement(SectionHeader, { title: s.title, Icon: s.Icon }), /* @__PURE__ */ React.createElement(CategoryRow, { items: s.items, onOpen: onOpenProduct, cardsImages }))), /* @__PURE__ */ React.createElement(Footer, { showToast }));
 }
-function RashqPage({ onOpenService, livePrices, apiState }) {
+function RashqPage({
+  onOpenService,
+  livePrices,
+  apiState
+}) {
   return /* @__PURE__ */ React.createElement("div", { className: "pt-2" }, /* @__PURE__ */ React.createElement("div", { className: "mx-4 mt-2 mb-1 rounded-3xl bg-gradient-to-br from-purple-800 via-purple-950 to-black border border-purple-700 p-5 relative overflow-hidden" }, /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 flex items-center gap-3" }, /* @__PURE__ */ React.createElement("span", { className: "w-11 h-11 rounded-2xl bg-purple-600 flex items-center justify-center shrink-0" }, /* @__PURE__ */ React.createElement(Zap, { className: "w-6 h-6 text-white" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-base" }, "\u0631\u0634\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs" }, "\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u0648\u062A\u0641\u0627\u0639\u0644 \u0644\u0643\u0644 \u0645\u0646\u0635\u0627\u062A\u0643 \u0628\u0636\u063A\u0637\u0629 \u0648\u062D\u062F\u0629")))), /* @__PURE__ */ React.createElement(RashqSection, { onOpenService, livePrices, apiState }), /* @__PURE__ */ React.createElement("div", { className: "h-6" }));
 }
-function PurchasesView({ goHome, purchases }) {
+function PurchasesView({
+  goHome,
+  purchases
+}) {
   const [sub, setSub] = useState("other");
-  return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-6" }, /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => setSub("other"),
-      className: sub === "other" ? "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
-    },
-    "\u0645\u0646\u062A\u062C\u0627\u062A \u0623\u062E\u0631\u0649"
-  ), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => setSub("cards"),
-      className: sub === "cards" ? "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
-    },
-    "\u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A"
-  )), sub === "cards" && purchases.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "space-y-2.5 pb-4" }, purchases.map((p) => /* @__PURE__ */ React.createElement("div", { key: p.id, className: "bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3.5 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "text-left" }, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, "$", p.price), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[10px]" }, p.date)), /* @__PURE__ */ React.createElement("div", { className: "text-right" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-200 text-xs" }, p.packageLabel), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-[11px]" }, p.productName), /* @__PURE__ */ React.createElement("p", { className: "text-gray-600 text-[10px] mt-0.5", dir: "ltr" }, p.id))))) : /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center py-14 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-800 to-purple-950 border border-purple-700 flex items-center justify-center mb-4" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-9 h-9 text-purple-400" })), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0644\u0633\u0647 \u0645\u0627 \u0633\u0648\u064A\u062A \u0623\u064A \u0639\u0645\u0644\u064A\u0629 \u0634\u0631\u0627\u0621"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-5" }, "\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u062A\u062C\u0631 \u0648\u0627\u0628\u062F\u0623 \u0623\u0648\u0644 \u0639\u0645\u0644\u064A\u0629 \u0634\u062D\u0646"), /* @__PURE__ */ React.createElement("button", { onClick: goHome, className: "text-purple-300 text-xs font-bold border border-purple-700 rounded-full px-5 py-2" }, "\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u062A\u062C\u0631")));
+  return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-4" }, /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-6" }, /* @__PURE__ */ React.createElement("button", { onClick: () => setSub("other"), className: sub === "other" ? "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400" }, "\u0645\u0646\u062A\u062C\u0627\u062A \u0623\u062E\u0631\u0649"), /* @__PURE__ */ React.createElement("button", { onClick: () => setSub("cards"), className: sub === "cards" ? "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2.5 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400" }, "\u0627\u0644\u0628\u0637\u0627\u0642\u0627\u062A")), sub === "cards" && purchases.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "space-y-2.5 pb-4" }, purchases.map((p) => /* @__PURE__ */ React.createElement("div", { key: p.id, className: "bg-surface border border-purple-900 rounded-2xl px-4 py-3.5 flex items-center justify-between" }, /* @__PURE__ */ React.createElement("div", { className: "text-left" }, /* @__PURE__ */ React.createElement("p", { className: "text-white text-sm font-bold" }, "$", p.price), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[10px]" }, p.date)), /* @__PURE__ */ React.createElement("div", { className: "text-right" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-200 text-xs" }, p.packageLabel), /* @__PURE__ */ React.createElement("p", { className: "text-purple-400 text-[11px]" }, p.productName), /* @__PURE__ */ React.createElement("p", { className: "text-gray-600 text-[10px] mt-0.5", dir: "ltr" }, p.id))))) : /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center justify-center py-14 text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-800 to-purple-950 border border-purple-700 flex items-center justify-center mb-4" }, /* @__PURE__ */ React.createElement(PackageSearch, { className: "w-9 h-9 text-purple-400" })), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm font-bold mb-1" }, "\u0644\u0633\u0647 \u0645\u0627 \u0633\u0648\u064A\u062A \u0623\u064A \u0639\u0645\u0644\u064A\u0629 \u0634\u0631\u0627\u0621"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-5" }, "\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u062A\u062C\u0631 \u0648\u0627\u0628\u062F\u0623 \u0623\u0648\u0644 \u0639\u0645\u0644\u064A\u0629 \u0634\u062D\u0646"), /* @__PURE__ */ React.createElement("button", { onClick: goHome, className: "text-purple-300 text-xs font-bold border border-purple-700 rounded-full px-5 py-2" }, "\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u062A\u062C\u0631")));
 }
-function SupportView({ showToast }) {
-  const items = [
-    { label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u0648\u0627\u062A\u0633\u0627\u0628", Icon: MessageCircle, msg: "\u0631\u0627\u0628\u0637 \u0648\u0627\u062A\u0633\u0627\u0628 \u0627\u0644\u062D\u0642\u064A\u0642\u064A \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" },
-    { label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F", Icon: MessageCircle, msg: "\u0631\u0627\u0628\u0637 \u0642\u0646\u0627\u0629 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" },
-    { label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645", Icon: Send, msg: "\u0631\u0627\u0628\u0637 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0627\u0644\u062D\u0642\u064A\u0642\u064A \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" },
-    { label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F", Icon: Send, msg: "\u0631\u0627\u0628\u0637 \u0642\u0646\u0627\u0629 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643" }
-  ];
-  const socials = [
-    [Instagram, "\u0631\u0627\u0628\u0637 \u0627\u0646\u0633\u062A\u0642\u0631\u0627\u0645 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"],
-    [Music2, "\u0631\u0627\u0628\u0637 \u062A\u064A\u0643 \u062A\u0648\u0643 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"],
-    [Facebook, "\u0631\u0627\u0628\u0637 \u0641\u064A\u0633\u0628\u0648\u0643 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"],
-    [Youtube, "\u0631\u0627\u0628\u0637 \u064A\u0648\u062A\u064A\u0648\u0628 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"]
-  ];
+function SupportView({
+  showToast
+}) {
+  const items = [{
+    label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u0648\u0627\u062A\u0633\u0627\u0628",
+    Icon: MessageCircle,
+    msg: "\u0631\u0627\u0628\u0637 \u0648\u0627\u062A\u0633\u0627\u0628 \u0627\u0644\u062D\u0642\u064A\u0642\u064A \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"
+  }, {
+    label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F",
+    Icon: MessageCircle,
+    msg: "\u0631\u0627\u0628\u0637 \u0642\u0646\u0627\u0629 \u0648\u0627\u062A\u0633\u0627\u0628 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"
+  }, {
+    label: "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A \u0639\u0628\u0631 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645",
+    Icon: Send,
+    msg: "\u0631\u0627\u0628\u0637 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0627\u0644\u062D\u0642\u064A\u0642\u064A \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"
+  }, {
+    label: "\u062A\u0627\u0628\u0639 \u0642\u0646\u0627\u062A\u0646\u0627 \u0639\u0644\u0649 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0643\u0644 \u062C\u062F\u064A\u062F",
+    Icon: Send,
+    msg: "\u0631\u0627\u0628\u0637 \u0642\u0646\u0627\u0629 \u062A\u064A\u0644\u064A\u062C\u0631\u0627\u0645 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643"
+  }];
+  const socials = [[Instagram, "\u0631\u0627\u0628\u0637 \u0627\u0646\u0633\u062A\u0642\u0631\u0627\u0645 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643", "\u0627\u0646\u0633\u062A\u0642\u0631\u0627\u0645"], [Music2, "\u0631\u0627\u0628\u0637 \u062A\u064A\u0643 \u062A\u0648\u0643 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643", "\u062A\u064A\u0643 \u062A\u0648\u0643"], [Facebook, "\u0631\u0627\u0628\u0637 \u0641\u064A\u0633\u0628\u0648\u0643 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643", "\u0641\u064A\u0633\u0628\u0648\u0643"], [Youtube, "\u0631\u0627\u0628\u0637 \u064A\u0648\u062A\u064A\u0648\u0628 \u0644\u0633\u0647 \u0645\u0627 \u0648\u0635\u0644\u0646\u064A \u0645\u0646\u0643", "\u064A\u0648\u062A\u064A\u0648\u0628"]];
   return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-4" }, /* @__PURE__ */ React.createElement("div", { className: "rounded-3xl bg-gradient-to-br from-purple-900 to-black border border-purple-800 p-5 text-center mb-6" }, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg mb-1" }, "\u0627\u0644\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-xs" }, "\u064A\u0627 \u0647\u0644\u0627! \u0644\u0627 \u062A\u062A\u0631\u062F\u062F \u0628\u0627\u0644\u062A\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0641\u064A \u062D\u0627\u0644 \u0643\u0627\u0646 \u0644\u062F\u064A\u0643 \u0623\u064A \u0627\u0633\u062A\u0641\u0633\u0627\u0631")), /* @__PURE__ */ React.createElement("div", { className: "space-y-3 mb-8" }, items.map((it, i) => {
     const ItIcon = it.Icon;
-    return /* @__PURE__ */ React.createElement(
-      "button",
-      {
-        key: i,
-        onClick: () => showToast(it.msg),
-        className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-2xl px-4 py-4"
-      },
-      /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }),
-      /* @__PURE__ */ React.createElement("span", { className: "text-sm text-gray-200 flex-1 text-center" }, it.label),
-      /* @__PURE__ */ React.createElement("span", { className: "w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(ItIcon, { className: "w-4 h-4 text-white" }))
-    );
-  })), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-500 mb-3 text-center" }, "\u062A\u0627\u0628\u0639\u0646\u0627 \u0639\u0644\u0649 \u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u062A\u0648\u0627\u0635\u0644"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-3" }, socials.map(([SocIcon, msg], i) => /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      key: i,
-      onClick: () => showToast(msg),
-      className: "w-11 h-11 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center"
-    },
-    /* @__PURE__ */ React.createElement(SocIcon, { className: "w-4 h-4 text-purple-300" })
-  ))));
+    return /* @__PURE__ */ React.createElement("button", { key: i, onClick: () => showToast(it.msg), className: "w-full flex items-center justify-between bg-surface border border-purple-900 rounded-2xl px-4 py-4" }, /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }), /* @__PURE__ */ React.createElement("span", { className: "text-sm text-gray-200 flex-1 text-center" }, it.label), /* @__PURE__ */ React.createElement("span", { className: "w-9 h-9 rounded-full bg-purple-700 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(ItIcon, { className: "w-4 h-4 text-white" })));
+  })), /* @__PURE__ */ React.createElement("p", { className: "text-xs text-gray-500 mb-3 text-center" }, "\u062A\u0627\u0628\u0639\u0646\u0627 \u0639\u0644\u0649 \u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u062A\u0648\u0627\u0635\u0644"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-3" }, socials.map(([SocIcon, msg, name], i) => /* @__PURE__ */ React.createElement("button", { key: i, onClick: () => showToast(msg), "aria-label": name, className: "w-11 h-11 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(SocIcon, { className: "w-4 h-4 text-purple-300" })))));
 }
-function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user, authToken }) {
+function AccountView({
+  currency,
+  setCurrency,
+  onTopUp,
+  showToast,
+  onLogout,
+  user,
+  authToken
+}) {
   const cur = CURRENCIES.find((c) => c.id === currency);
   const initials = (user?.name || "\u061F").trim().slice(0, 2).toUpperCase();
   const [resending, setResending] = useState(false);
-  const menu = [
-    { label: "\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629", Icon: User, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
-    { label: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", Icon: Heart, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0641\u0636\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
-    { label: "\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629", Icon: Link2, badge: "\u062C\u062F\u064A\u062F", msg: "\u0628\u0631\u0646\u0627\u0645\u062C \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" },
-    { label: "\u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640 API", Icon: Key, msg: "\u0625\u062F\u0627\u0631\u0629 \u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640API \u0642\u0631\u064A\u0628\u064B\u0627" },
-    { label: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629", Icon: HelpCircle, msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627" }
-  ];
+  const menu = [{
+    label: "\u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629",
+    Icon: User,
+    msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0634\u062E\u0635\u064A\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"
+  }, {
+    label: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629",
+    Icon: Heart,
+    msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0645\u0641\u0636\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"
+  }, {
+    label: "\u0627\u0644\u062A\u0633\u0648\u064A\u0642 \u0628\u0627\u0644\u0639\u0645\u0648\u0644\u0629",
+    Icon: Link2,
+    badge: "\u062C\u062F\u064A\u062F",
+    msg: "\u0628\u0631\u0646\u0627\u0645\u062C \u0627\u0644\u0639\u0645\u0648\u0644\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"
+  }, {
+    label: "\u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640 API",
+    Icon: Key,
+    msg: "\u0625\u062F\u0627\u0631\u0629 \u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0640API \u0642\u0631\u064A\u0628\u064B\u0627"
+  }, {
+    label: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629",
+    Icon: HelpCircle,
+    msg: "\u0635\u0641\u062D\u0629 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0634\u0627\u0626\u0639\u0629 \u0642\u0631\u064A\u0628\u064B\u0627"
+  }];
   async function resendVerification() {
     setResending(true);
     try {
       const res = await fetch(`${RASHQ_API_BASE}/api/auth/resend-verification`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
       });
       const data = await res.json();
       showToast(data.success ? "\u062A\u0645 \u0625\u0631\u0633\u0627\u0644 \u0631\u0627\u0628\u0637 \u0627\u0644\u062A\u0641\u0639\u064A\u0644\u060C \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643" : data.error || "\u062A\u0639\u0630\u0631 \u0627\u0644\u0625\u0631\u0633\u0627\u0644");
@@ -690,80 +892,26 @@ function AccountView({ currency, setCurrency, onTopUp, showToast, onLogout, user
       setResending(false);
     }
   }
-  return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-6" }, /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-purple-950 flex items-center justify-center text-2xl font-black text-white ring-4 ring-purple-700 mb-3",
-      style: { boxShadow: "0 0 30px rgba(168,85,247,0.5)" }
-    },
-    initials
-  ), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg" }, user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-2", dir: "ltr" }, user?.email || ""), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full" }, /* @__PURE__ */ React.createElement(ShieldCheck, { className: "w-3 h-3" }), " \u0639\u0636\u0648 \u0645\u0645\u064A\u0632 \u0641\u064A Supersonic")), user && user.email_verified === false && /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4" }, /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: resendVerification,
-      disabled: resending,
-      className: "text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50"
-    },
-    resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"
-  ), /* @__PURE__ */ React.createElement("span", { className: "text-amber-200 text-xs text-right flex-1" }, "\u0625\u064A\u0645\u064A\u0644\u0643 \u0645\u0648 \u0645\u0641\u0639\u0651\u0644 \u2014 \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-4" }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      key: c.id,
-      onClick: () => setCurrency(c.id),
-      className: currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400"
-    },
-    c.id
-  ))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-gray-950 border border-purple-900 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-1" }, "\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u0646\u0641\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.spent)), /* @__PURE__ */ React.createElement("div", { className: "bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-[11px] mb-1" }, "\u0631\u0635\u064A\u062F\u0643 \u0627\u0644\u062D\u0627\u0644\u064A"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.balance))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3 mb-3" }, /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627"),
-      className: "flex-1 flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-3 text-xs text-gray-200"
-    },
-    /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4" }),
-    " \u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F"
-  ), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: onTopUp,
-      className: "flex-1 flex items-center justify-center gap-2 bg-purple-600 rounded-xl py-3 text-xs text-white font-bold",
-      style: { boxShadow: "0 0 20px rgba(168,85,247,0.4)" }
-    },
-    /* @__PURE__ */ React.createElement(Wallet, { className: "w-4 h-4" }),
-    " \u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F"
-  )), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => {
-        const id = "SS-" + (user?.id ?? "00000");
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(id).then(
-            () => showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641: " + id),
-            () => showToast("\u062A\u0639\u0630\u0631 \u0627\u0644\u0646\u0633\u062E \u2014 \u0627\u0644\u0645\u0639\u0631\u0641: " + id)
-          );
-        } else {
-          showToast("\u0627\u0644\u0645\u0639\u0631\u0641: " + id);
-        }
-      },
-      className: "w-full flex items-center justify-center gap-2 bg-gray-950 border border-purple-900 rounded-xl py-3 text-xs text-gray-300 mb-6"
-    },
-    /* @__PURE__ */ React.createElement(Copy, { className: "w-3.5 h-3.5" }),
-    " \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641"
-  ), /* @__PURE__ */ React.createElement("div", { className: "space-y-2 mb-6" }, menu.map((m, i) => {
+  return /* @__PURE__ */ React.createElement("div", { className: "px-4 pt-6" }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-6" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-purple-950 flex items-center justify-center text-2xl font-black text-white ring-4 ring-purple-700 mb-3", style: {
+    boxShadow: "0 0 30px rgba(168,85,247,0.5)"
+  } }, initials), /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg" }, user?.name || "\u0645\u0633\u062A\u062E\u062F\u0645"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-2", dir: "ltr" }, user?.email || ""), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-1 bg-purple-950 border border-purple-700 text-purple-300 text-[11px] px-3 py-1 rounded-full" }, /* @__PURE__ */ React.createElement(ShieldCheck, { className: "w-3 h-3" }), " \u0639\u0636\u0648 \u0645\u0645\u064A\u0632 \u0641\u064A Supersonic")), user && user.email_verified === false && /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between gap-3 bg-amber-950 border border-amber-800 rounded-2xl px-4 py-3 mb-4" }, /* @__PURE__ */ React.createElement("button", { onClick: resendVerification, disabled: resending, className: "text-amber-300 text-xs font-bold shrink-0 disabled:opacity-50" }, resending ? "\u062C\u0627\u0631\u064D \u0627\u0644\u0625\u0631\u0633\u0627\u0644..." : "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644"), /* @__PURE__ */ React.createElement("span", { className: "text-amber-200 text-xs text-right flex-1" }, "\u0625\u064A\u0645\u064A\u0644\u0643 \u0645\u0648 \u0645\u0641\u0639\u0651\u0644 \u2014 \u062A\u0641\u0642\u0651\u062F \u0628\u0631\u064A\u062F\u0643")), /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-4" }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => setCurrency(c.id), className: currency === c.id ? "flex-1 py-2 rounded-xl text-xs font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-xs font-bold border bg-transparent border-purple-900 text-gray-400" }, c.id))), /* @__PURE__ */ React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-4" }, /* @__PURE__ */ React.createElement("div", { className: "bg-surface border border-purple-900 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-[11px] mb-1" }, "\u0627\u0644\u0631\u0635\u064A\u062F \u0627\u0644\u0645\u0646\u0641\u0642"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.spent)), /* @__PURE__ */ React.createElement("div", { className: "bg-gradient-to-br from-purple-900 to-purple-950 border border-purple-700 rounded-2xl p-4" }, /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-[11px] mb-1" }, "\u0631\u0635\u064A\u062F\u0643 \u0627\u0644\u062D\u0627\u0644\u064A"), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold" }, cur.balance))), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3 mb-3" }, /* @__PURE__ */ React.createElement("button", { onClick: () => showToast("\u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u064A\u0646 \u0627\u0644\u0645\u062D\u0627\u0641\u0638 \u0642\u0631\u064A\u0628\u064B\u0627"), className: "flex-1 flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-3 text-xs text-gray-200" }, /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4" }), " \u062A\u062D\u0648\u064A\u0644 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("button", { onClick: onTopUp, className: "flex-1 flex items-center justify-center gap-2 bg-purple-600 rounded-xl py-3 text-xs text-white font-bold", style: {
+    boxShadow: "0 0 20px rgba(168,85,247,0.4)"
+  } }, /* @__PURE__ */ React.createElement(Wallet, { className: "w-4 h-4" }), " \u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F")), /* @__PURE__ */ React.createElement("button", { onClick: () => {
+    const id = "SS-" + (user?.id ?? "00000");
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(id).then(() => showToast("\u062A\u0645 \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641: " + id), () => showToast("\u062A\u0639\u0630\u0631 \u0627\u0644\u0646\u0633\u062E \u2014 \u0627\u0644\u0645\u0639\u0631\u0641: " + id));
+    } else {
+      showToast("\u0627\u0644\u0645\u0639\u0631\u0641: " + id);
+    }
+  }, className: "w-full flex items-center justify-center gap-2 bg-surface border border-purple-900 rounded-xl py-3 text-xs text-gray-300 mb-6" }, /* @__PURE__ */ React.createElement(Copy, { className: "w-3.5 h-3.5" }), " \u0646\u0633\u062E \u0627\u0644\u0645\u0639\u0631\u0641"), /* @__PURE__ */ React.createElement("div", { className: "space-y-2 mb-6" }, menu.map((m, i) => {
     const MIcon = m.Icon;
-    return /* @__PURE__ */ React.createElement(
-      "button",
-      {
-        key: i,
-        onClick: () => showToast(m.msg),
-        className: "w-full flex items-center justify-between bg-gray-950 border border-purple-900 rounded-2xl px-4 py-3.5"
-      },
-      /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }),
-      /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 flex-1 justify-end text-sm text-gray-200" }, m.badge && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] bg-purple-600 text-white px-1.5 py-0.5 rounded-full" }, m.badge), m.label),
-      /* @__PURE__ */ React.createElement("span", { className: "w-8 h-8 rounded-lg bg-purple-950 flex items-center justify-center ml-2" }, /* @__PURE__ */ React.createElement(MIcon, { className: "w-4 h-4 text-purple-400" }))
-    );
+    return /* @__PURE__ */ React.createElement("button", { key: i, onClick: () => showToast(m.msg), className: "w-full flex items-center justify-between bg-surface border border-purple-900 rounded-2xl px-4 py-3.5" }, /* @__PURE__ */ React.createElement(ChevronLeft, { className: "w-4 h-4 text-gray-600" }), /* @__PURE__ */ React.createElement("span", { className: "flex items-center gap-2 flex-1 justify-end text-sm text-gray-200" }, m.badge && /* @__PURE__ */ React.createElement("span", { className: "text-[10px] bg-accent text-white px-1.5 py-0.5 rounded-full" }, m.badge), m.label), /* @__PURE__ */ React.createElement("span", { className: "w-8 h-8 rounded-lg bg-purple-950 flex items-center justify-center ml-2" }, /* @__PURE__ */ React.createElement(MIcon, { className: "w-4 h-4 text-purple-400" })));
   })), /* @__PURE__ */ React.createElement("button", { onClick: onLogout, className: "w-full flex items-center justify-center gap-2 text-red-400 text-sm py-3 mb-6" }, /* @__PURE__ */ React.createElement(LogOut, { className: "w-4 h-4" }), " \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C"));
 }
-function TopUpSheet({ onClose, showToast }) {
+function TopUpSheet({
+  onClose,
+  showToast
+}) {
   const [method, setMethod] = useState("card");
   const [step, setStep] = useState("form");
   const [code, setCode] = useState("");
@@ -779,46 +927,30 @@ function TopUpSheet({ onClose, showToast }) {
     showToast("\u062A\u0645 \u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F \u0628\u0646\u062C\u0627\u062D");
     onClose();
   }
-  const methods = [
-    { id: "card", label: "\u0644\u064A\u0628\u064A\u0627\u0646\u0627 / \u0645\u062F\u0627\u0631" },
-    { id: "bank", label: "\u0628\u0637\u0627\u0642\u0629 \u0645\u0635\u0631\u0641\u064A\u0629" },
-    { id: "transfer", label: "\u062A\u062D\u0648\u064A\u0644 \u062F\u0627\u062E\u0644\u064A" }
-  ];
-  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-black", style: { opacity: 0.7 }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-gray-950 border-t border-purple-800 rounded-t-3xl p-5 pb-8", style: { maxWidth: 480 } }, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold" }, "\u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("span", { className: "w-8" })), step === "form" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, methods.map((m) => /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      key: m.id,
-      onClick: () => setMethod(m.id),
-      className: method === m.id ? "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-transparent border-purple-900 text-gray-400"
-    },
-    m.label
-  ))), method === "card" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0643\u0631\u062A \u0627\u0644\u0634\u062D\u0646"), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      value: code,
-      onChange: (e) => setCode(e.target.value),
-      placeholder: "XXXX-XXXX-XXXX",
-      className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none"
-    }
-  )), method === "bank" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "\u0631\u0642\u0645 \u0627\u0644\u0628\u0637\u0627\u0642\u0629", className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "MM/YY", className: "w-1/2 bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("input", { placeholder: "CVV", className: "w-1/2 bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }))), method === "transfer" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-black border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u064A\u0646\u0627\u0631 \u0644\u064A\u0628\u064A"), /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u0648\u0644\u0627\u0631")), /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-black border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u062F\u0648\u0644\u0627\u0631"), /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u0645\u0635\u0631\u0641"))), /* @__PURE__ */ React.createElement("input", { placeholder: "\u0627\u0644\u0645\u0628\u0644\u063A", className: "w-full bg-black border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: submit,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-5",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    "\u062A\u0623\u0643\u064A\u062F"
-  )), step === "otp" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-xs text-center mb-4" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0627\u0644\u062A\u062D\u0642\u0642 \u0627\u0644\u0645\u0631\u0633\u0644 \u0625\u0644\u0649 \u0631\u0642\u0645 \u0647\u0627\u062A\u0641\u0643"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-2 mb-5", dir: "ltr" }, [0, 1, 2, 3].map((i) => /* @__PURE__ */ React.createElement("input", { key: i, maxLength: 1, className: "w-11 h-12 text-center bg-black border border-purple-800 rounded-xl text-white text-lg outline-none" }))), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: confirmOtp,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0643\u0648\u062F"
-  ))));
+  const methods = [{
+    id: "card",
+    label: "\u0644\u064A\u0628\u064A\u0627\u0646\u0627 / \u0645\u062F\u0627\u0631"
+  }, {
+    id: "bank",
+    label: "\u0628\u0637\u0627\u0642\u0629 \u0645\u0635\u0631\u0641\u064A\u0629"
+  }, {
+    id: "transfer",
+    label: "\u062A\u062D\u0648\u064A\u0644 \u062F\u0627\u062E\u0644\u064A"
+  }];
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed inset-0 z-30 flex items-end justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-void", style: {
+    opacity: 0.7
+  }, onClick: onClose }), /* @__PURE__ */ React.createElement("div", { className: "relative w-full bg-surface border-t border-purple-800 rounded-t-3xl p-5 pb-8", style: {
+    maxWidth: 480
+  } }, /* @__PURE__ */ React.createElement("div", { className: "w-10 h-1 bg-purple-800 rounded-full mx-auto mb-5" }), /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-between mb-5" }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, "aria-label": "\u0625\u063A\u0644\u0627\u0642", className: "w-8 h-8 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center" }, /* @__PURE__ */ React.createElement(X, { className: "w-4 h-4 text-gray-400" })), /* @__PURE__ */ React.createElement("h3", { className: "text-white font-bold" }, "\u0634\u062D\u0646 \u0627\u0644\u0631\u0635\u064A\u062F"), /* @__PURE__ */ React.createElement("span", { className: "w-8" })), step === "form" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "flex gap-2 mb-5" }, methods.map((m) => /* @__PURE__ */ React.createElement("button", { key: m.id, onClick: () => setMethod(m.id), className: method === m.id ? "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-purple-600 border-purple-500 text-white" : "flex-1 py-2 rounded-xl text-[11px] font-bold border bg-transparent border-purple-900 text-gray-400" }, m.label))), method === "card" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("label", { className: "text-xs text-gray-400" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0643\u0631\u062A \u0627\u0644\u0634\u062D\u0646"), /* @__PURE__ */ React.createElement("input", { value: code, onChange: (e) => setCode(e.target.value), placeholder: "XXXX-XXXX-XXXX", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), method === "bank" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "\\u0631\\u0642\\u0645 \\u0627\\u0644\\u0628\\u0637\\u0627\\u0642\\u0629", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("div", { className: "flex gap-3" }, /* @__PURE__ */ React.createElement("input", { placeholder: "MM/YY", className: "w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }), /* @__PURE__ */ React.createElement("input", { placeholder: "CVV", className: "w-1/2 bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" }))), method === "transfer" && /* @__PURE__ */ React.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u064A\u0646\u0627\u0631 \u0644\u064A\u0628\u064A"), /* @__PURE__ */ React.createElement("option", null, "\u0645\u0646: \u062F\u0648\u0644\u0627\u0631")), /* @__PURE__ */ React.createElement(ArrowLeftRight, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("select", { className: "flex-1 bg-void border border-purple-900 rounded-xl px-3 py-3 text-white text-sm outline-none" }, /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u062F\u0648\u0644\u0627\u0631"), /* @__PURE__ */ React.createElement("option", null, "\u0625\u0644\u0649: \u0645\u0635\u0631\u0641"))), /* @__PURE__ */ React.createElement("input", { placeholder: "\\u0627\\u0644\\u0645\\u0628\\u0644\\u063A", className: "w-full bg-void border border-purple-900 rounded-xl px-4 py-3 text-white text-sm outline-none" })), /* @__PURE__ */ React.createElement("button", { onClick: submit, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm mt-5", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, "\u062A\u0623\u0643\u064A\u062F")), step === "otp" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", { className: "text-gray-400 text-xs text-center mb-4" }, "\u0623\u062F\u062E\u0644 \u0643\u0648\u062F \u0627\u0644\u062A\u062D\u0642\u0642 \u0627\u0644\u0645\u0631\u0633\u0644 \u0625\u0644\u0649 \u0631\u0642\u0645 \u0647\u0627\u062A\u0641\u0643"), /* @__PURE__ */ React.createElement("div", { className: "flex justify-center gap-2 mb-5", dir: "ltr" }, [0, 1, 2, 3].map((i) => /* @__PURE__ */ React.createElement("input", { key: i, maxLength: 1, className: "w-11 h-12 text-center bg-void border border-purple-800 rounded-xl text-white text-lg outline-none" }))), /* @__PURE__ */ React.createElement("button", { onClick: confirmOtp, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, "\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0643\u0648\u062F"))));
 }
-function ResetPasswordScreen({ token, onDone }) {
+function ResetPasswordScreen({
+  token,
+  onDone
+}) {
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -835,8 +967,13 @@ function ResetPasswordScreen({ token, onDone }) {
     try {
       const res = await fetch(`${RASHQ_API_BASE}/api/auth/reset-password`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          token,
+          password
+        })
       });
       const data = await res.json();
       if (data.success) setDone(true);
@@ -847,44 +984,24 @@ function ResetPasswordScreen({ token, onDone }) {
       setLoading(false);
     }
   }
-  return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-black flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col justify-center px-6 relative overflow-hidden", style: { maxWidth: 480, minHeight: "100vh" } }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10", style: { maxWidth: 380, margin: "0 auto", width: "100%" } }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-8" }, /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: "w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mb-4",
-      style: { boxShadow: "0 0 30px rgba(168,85,247,0.5)" }
-    },
-    /* @__PURE__ */ React.createElement(Zap, { className: "w-8 h-8 text-white" })
-  ), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), done ? /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Check, { className: "w-8 h-8 text-white", strokeWidth: 3 })), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold mb-2" }, "\u062A\u0645 \u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u2705"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-6" }, "\u0633\u062C\u0651\u0644 \u062F\u062E\u0648\u0644\u0643 \u0628\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062C\u062F\u064A\u062F\u0629"), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: onDone,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644"
-  )) : /* @__PURE__ */ React.createElement("form", { onSubmit: submit }, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg mb-1 text-center" }, "\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062C\u062F\u064A\u062F\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-6 text-center" }, "\u0627\u0643\u062A\u0628 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062C\u062F\u064A\u062F\u0629 \u0644\u062D\u0633\u0627\u0628\u0643"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3 mb-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: showPass ? "text" : "password",
-      value: password,
-      onChange: (e) => setPassword(e.target.value),
-      placeholder: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062C\u062F\u064A\u062F\u0629 (8 \u0623\u062D\u0631\u0641 \u0641\u0623\u0643\u062B\u0631)",
-      className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1",
-      dir: "ltr"
-    }
-  ), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center mb-3" }, error), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      type: "submit",
-      disabled: loading,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    loading && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
-    loading ? "\u0644\u062D\u0638\u0629..." : "\u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"
-  )))));
+  return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-void flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col justify-center px-6 relative overflow-hidden", style: {
+    maxWidth: 480,
+    minHeight: "100vh"
+  } }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10", style: {
+    maxWidth: 380,
+    margin: "0 auto",
+    width: "100%"
+  } }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-8" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mb-4", style: {
+    boxShadow: "0 0 30px rgba(168,85,247,0.5)"
+  } }, /* @__PURE__ */ React.createElement(Zap, { className: "w-8 h-8 text-white" })), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), done ? /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Check, { className: "w-8 h-8 text-white", strokeWidth: 3 })), /* @__PURE__ */ React.createElement("p", { className: "text-white font-bold mb-2" }, "\u062A\u0645 \u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u2705"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-6" }, "\u0633\u062C\u0651\u0644 \u062F\u062E\u0648\u0644\u0643 \u0628\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062C\u062F\u064A\u062F\u0629"), /* @__PURE__ */ React.createElement("button", { onClick: onDone, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644")) : /* @__PURE__ */ React.createElement("form", { onSubmit: submit }, /* @__PURE__ */ React.createElement("h2", { className: "text-white font-bold text-lg mb-1 text-center" }, "\u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062C\u062F\u064A\u062F\u0629"), /* @__PURE__ */ React.createElement("p", { className: "text-gray-500 text-xs mb-6 text-center" }, "\u0627\u0643\u062A\u0628 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631 \u062C\u062F\u064A\u062F\u0629 \u0644\u062D\u0633\u0627\u0628\u0643"), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-surface border border-purple-900 rounded-xl px-4 py-3 mb-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("input", { type: showPass ? "text" : "password", value: password, onChange: (e) => setPassword(e.target.value), placeholder: "\\u0643\\u0644\\u0645\\u0629 \\u0627\\u0644\\u0645\\u0631\\u0648\\u0631 \\u0627\\u0644\\u062C\\u062F\\u064A\\u062F\\u0629 (8 \\u0623\\u062D\\u0631\\u0641 \\u0641\\u0623\\u0643\\u062B\\u0631)", className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1", dir: "ltr" }), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button", "aria-label": showPass ? "\u0625\u062E\u0641\u0627\u0621 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631" : "\u0625\u0638\u0647\u0627\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center mb-3" }, error), /* @__PURE__ */ React.createElement("button", { type: "submit", disabled: loading, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, loading && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }), loading ? "\u0644\u062D\u0638\u0629..." : "\u062A\u063A\u064A\u064A\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631")))));
 }
-function AuthScreen({ onAuthed }) {
+function AuthScreen({
+  onAuthed
+}) {
   const [showPass, setShowPass] = useState(false);
   const [mode, setMode] = useState("login");
   const [name, setName] = useState("");
@@ -910,8 +1027,12 @@ function AuthScreen({ onAuthed }) {
       try {
         await fetch(`${RASHQ_API_BASE}/api/auth/forgot-password`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email.trim() })
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email.trim()
+          })
         });
         setForgotSent(true);
       } catch (err) {
@@ -932,10 +1053,19 @@ function AuthScreen({ onAuthed }) {
     setLoading(true);
     try {
       const endpoint = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
-      const body = mode === "signup" ? { name: name.trim(), email: email.trim(), password } : { email: email.trim(), password };
+      const body = mode === "signup" ? {
+        name: name.trim(),
+        email: email.trim(),
+        password
+      } : {
+        email: email.trim(),
+        password
+      };
       const res = await fetch(`${RASHQ_API_BASE}${endpoint}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(body)
       });
       const data = await res.json();
@@ -950,93 +1080,41 @@ function AuthScreen({ onAuthed }) {
       setLoading(false);
     }
   }
-  return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-black flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col md:flex-row", style: { maxWidth: 1100 } }, /* @__PURE__ */ React.createElement("div", { className: "hidden md:flex md:w-1/2 relative overflow-hidden items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black" }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 text-center px-10" }, /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: "w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mx-auto mb-6",
-      style: { boxShadow: "0 0 40px rgba(168,85,247,0.5)" }
-    },
-    /* @__PURE__ */ React.createElement(Zap, { className: "w-10 h-10 text-white" })
-  ), /* @__PURE__ */ React.createElement("h1", { className: "text-4xl font-black italic bg-gradient-to-l from-purple-300 to-white bg-clip-text text-transparent mb-3" }, "Supersonic"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-sm mx-auto leading-relaxed", style: { maxWidth: 300 } }, "\u0634\u062D\u0646 \u0623\u0644\u0639\u0627\u0628\u060C \u0628\u0637\u0627\u0642\u0627\u062A \u0647\u062F\u0627\u064A\u0627\u060C \u0645\u062D\u0627\u0641\u0638 \u0631\u0642\u0645\u064A\u0629\u060C \u0648\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u2014 \u0643\u0644 \u0634\u064A \u0628\u0645\u0643\u0627\u0646 \u0648\u062D\u062F \u0648\u0628\u0633\u0631\u0639\u0629"))), /* @__PURE__ */ React.createElement("div", { className: "w-full md:w-1/2 flex flex-col justify-center px-6 sm:px-10 md:px-14 py-10 relative overflow-hidden", style: { minHeight: "100vh" } }, /* @__PURE__ */ React.createElement("div", { className: "md:hidden" }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null)), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 w-full", style: { maxWidth: 380, margin: "0 auto" } }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-8 md:hidden" }, /* @__PURE__ */ React.createElement(
-    "div",
-    {
-      className: "w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mb-4",
-      style: { boxShadow: "0 0 30px rgba(168,85,247,0.5)" }
-    },
-    /* @__PURE__ */ React.createElement(Zap, { className: "w-8 h-8 text-white" })
-  ), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("h2", { className: "hidden md:block text-white font-bold text-2xl mb-1" }, mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F" : "\u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"), /* @__PURE__ */ React.createElement("p", { className: "hidden md:block text-gray-500 text-xs mb-8" }, mode === "login" ? "\u0623\u0647\u0644\u064B\u0627 \u0628\u0639\u0648\u062F\u062A\u0643" : mode === "signup" ? "\u064A\u0633\u062A\u063A\u0631\u0642 \u0623\u0642\u0644 \u0645\u0646 \u062F\u0642\u064A\u0642\u0629" : "\u0628\u0646\u0628\u0639\u062B\u0644\u0643 \u0631\u0627\u0628\u0637 \u0639\u0628\u0631 \u0627\u0644\u0625\u064A\u0645\u064A\u0644"), mode === "forgot" && forgotSent ? /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Mail, { className: "w-7 h-7 text-white" })), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm mb-6" }, "\u0644\u0648 \u0627\u0644\u0625\u064A\u0645\u064A\u0644 \u0645\u0633\u062C\u0651\u0644 \u0639\u0646\u062F\u0646\u0627\u060C \u0628\u064A\u0648\u0635\u0644\u0643 \u0631\u0627\u0628\u0637 \u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u062E\u0644\u0627\u0644 \u062F\u0642\u0627\u064A\u0642."), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => {
-        setMode("login");
-        setForgotSent(false);
-      },
-      className: "text-purple-400 text-xs font-bold"
-    },
-    "\u0631\u062C\u0648\u0639 \u0644\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644"
-  )) : /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "space-y-3" }, mode === "signup" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(User, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      value: name,
-      onChange: (e) => setName(e.target.value),
-      placeholder: "\u0627\u0633\u0645\u0643",
-      className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1"
-    }
-  )), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Mail, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "email",
-      value: email,
-      onChange: (e) => setEmail(e.target.value),
-      placeholder: "\u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A",
-      className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1",
-      dir: "ltr"
-    }
-  )), mode !== "forgot" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-gray-950 border border-purple-900 rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: showPass ? "text" : "password",
-      value: password,
-      onChange: (e) => setPassword(e.target.value),
-      placeholder: "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 (8 \u0623\u062D\u0631\u0641 \u0641\u0623\u0643\u062B\u0631)",
-      className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1",
-      dir: "ltr"
-    }
-  ), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), mode === "login" && /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      type: "button",
-      onClick: () => {
-        setMode("forgot");
-        setError("");
-      },
-      className: "text-purple-400 text-xs block"
-    },
-    "\u0646\u0633\u064A\u062A \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061F"
-  ), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center" }, error), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      type: "submit",
-      disabled: loading,
-      className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2",
-      style: { boxShadow: "0 0 24px rgba(168,85,247,0.45)" }
-    },
-    loading && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }),
-    loading ? "\u0644\u062D\u0638\u0629..." : mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628" : "\u0625\u0631\u0633\u0627\u0644 \u0631\u0627\u0628\u0637 \u0627\u0644\u0627\u0633\u062A\u0631\u062C\u0627\u0639"
-  )), mode !== "forgot" && /* @__PURE__ */ React.createElement("p", { className: "text-center text-xs text-gray-500 mt-5" }, mode === "login" ? "\u0645\u0627 \u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F " : "\u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F ", /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => {
-        setMode((m) => m === "login" ? "signup" : "login");
-        setError("");
-      },
-      className: "text-purple-400 font-bold"
-    },
-    mode === "login" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F" : "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644"
-  ))))));
+  return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-void flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full flex flex-col md:flex-row", style: {
+    maxWidth: 1100
+  } }, /* @__PURE__ */ React.createElement("div", { className: "hidden md:flex md:w-1/2 relative overflow-hidden items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black" }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 text-center px-10" }, /* @__PURE__ */ React.createElement("div", { className: "w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mx-auto mb-6", style: {
+    boxShadow: "0 0 40px rgba(168,85,247,0.5)"
+  } }, /* @__PURE__ */ React.createElement(Zap, { className: "w-10 h-10 text-white" })), /* @__PURE__ */ React.createElement("h1", { className: "text-4xl font-black italic bg-gradient-to-l from-purple-300 to-white bg-clip-text text-transparent mb-3" }, "Supersonic"), /* @__PURE__ */ React.createElement("p", { className: "text-purple-300 text-sm mx-auto leading-relaxed", style: {
+    maxWidth: 300
+  } }, "\u0634\u062D\u0646 \u0623\u0644\u0639\u0627\u0628\u060C \u0628\u0637\u0627\u0642\u0627\u062A \u0647\u062F\u0627\u064A\u0627\u060C \u0645\u062D\u0627\u0641\u0638 \u0631\u0642\u0645\u064A\u0629\u060C \u0648\u0645\u062A\u0627\u0628\u0639\u064A\u0646 \u2014 \u0643\u0644 \u0634\u064A \u0628\u0645\u0643\u0627\u0646 \u0648\u062D\u062F \u0648\u0628\u0633\u0631\u0639\u0629"))), /* @__PURE__ */ React.createElement("div", { className: "w-full md:w-1/2 flex flex-col justify-center px-6 sm:px-10 md:px-14 py-10 relative overflow-hidden", style: {
+    minHeight: "100vh"
+  } }, /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0" }, /* @__PURE__ */ React.createElement(GlowOrbs, null), /* @__PURE__ */ React.createElement(SpeedStreaks, null), /* @__PURE__ */ React.createElement("div", { className: "absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-void" })), /* @__PURE__ */ React.createElement("div", { className: "relative z-10 w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/40", style: {
+    maxWidth: 380,
+    margin: "0 auto"
+  } }, /* @__PURE__ */ React.createElement("div", { className: "flex flex-col items-center mb-8 md:hidden" }, /* @__PURE__ */ React.createElement("div", { className: "w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-900 flex items-center justify-center mb-4", style: {
+    boxShadow: "0 0 30px rgba(168,85,247,0.5)"
+  } }, /* @__PURE__ */ React.createElement(Zap, { className: "w-8 h-8 text-white" })), /* @__PURE__ */ React.createElement("h1", { className: "text-2xl font-black italic bg-gradient-to-l from-purple-400 to-white bg-clip-text text-transparent" }, "Supersonic")), /* @__PURE__ */ React.createElement("h2", { className: "hidden md:block text-white font-bold text-2xl mb-1" }, mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F" : "\u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"), /* @__PURE__ */ React.createElement("p", { className: "hidden md:block text-gray-500 text-xs mb-8" }, mode === "login" ? "\u0623\u0647\u0644\u064B\u0627 \u0628\u0639\u0648\u062F\u062A\u0643" : mode === "signup" ? "\u064A\u0633\u062A\u063A\u0631\u0642 \u0623\u0642\u0644 \u0645\u0646 \u062F\u0642\u064A\u0642\u0629" : "\u0628\u0646\u0628\u0639\u062B\u0644\u0643 \u0631\u0627\u0628\u0637 \u0639\u0628\u0631 \u0627\u0644\u0625\u064A\u0645\u064A\u0644"), mode === "forgot" && forgotSent ? /* @__PURE__ */ React.createElement("div", { className: "text-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-800 flex items-center justify-center mx-auto mb-4" }, /* @__PURE__ */ React.createElement(Mail, { className: "w-7 h-7 text-white" })), /* @__PURE__ */ React.createElement("p", { className: "text-gray-300 text-sm mb-6" }, "\u0644\u0648 \u0627\u0644\u0625\u064A\u0645\u064A\u0644 \u0645\u0633\u062C\u0651\u0644 \u0639\u0646\u062F\u0646\u0627\u060C \u0628\u064A\u0648\u0635\u0644\u0643 \u0631\u0627\u0628\u0637 \u0627\u0633\u062A\u0631\u062C\u0627\u0639 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u062E\u0644\u0627\u0644 \u062F\u0642\u0627\u064A\u0642."), /* @__PURE__ */ React.createElement("button", { onClick: () => {
+    setMode("login");
+    setForgotSent(false);
+  }, className: "text-purple-400 text-xs font-bold" }, "\u0631\u062C\u0648\u0639 \u0644\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644")) : /* @__PURE__ */ React.createElement("form", { onSubmit: submit, className: "space-y-3" }, mode === "signup" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(User, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("input", { value: name, onChange: (e) => setName(e.target.value), placeholder: "\\u0627\\u0633\\u0645\\u0643", className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1" })), /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Mail, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("input", { type: "email", value: email, onChange: (e) => setEmail(e.target.value), placeholder: "\\u0627\\u0644\\u0628\\u0631\\u064A\\u062F \\u0627\\u0644\\u0625\\u0644\\u0643\\u062A\\u0631\\u0648\\u0646\\u064A", className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1", dir: "ltr" })), mode !== "forgot" && /* @__PURE__ */ React.createElement("div", { className: "flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 focus-within:border-purple-400/60 focus-within:bg-white/10 transition-colors rounded-xl px-4 py-3" }, /* @__PURE__ */ React.createElement(Lock, { className: "w-4 h-4 text-purple-500" }), /* @__PURE__ */ React.createElement("input", { type: showPass ? "text" : "password", value: password, onChange: (e) => setPassword(e.target.value), placeholder: "\\u0643\\u0644\\u0645\\u0629 \\u0627\\u0644\\u0645\\u0631\\u0648\\u0631 (8 \\u0623\\u062D\\u0631\\u0641 \\u0641\\u0623\\u0643\\u062B\\u0631)", className: "bg-transparent outline-none text-sm text-white placeholder-gray-500 flex-1", dir: "ltr" }), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowPass((v) => !v), type: "button", "aria-label": showPass ? "\u0625\u062E\u0641\u0627\u0621 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631" : "\u0625\u0638\u0647\u0627\u0631 \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631" }, showPass ? /* @__PURE__ */ React.createElement(EyeOff, { className: "w-4 h-4 text-gray-500" }) : /* @__PURE__ */ React.createElement(Eye, { className: "w-4 h-4 text-gray-500" }))), mode === "login" && /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => {
+    setMode("forgot");
+    setError("");
+  }, className: "text-purple-400 text-xs block" }, "\u0646\u0633\u064A\u062A \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061F"), error && /* @__PURE__ */ React.createElement("p", { className: "text-red-400 text-xs text-center" }, error), /* @__PURE__ */ React.createElement("button", { type: "submit", disabled: loading, className: "w-full bg-purple-600 text-white font-bold rounded-xl py-3.5 text-sm disabled:opacity-60 flex items-center justify-center gap-2", style: {
+    boxShadow: "0 0 24px rgba(168,85,247,0.45)"
+  } }, loading && /* @__PURE__ */ React.createElement(Loader2, { className: "w-4 h-4 animate-spin" }), loading ? "\u0644\u062D\u0638\u0629..." : mode === "login" ? "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644" : mode === "signup" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628" : "\u0625\u0631\u0633\u0627\u0644 \u0631\u0627\u0628\u0637 \u0627\u0644\u0627\u0633\u062A\u0631\u062C\u0627\u0639")), mode !== "forgot" && /* @__PURE__ */ React.createElement("p", { className: "text-center text-xs text-gray-500 mt-5" }, mode === "login" ? "\u0645\u0627 \u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F " : "\u0639\u0646\u062F\u0643 \u062D\u0633\u0627\u0628\u061F ", /* @__PURE__ */ React.createElement("button", { onClick: () => {
+    setMode((m) => m === "login" ? "signup" : "login");
+    setError("");
+  }, className: "text-purple-400 font-bold" }, mode === "login" ? "\u0625\u0646\u0634\u0627\u0621 \u062D\u0633\u0627\u0628 \u062C\u062F\u064A\u062F" : "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644"))))));
 }
-function Toast({ message }) {
-  return /* @__PURE__ */ React.createElement("div", { className: "fixed bottom-24 inset-x-0 z-40 flex justify-center px-6", style: { maxWidth: 480, margin: "0 auto" } }, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-700 text-white text-xs font-bold px-4 py-2.5 rounded-full flex items-center gap-2", style: { boxShadow: "0 4px 20px rgba(168,85,247,0.5)" } }, /* @__PURE__ */ React.createElement(Check, { className: "w-3.5 h-3.5" }), " ", message));
+function Toast({
+  message
+}) {
+  return /* @__PURE__ */ React.createElement("div", { className: "fixed bottom-24 inset-x-0 z-40 flex justify-center px-6", style: {
+    maxWidth: 480,
+    margin: "0 auto"
+  } }, /* @__PURE__ */ React.createElement("div", { className: "bg-purple-700 text-white text-xs font-bold px-4 py-2.5 rounded-full flex items-center gap-2", style: {
+    boxShadow: "0 4px 20px rgba(168,85,247,0.5)"
+  } }, /* @__PURE__ */ React.createElement(Check, { className: "w-3.5 h-3.5" }), " ", message));
 }
 function LoadingSpinner() {
   return /* @__PURE__ */ React.createElement("div", { className: "flex items-center justify-center py-24" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-7 h-7 text-purple-500 animate-spin" }));
@@ -1059,6 +1137,25 @@ function App() {
   const [cardsImages, setCardsImages] = useState({});
   const [toast, setToast] = useState("");
   const [resetToken, setResetToken] = useState(null);
+  const [authChecking, setAuthChecking] = useState(true);
+  useEffect(() => {
+    const stored = loadStoredSession();
+    if (!stored || RASHQ_API_BASE.includes("REPLACE-WITH")) {
+      setAuthChecking(false);
+      return;
+    }
+    fetch(`${RASHQ_API_BASE}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${stored.token}` }
+    }).then((res) => res.json()).then((data) => {
+      if (data.success) {
+        setCurrentUser(data.user);
+        setAuthToken(stored.token);
+      } else {
+        clearStoredSession();
+      }
+    }).catch(() => {
+    }).finally(() => setAuthChecking(false));
+  }, []);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const vToken = params.get("verify_token");
@@ -1128,67 +1225,42 @@ function App() {
     if (authToken && !RASHQ_API_BASE.includes("REPLACE-WITH")) {
       fetch(`${RASHQ_API_BASE}/api/auth/logout`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${authToken}` }
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
       }).catch(() => {
       });
     }
+    clearStoredSession();
     setCurrentUser(null);
     setAuthToken(null);
   }
   if (resetToken) {
     return /* @__PURE__ */ React.createElement(ResetPasswordScreen, { token: resetToken, onDone: () => setResetToken(null) });
   }
-  if (!currentUser) {
-    return /* @__PURE__ */ React.createElement(
-      AuthScreen,
-      {
-        onAuthed: (user, token) => {
-          setCurrentUser(user);
-          setAuthToken(token);
-        }
-      }
-    );
+  if (authChecking) {
+    return /* @__PURE__ */ React.createElement("div", { className: "min-h-screen bg-void flex items-center justify-center" }, /* @__PURE__ */ React.createElement(Loader2, { className: "w-7 h-7 text-purple-500 animate-spin" }));
   }
-  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", className: "min-h-screen bg-black flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full relative text-white font-sans", style: { maxWidth: 480 } }, /* @__PURE__ */ React.createElement(Header, { onSearchClick: () => searchRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), showToast }), /* @__PURE__ */ React.createElement("main", { className: "pb-28" }, loading ? /* @__PURE__ */ React.createElement(LoadingSpinner, null) : /* @__PURE__ */ React.createElement(React.Fragment, null, tab === "home" && /* @__PURE__ */ React.createElement(
-    HomeView,
-    {
-      filter,
-      setFilter,
-      slide,
-      showToast,
-      onOpenProduct: setOpenProduct,
-      searchRef,
-      cardsImages
-    }
-  ), tab === "rashq" && /* @__PURE__ */ React.createElement(
-    RashqPage,
-    {
-      livePrices: rashqLive,
-      apiState: rashqApiState,
-      onOpenService: (service, platformLabel, unitPrice, isLive) => setRashqOrder({ service, platformLabel, unitPrice, isLive })
-    }
-  ), tab === "purchases" && /* @__PURE__ */ React.createElement(PurchasesView, { goHome: () => goTab("home"), purchases }), tab === "support" && /* @__PURE__ */ React.createElement(SupportView, { showToast }), tab === "account" && /* @__PURE__ */ React.createElement(
-    AccountView,
-    {
-      currency,
-      setCurrency,
-      onTopUp: () => setShowTopUp(true),
-      showToast,
-      onLogout: handleLogout,
-      user: currentUser,
-      authToken
-    }
-  ))), /* @__PURE__ */ React.createElement(BottomNav, { tab, onChange: goTab })), showTopUp && /* @__PURE__ */ React.createElement(TopUpSheet, { onClose: () => setShowTopUp(false), showToast }), rashqOrder && /* @__PURE__ */ React.createElement(RashqOrderSheet, { order: rashqOrder, onClose: () => setRashqOrder(null), showToast }), openProduct && /* @__PURE__ */ React.createElement(
-    ProductSheet,
-    {
-      item: openProduct,
-      onClose: () => setOpenProduct(null),
-      onPurchased: (record) => setPurchases((prev) => [record, ...prev])
-    }
-  ), toast && /* @__PURE__ */ React.createElement(Toast, { message: toast }));
+  if (!currentUser) {
+    return /* @__PURE__ */ React.createElement(AuthScreen, { onAuthed: (user, token) => {
+      saveStoredSession(user, token);
+      setCurrentUser(user);
+      setAuthToken(token);
+    } });
+  }
+  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", className: "min-h-screen bg-void flex justify-center" }, /* @__PURE__ */ React.createElement("div", { className: "w-full relative text-white font-sans", style: {
+    maxWidth: 480
+  } }, /* @__PURE__ */ React.createElement(Header, { onSearchClick: () => searchRef.current?.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  }), showToast }), /* @__PURE__ */ React.createElement("main", { className: "pb-28" }, loading ? /* @__PURE__ */ React.createElement(LoadingSpinner, null) : /* @__PURE__ */ React.createElement(React.Fragment, null, tab === "home" && /* @__PURE__ */ React.createElement(HomeView, { filter, setFilter, slide, showToast, onOpenProduct: setOpenProduct, searchRef, cardsImages }), tab === "rashq" && /* @__PURE__ */ React.createElement(RashqPage, { livePrices: rashqLive, apiState: rashqApiState, onOpenService: (service, platformLabel, unitPrice, isLive) => setRashqOrder({
+    service,
+    platformLabel,
+    unitPrice,
+    isLive
+  }) }), tab === "purchases" && /* @__PURE__ */ React.createElement(PurchasesView, { goHome: () => goTab("home"), purchases }), tab === "support" && /* @__PURE__ */ React.createElement(SupportView, { showToast }), tab === "account" && /* @__PURE__ */ React.createElement(AccountView, { currency, setCurrency, onTopUp: () => setShowTopUp(true), showToast, onLogout: handleLogout, user: currentUser, authToken }))), /* @__PURE__ */ React.createElement(BottomNav, { tab, onChange: goTab })), showTopUp && /* @__PURE__ */ React.createElement(TopUpSheet, { onClose: () => setShowTopUp(false), showToast }), rashqOrder && /* @__PURE__ */ React.createElement(RashqOrderSheet, { order: rashqOrder, onClose: () => setRashqOrder(null), showToast }), openProduct && /* @__PURE__ */ React.createElement(ProductSheet, { item: openProduct, onClose: () => setOpenProduct(null), onPurchased: (record) => setPurchases((prev) => [record, ...prev]) }), toast && /* @__PURE__ */ React.createElement(Toast, { message: toast }));
 }
 createRoot(document.getElementById("root")).render(/* @__PURE__ */ React.createElement(App, null));
 export {
   App as default
 };
-

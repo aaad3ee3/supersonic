@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://REPLACE-USERNAME.github.io/REPLACE-REPO/sitemap.xml
+Sitemap: https://aaad3ee3.github.io/supersonic/sitemap.xml

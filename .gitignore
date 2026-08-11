@@ -1,0 +1,20 @@
+# SQLite database — contains real user emails/password hashes once the
+# backend runs locally. Must never land in this public repo.
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Secrets — real keys must only ever come from Railway env vars, never a file.
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+
+# Node (in case anyone runs a local toolchain against supersonic-app.jsx)
+node_modules/
+
+# OS/editor cruft
+.DS_Store
