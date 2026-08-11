@@ -265,6 +265,8 @@ def add_cors_headers(resp):
     resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     resp.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Site-Token, Authorization"
     resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return resp
 
 
@@ -402,10 +404,15 @@ def verify_email():
     conn = get_db()
     try:
         row = conn.execute(
-            "SELECT user_id FROM email_tokens WHERE token = ? AND kind = 'verify' AND used = 0", (token,)
+            "SELECT user_id, created_at FROM email_tokens WHERE token = ? AND kind = 'verify' AND used = 0", (token,)
         ).fetchone()
         if not row:
             return jsonify({"success": False, "error": "رابط التفعيل غير صالح أو مستخدم من قبل"}), 400
+
+        created = datetime.strptime(row["created_at"], "%Y-%m-%d %H:%M:%S")
+        if (datetime.now(timezone.utc).replace(tzinfo=None) - created) > timedelta(hours=24):
+            return jsonify({"success": False, "error": "انتهت صلاحية رابط التفعيل، اطلب رابط جديد من صفحة حسابك"}), 400
+
         conn.execute("UPDATE users SET email_verified = 1 WHERE id = ?", (row["user_id"],))
         conn.execute("UPDATE email_tokens SET used = 1 WHERE token = ?", (token,))
         conn.commit()
