@@ -984,7 +984,12 @@ def libyana_register_webhook():
     if not SMSGATE_CLOUD_USERNAME or not SMSGATE_CLOUD_PASSWORD:
         return jsonify({"ok": False, "error": "SMSGATE_CLOUD_USERNAME/SMSGATE_CLOUD_PASSWORD مو مضبوطين بـ Railway"}), 503
 
-    our_webhook_url = f"{request.url_root.rstrip('/')}/api/libyana/webhook?key={LIBYANA_WEBHOOK_SECRET}"
+    # request.url_root reflects http:// here — Railway terminates TLS at its
+    # edge and forwards to this process over plain HTTP internally, so Flask
+    # sees an http:// request even though the real client always hits us over
+    # https://. Force the scheme instead of trusting it, since this site is
+    # never served any other way.
+    our_webhook_url = f"https://{request.host}/api/libyana/webhook?key={LIBYANA_WEBHOOK_SECRET}"
 
     try:
         r = requests.post(
