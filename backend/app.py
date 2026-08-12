@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import socket
 import sqlite3
 import secrets
 import smtplib
@@ -413,6 +414,22 @@ SMTP_APP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD")
 SITE_URL = os.environ.get("SITE_URL", "https://aaad3ee3.github.io/supersonic")
 
 
+class _SMTP_SSL_IPv4(smtplib.SMTP_SSL):
+    # Railway's containers have no IPv6 route, but smtp.gmail.com resolves to
+    # both A and AAAA records — the stdlib socket.create_connection() (which
+    # does its own getaddrinfo internally) can pick the IPv6 address first and
+    # fail with "[Errno 101] Network is unreachable" before ever trying IPv4
+    # (confirmed from real Deploy Logs). Mirrors the real SMTP/SMTP_SSL
+    # _get_socket implementations exactly, just resolving IPv4 explicitly
+    # first — TLS still verifies against the real hostname via server_hostname.
+    def _get_socket(self, host, port, timeout):
+        if timeout is not None and not timeout:
+            raise ValueError("Non-blocking socket (timeout=0) is not supported")
+        addr_info = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
+        new_socket = socket.create_connection(addr_info[0][4], timeout, self.source_address)
+        return self.context.wrap_socket(new_socket, server_hostname=self._host)
+
+
 def send_email(to_email, subject, body):
     if not SMTP_EMAIL or not SMTP_APP_PASSWORD:
         print(f"[email] SMTP not configured — would have sent to {to_email!r}: {subject!r}")
@@ -422,7 +439,7 @@ def send_email(to_email, subject, body):
         msg["Subject"] = subject
         msg["From"] = SMTP_EMAIL
         msg["To"] = to_email
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+        with _SMTP_SSL_IPv4("smtp.gmail.com", 465, timeout=10) as server:
             server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
             server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
         return True
