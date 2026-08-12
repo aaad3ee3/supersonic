@@ -1123,7 +1123,7 @@ function LibyanaTopUp({ authToken, showToast, onPaid }) {
           }
         }
       } catch (e) {}
-    }, 4000);
+    }, 2000);
     return () => clearInterval(poll);
   }, [charge, status, authToken]);
 
