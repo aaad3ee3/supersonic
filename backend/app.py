@@ -1,12 +1,9 @@
 import os
 import re
 import time
-import socket
 import sqlite3
 import secrets
-import smtplib
 import threading
-from email.mime.text import MIMEText
 from urllib.parse import urlparse
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
@@ -406,42 +403,33 @@ EMAIL_RE = re.compile(r'^[^@\s]{1,64}@[^@\s]{1,190}\.[^@\s]{2,24}$')
 # email isn't found — see the timing-attack note in login() below.
 DUMMY_HASH = generate_password_hash(secrets.token_hex(16))
 
-# --- Outgoing email, via Gmail SMTP (smtplib is Python's standard library —
-# no new package, no new external service to sign up for beyond a Gmail
-# account you already have + a Google "App Password" for it, see README). ---
-SMTP_EMAIL = os.environ.get("SMTP_EMAIL")
-SMTP_APP_PASSWORD = os.environ.get("SMTP_APP_PASSWORD")
+# --- Outgoing email, via Resend's HTTP API (not raw SMTP: Railway's network
+# blocks outbound SMTP ports 465/587 entirely — confirmed from real Deploy
+# Logs, first as "[Errno 101] Network is unreachable" then, after fixing that,
+# as a clean connection timeout. Resend sends over plain HTTPS like any other
+# API call, so it isn't affected by that port block. No new package needed,
+# reuses `requests` which is already a dependency. https://resend.com/api-keys
+# for the API key, RESEND_FROM must be an address on a domain you verified
+# with Resend (see their dashboard) or their shared test sender if allowed.
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
+RESEND_FROM = os.environ.get("RESEND_FROM", "Supersonic <onboarding@resend.dev>")
 SITE_URL = os.environ.get("SITE_URL", "https://aaad3ee3.github.io/supersonic")
 
 
-class _SMTP_SSL_IPv4(smtplib.SMTP_SSL):
-    # Railway's containers have no IPv6 route, but smtp.gmail.com resolves to
-    # both A and AAAA records — the stdlib socket.create_connection() (which
-    # does its own getaddrinfo internally) can pick the IPv6 address first and
-    # fail with "[Errno 101] Network is unreachable" before ever trying IPv4
-    # (confirmed from real Deploy Logs). Mirrors the real SMTP/SMTP_SSL
-    # _get_socket implementations exactly, just resolving IPv4 explicitly
-    # first — TLS still verifies against the real hostname via server_hostname.
-    def _get_socket(self, host, port, timeout):
-        if timeout is not None and not timeout:
-            raise ValueError("Non-blocking socket (timeout=0) is not supported")
-        addr_info = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)
-        new_socket = socket.create_connection(addr_info[0][4], timeout, self.source_address)
-        return self.context.wrap_socket(new_socket, server_hostname=self._host)
-
-
 def send_email(to_email, subject, body):
-    if not SMTP_EMAIL or not SMTP_APP_PASSWORD:
-        print(f"[email] SMTP not configured — would have sent to {to_email!r}: {subject!r}")
+    if not RESEND_API_KEY:
+        print(f"[email] RESEND_API_KEY not configured — would have sent to {to_email!r}: {subject!r}")
         return False
     try:
-        msg = MIMEText(body, "plain", "utf-8")
-        msg["Subject"] = subject
-        msg["From"] = SMTP_EMAIL
-        msg["To"] = to_email
-        with _SMTP_SSL_IPv4("smtp.gmail.com", 465, timeout=10) as server:
-            server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
-            server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
+        r = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+            json={"from": RESEND_FROM, "to": [to_email], "subject": subject, "text": body},
+            timeout=10,
+        )
+        if r.status_code >= 300:
+            print(f"[email] send to {to_email!r} failed: {r.status_code} {r.text[:300]!r}")
+            return False
         return True
     except Exception as e:
         print(f"[email] send to {to_email!r} failed: {e}")

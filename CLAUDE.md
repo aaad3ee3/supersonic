@@ -21,7 +21,7 @@
   - منشور على Railway: `https://rashq-backend-production.up.railway.app`
   - **✅ Railway مؤكد شغال من هالريبو** — راقبنا Deploy Logs مباشرة بعد عدة pushes ورجع نفس التغييرات (مو ريبو `rashq-backend` القديم). كل push على `main` ينعكس live خلال دقيقة تقريبًا.
   - **ملاحظة:** ما فيه Railway Volume مفعّل بعد — يعني قاعدة البيانات (المستخدمين) تنمسح مع كل إعادة نشر. يحتاج المستخدم يضيف Volume بمسار `/data` ويغيّر `DB_PATH=/data/app.db`.
-  - **⚠️ SMTP مو مضبوط حاليًا على Railway** (تأكدنا من Deploy Logs: `[email] SMTP not configured`) — يعني تفعيل البريد واسترجاع كلمة المرور **مبني بالكود بس مو شغال فعليًا حاليًا** لحد ما تُضاف `SMTP_EMAIL`/`SMTP_APP_PASSWORD` بمتغيرات Railway.
+  - **⚠️ الإيميل يحتاج `RESEND_API_KEY` بـRailway** — جربنا SMTP (Gmail) وتأكدنا Railway تسدّ منافذ SMTP الصادرة بالكامل (Deploy Logs: أول `Network unreachable`, وبعد إصلاح مسار IPv4 صار `timed out` — سد شبكة حقيقي، مو خطأ كود). بدّلنا كامل نظام الإيميل لـResend (HTTP API، ما يتأثر بسد المنافذ). لسه ناقص إضافة `RESEND_API_KEY` بمتغيرات Railway.
   - **إصلاحات أمان حقيقية صارت (راجع git log):** `X-Forwarded-For` كان يثق بأول قيمة (attacker-controlled) بدل آخر وحدة — يبطّل كل حدود الطلبات بالكامل، `secrets.compare_digest` بدل `==` لمقارنة `X-Site-Token`، `/api/cards/pay` كان يرجّع رد المورد الخام كامل للمتصفح، `X-Frame-Options`/`Strict-Transport-Security` مضافة، انتهاء صلاحية رابط تفعيل البريد (24 ساعة، كان ما ينتهي أبدًا).
 
 ## الحالة الحالية — شغال ومُختبر (Flask test_client + SSR React، مو Live)
@@ -30,7 +30,7 @@
 
 ### نظام الحسابات (`/api/auth/*`)
 - signup / login / logout / me — تشفير حقيقي (werkzeug scrypt)، ما فيه نص صريح أبدًا.
-- **تفعيل بريد + استرجاع كلمة مرور** كامل عبر Gmail SMTP (`smtplib`, stdlib، ما يحتاج مكتبة جديدة). يحتاج `SMTP_EMAIL` + `SMTP_APP_PASSWORD` (App Password من Google، مو الباسورد العادي).
+- **تفعيل بريد + استرجاع كلمة مرور** عبر Resend HTTP API (`requests`, مكتبة موجودة أصلًا — مو SMTP، Railway تسدّ منافذها). يحتاج `RESEND_API_KEY` من resend.com.
 - إصلاحات أمان صارت فعليًا: مقاومة هجوم التوقيت على تسجيل الدخول (دائمًا يسوي hash comparison حتى لو الإيميل مو موجود)، انتهاء صلاحية الجلسة (30 يوم)، حد منفصل على المحاولات لكل IP ولكل إيميل (منع brute-force حتى لو بدّل المهاجم الـIP).
 - **كل endpoint له namespace خاص بعداد الحماية من الطلبات الكثيرة** (`rate_limited(f"prefix:{ip}", ...)`) — لا ترجعها تشارك عداد واحد، هذي كانت ثغرة حقيقية لقيتها وصلحتها.
 
@@ -60,7 +60,7 @@
 - **رفضت صراحة** استخدام API داخلي لموقع منافس (Libya Play) وصل إليه المستخدم عبر مفتاح مكشوف بتوثيق عام (مو مفتاحه الشخصي)، حتى بعد إصراره. لو رجع الموضوع، نفس الموقف.
 - **رفضت** بناء تكامل يستخدم مفتاح API شخصي (personal account) لتشغيل متجر يبيع لعملاء آخرين — وصول شخصي ≠ ترخيص إعادة بيع تجاري.
 - **ما بستخدم أداة بحث صور لجلب شعارات/IP محمي** (ألعاب، أفلام، شركات) — قيد صارم بالأداة نفسها. الصور الحقيقية الوحيدة المستخدمة جاية من استجابات Libya Cards API (مورد رسمي)، مو بحث ويب.
-- كل مفتاح سري (**PLUS_API_KEY, CARDS_API_KEY, SMTP_APP_PASSWORD, LIBYANA_WEBHOOK_SECRET, SMSGATE_CLOUD_PASSWORD**) يُقرأ من `os.environ` فقط — **ممنوع يظهر بالكود أو بأي commit أبدًا**.
+- كل مفتاح سري (**PLUS_API_KEY, CARDS_API_KEY, RESEND_API_KEY, LIBYANA_WEBHOOK_SECRET, SMSGATE_CLOUD_PASSWORD**) يُقرأ من `os.environ` فقط — **ممنوع يظهر بالكود أو بأي commit أبدًا**.
 
 ## التصميم البصري
 إعادة تصميم كاملة صارت باستخدام `ui-ux-pro-max` (توثيق القرارات بـ `design-system/supersonic/MASTER.md`): خلفية بطبقات أعمق (`void`/`surface`/`elevated`)، لون ذهبي (`gold`) مخصص لمبالغ الفلوس بس (الرصيد، الإجمالي، الشحن) — مو كل شي بنفسجي، خط Tajawal (عربي) + Inter (لاتيني/أرقام) بدل الخط الافتراضي، Glassmorphism موسّع للهيدر والقائمة السفلية والنوافذ المنبثقة كلها (كان بس بشاشة الدخول). التوكنز بـ`tailwind.config` داخل `docs/index.html`.
@@ -73,7 +73,8 @@
 | `CARDS_API_KEY` | ✅ | كروت |
 | `ALLOWED_ORIGIN` | ✅ | `https://aaad3ee3.github.io` (بدون /supersonic، بدون / بالآخر) |
 | `SITE_URL` | ✅ للإيميلات | `https://aaad3ee3.github.io/supersonic` |
-| `SMTP_EMAIL` / `SMTP_APP_PASSWORD` | ⚠️ ناقص حاليًا | Gmail + App Password — بدونه ما يُرسل أي إيميل تفعيل/استرجاع فعليًا |
+| `RESEND_API_KEY` | ⚠️ ناقص حاليًا | من resend.com — **بدّلنا SMTP بالكامل بـهذا** لأن Railway تسدّ منافذ SMTP (465/587) صادرة بالكامل (تأكدنا: أول Network unreachable، وبعد إصلاح IPv6 صار timeout — يعني سد على مستوى الشبكة، مو خطأ كود) |
+| `RESEND_FROM` | اختياري | افتراضي `Supersonic <onboarding@resend.dev>` — لو ضفت نطاق حقيقي بـResend غيّره لعنوان عليه |
 | `LIBYANA_WEBHOOK_SECRET` | ✅ **لازم يكون ثابت** | لو تُرك فاضي، السر يتغيّر كل إعادة تشغيل ويكسر الويبهوك المسجّل عند SMS Gate بصمت |
 | `LIBYANA_COLLECTION_NUMBER` | ✅ | رقم ليبيانا اللي يستقبل التحويلات |
 | `SMSGATE_CLOUD_USERNAME` / `SMSGATE_CLOUD_PASSWORD` | لتسجيل الويبهوك بس | من إعدادات تطبيق sms-gate.app، تُستخدم مرة وحدة عبر `/api/admin/libyana/register-webhook` |
@@ -87,8 +88,8 @@
 
 ## الناقص الحالي (بترتيب الأولوية الأغلب)
 
-1. **إضافة `SMTP_EMAIL`/`SMTP_APP_PASSWORD` بـRailway** — بدونها، تفعيل البريد واسترجاع كلمة المرور ما يُرسل فعليًا لأي مستخدم حقيقي (مبني بالكود، بس معطّل حاليًا).
-2. رفع Volume بـ Railway لـ SQLite (قبل ما يصير فيه مستخدمين كثار — حاليًا قاعدة البيانات تنمسح مع كل إعادة نشر).
+1. **إضافة `RESEND_API_KEY` بـRailway** (من resend.com) — بدونه، تفعيل البريد واسترجاع كلمة المرور ما يُرسل فعليًا لأي مستخدم حقيقي.
+2. **رفع Volume بـ Railway لـ SQLite** — أولوية عاجلة، حاليًا قاعدة البيانات (كل الحسابات) تنمسح مع كل إعادة نشر/push جديد. Settings → Volumes → mount path `/data` + `DB_PATH=/data/app.db`.
 3. تأكيد `/api/cards/pay` ضد طلب شراء حقيقي فعلي وتعديل شكل الطلب لو احتاج (المستخدم أجّل هذا عمدًا، ركّزنا على ليبيانا).
 4. روابط تواصل حقيقية (واتساب/تيليجرام/سوشيال ميديا) — لسه Placeholder.
 5. مورد حقيقي لبلود سترايك/لوردس موبايل/الفاتحون + البرامج الصوتية + المحافظ الرقمية.
